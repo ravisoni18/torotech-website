@@ -1,26 +1,134 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #ffffff;
+  --mist: #f3f6f9;
+  --line: #dde5ec;
+  --ink: #0b1f3a;
+  --ink-soft: #3f5068;
+  --muted: #6b7a90;
+  --teal: #0f9d9d;
+  --teal-deep: #0a7676;
+  --teal-tint: #e3f5f5;
+  --gold: #f0b429;
+  --coral: #e0533f;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-paper: var(--paper);
+  --color-mist: var(--mist);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-muted: var(--muted);
+  --color-teal: var(--teal);
+  --color-teal-deep: var(--teal-deep);
+  --color-teal-tint: var(--teal-tint);
+  --color-gold: var(--gold);
+  --color-coral: var(--coral);
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", Menlo, monospace;
+  --radius-card: 14px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+::selection {
+  background: var(--teal-tint);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Marketing prose (rendered markdown) */
+.prose-tt {
+  color: var(--ink-soft);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  max-width: 68ch;
+}
+.prose-tt h2 { color: var(--ink); font-size: 1.75rem; font-weight: 700; margin: 2.5rem 0 1rem; }
+.prose-tt h3 { color: var(--ink); font-size: 1.25rem; font-weight: 700; margin: 2rem 0 0.75rem; }
+.prose-tt p { margin: 0 0 1.25rem; }
+.prose-tt ul, .prose-tt ol { margin: 0 0 1.25rem 1.25rem; }
+.prose-tt ul { list-style: disc; }
+.prose-tt ol { list-style: decimal; }
+.prose-tt li { margin: 0.35rem 0; }
+.prose-tt a { color: var(--teal-deep); text-decoration: underline; text-underline-offset: 3px; }
+.prose-tt blockquote { border-left: 3px solid var(--teal); padding-left: 1.25rem; color: var(--ink); font-weight: 500; margin: 1.5rem 0; }
+.prose-tt code { font-family: var(--font-mono); font-size: 0.9em; background: var(--mist); padding: 0.15em 0.4em; border-radius: 5px; }
+.prose-tt pre { background: var(--ink); color: #dfe8f2; padding: 1.25rem; border-radius: 10px; overflow-x: auto; margin: 0 0 1.5rem; font-size: 0.875rem; line-height: 1.6; }
+.prose-tt pre code { background: transparent; padding: 0; color: inherit; }
+.prose-tt table { border-collapse: collapse; width: 100%; margin: 0 0 1.5rem; font-size: 0.95rem; }
+.prose-tt th, .prose-tt td { border: 1px solid var(--line); padding: 0.5rem 0.75rem; text-align: left; }
+.prose-tt th { background: var(--mist); color: var(--ink); }
+.prose-tt img { border-radius: 10px; }
+.prose-tt hr { border: 0; border-top: 1px solid var(--line); margin: 2.5rem 0; }
+
+/* Logo marquee */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 40s linear infinite;
+}
+.marquee:hover .marquee-track { animation-play-state: paused; }
+
+/* Hero system diagram */
+@keyframes flow {
+  to { stroke-dashoffset: -40; }
+}
+.flow-line {
+  stroke-dasharray: 6 8;
+  animation: flow 1.6s linear infinite;
+}
+@keyframes packet {
+  0% { offset-distance: 0%; opacity: 0; }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+.packet {
+  offset-rotate: 0deg;
+  animation: packet 3.2s ease-in-out infinite;
+}
+@keyframes pulse-ring {
+  0% { transform: scale(0.9); opacity: 0.6; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+.pulse-ring {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: pulse-ring 2.4s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track, .flow-line, .packet, .pulse-ring { animation: none !important; }
+  html { scroll-behavior: auto; }
 }

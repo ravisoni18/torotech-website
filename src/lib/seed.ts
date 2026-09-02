@@ -1,0 +1,361 @@
+import "server-only";
+
+type Seedable = { exec: (sql: string, params?: unknown[]) => Promise<void> };
+
+type SeedItem = {
+  type: "service" | "case_study" | "post" | "page";
+  slug: string;
+  title: string;
+  excerpt: string;
+  body: string;
+  tags?: string[];
+  data?: Record<string, unknown>;
+  sort_order?: number;
+};
+
+const services: SeedItem[] = [
+  {
+    type: "service",
+    slug: "ai-for-sap",
+    title: "AI agents inside SAP S/4HANA",
+    excerpt:
+      "Agents that read your CDS views, call your BAPIs and RAP services, and complete real work — order holds, material verification, returns — with a human approving the edge cases.",
+    sort_order: 1,
+    tags: ["S/4HANA", "RAP", "OData", "Agents"],
+    data: {
+      icon: "brain",
+      outcomes: [
+        "Ship an approved-action agent in 6–8 weeks",
+        "Every action traceable to an SAP change document",
+        "Works on ECC and S/4HANA, on-prem or cloud",
+      ],
+    },
+    body: `## What we build
+
+Most "AI for SAP" demos stop at a chat window that summarises a screen. We build agents that **do the work** — safely, inside your authorisation concept.
+
+A Torotech agent is a small, auditable service on BTP that:
+
+- reads business context through **ABAP CDS views** and **OData V4** services (no direct table access, ever)
+- reasons with a model of your choice (Anthropic Claude, Azure OpenAI, or SAP AI Core)
+- proposes actions as **RAP** or **BAPI** calls, with the full payload shown to an approver
+- writes back only after approval rules pass, and logs every step to a change document
+
+## Typical first projects
+
+| Process | What the agent does | Guardrail |
+| --- | --- | --- |
+| Sales order holds | Reads block reasons, credit exposure and delivery dates; drafts the release or the customer note | Release above a threshold needs a human |
+| Material verification | Compares inbound ASN, PO and goods-receipt data; flags mismatches with a suggested resolution | Never posts a GR on its own |
+| Returns triage | Classifies return reasons from free text and photos; proposes disposition and credit | Credit memo is always approved |
+
+## How an engagement runs
+
+1. **Process walk-through (1 week).** We sit with the people who do the work today and map the exceptions, not the happy path.
+2. **Read-only agent (2–3 weeks).** The agent explains what it *would* do on live data. Your team grades it.
+3. **Approved actions (3–4 weeks).** We wire write-backs behind an approval inbox in Fiori or Teams.
+4. **Hand-over.** Runbooks, monitoring dashboards, and prompt/eval suites live in your repo.
+
+## Stack
+
+SAP BTP Cloud Foundry or Kyma · CAP (Node.js/TypeScript) · SAP Cloud Connector · Destination service · Anthropic Claude / SAP AI Core · Fiori Elements approval app.`,
+  },
+  {
+    type: "service",
+    slug: "btp-extensions",
+    title: "BTP extensions & integration",
+    excerpt:
+      "Side-by-side extensions on SAP BTP with CAP, Event Mesh and Integration Suite — so the core stays clean and upgrades stay boring.",
+    sort_order: 2,
+    tags: ["BTP", "CAP", "Integration Suite", "Event Mesh"],
+    data: {
+      icon: "layers",
+      outcomes: [
+        "Clean-core extensions with zero custom code in S/4",
+        "Event-driven integrations with EDI, cXML and 3PL partners",
+        "One BTP subaccount layout you can actually explain",
+      ],
+    },
+    body: `## Keep the core clean without slowing the business
+
+Every customisation you put in S/4HANA is a tax on the next upgrade. We build the things your business needs *next to* SAP on BTP — and connect them with events, not batch jobs.
+
+## What we deliver
+
+- **CAP services** in TypeScript with proper authorisation, draft handling and OData V4 exposure
+- **Integration Suite** flows for EDI 850/856/810, cXML punch-out, and 3PL shipment feeds
+- **Event Mesh** subscriptions so BTP apps react to SAP business events in seconds
+- **Cloud Connector & Destinations** configured once, documented, and reproducible with Terraform
+- **CI/CD** with MTA builds, Cloud Transport Management and GitHub Actions
+
+## Reference architecture
+
+\`\`\`
+S/4HANA ──(events)──▶ Event Mesh ──▶ CAP service ──▶ HANA Cloud
+   ▲                                       │
+   └────────(OData / BAPI via Cloud Connector)◀┘
+\`\`\`
+
+We've run this pattern in food distribution, healthcare and manufacturing, on both ECC and S/4HANA.`,
+  },
+  {
+    type: "service",
+    slug: "fiori-apps",
+    title: "Fiori & UI5 applications",
+    excerpt:
+      "Fiori Elements where it fits, freestyle UI5 where it doesn't. Fast, accessible apps that people open on the warehouse floor and in the boardroom.",
+    sort_order: 3,
+    tags: ["Fiori", "UI5", "Fiori Elements", "Launchpad"],
+    data: {
+      icon: "layout",
+      outcomes: [
+        "Apps built on annotations, so they stay upgrade-safe",
+        "Offline-tolerant scanning apps for warehouses",
+        "Launchpad content you can govern",
+      ],
+    },
+    body: `## Apps people actually want to open
+
+We build Fiori apps with the same care we'd give a consumer product — clear flows, quick loads, keyboard and scanner friendly.
+
+## Where we're strongest
+
+- **Fiori Elements** (List Report, Object Page, Analytical List Page) driven by CDS annotations and RAP behaviour definitions
+- **Freestyle UI5 / TypeScript** for scanning, planning boards, blotters and anything a template can't express
+- **Launchpad & Build Work Zone** design: catalogs, spaces and pages that match how teams work
+- **AI-assisted UI**: inline explanation, smart defaults and natural-language filters powered by the same agents we build for S/4
+
+## Recent work
+
+- Shipment blotter with live carrier status and exception colouring
+- Material verification app with camera scanning and side-by-side PO comparison
+- Return-order summary analytical list page with drill-down to credit memos`,
+  },
+  {
+    type: "service",
+    slug: "web-development",
+    title: "Web apps with AI built in",
+    excerpt:
+      "Next.js, TypeScript and Node.js products — customer portals, internal tools and marketing sites — with AI features that earn their place.",
+    sort_order: 4,
+    tags: ["Next.js", "TypeScript", "Node.js", "Docker"],
+    data: {
+      icon: "globe",
+      outcomes: [
+        "Production-ready in weeks, deployed on your own servers",
+        "Auth, content management and analytics included",
+        "AI features scoped to a measurable outcome",
+      ],
+    },
+    body: `## Websites and web apps that do real work
+
+We build on **Next.js**, **TypeScript** and **Node.js**, deploy with **Docker**, and keep the data layer simple — an embedded HTAP store like DuckDB when one server is enough, Postgres when it isn't.
+
+## What comes standard
+
+- Authentication with Clerk or your identity provider
+- A content workspace so your team can publish without a developer
+- Real-time analytics and a lead pipeline in the same database
+- Accessible, fast pages — Lighthouse 95+ is the floor, not the goal
+- Container images and a compose file that run on any Linux box
+
+## Where AI fits
+
+Semantic search across documents, assistants that answer from *your* content, form auto-fill from uploads, and summarisation for support teams. We scope each AI feature to a number you can check — deflection rate, time-to-answer, conversion — and measure it in the same dashboard.
+
+This site is built exactly this way. Ask us for the repo tour.`,
+  },
+];
+
+const caseStudies: SeedItem[] = [
+  {
+    type: "case_study",
+    slug: "material-verification-agent",
+    title: "Cutting goods-receipt disputes by 70% with an SAP verification agent",
+    excerpt:
+      "A food distributor replaced manual PO-vs-ASN checks with a BTP agent that flags mismatches before the truck is unloaded.",
+    tags: ["S/4HANA", "BTP", "Agents", "Food distribution"],
+    data: {
+      client: "National food distributor",
+      industry: "Food distribution",
+      metric_value: "70%",
+      metric_label: "fewer GR disputes",
+      duration: "9 weeks",
+    },
+    body: `## The problem
+
+Receiving clerks compared purchase orders, supplier ASNs and physical counts by hand — across 14 warehouses. Discrepancies surfaced days later as credit disputes.
+
+## What we built
+
+A CAP service on BTP subscribes to inbound delivery events, pulls the PO and ASN through OData, and asks a Claude model to reconcile quantities, units and substitutions. The agent posts a *proposal* into a Fiori approval app; the clerk confirms in one tap.
+
+- Mismatches flagged **before** unloading, with a plain-language reason
+- Every proposal stored with the model's reasoning for audit
+- No write-back without a human tap — this was non-negotiable
+
+## Result
+
+- **70% fewer** goods-receipt disputes in the first quarter
+- Average receiving time down from 22 to 9 minutes per delivery
+- Zero unplanned postings — the approval rule held`,
+  },
+  {
+    type: "case_study",
+    slug: "shipment-blotter",
+    title: "A live shipment blotter for a 3PL-heavy supply chain",
+    excerpt:
+      "Freestyle UI5 with Event Mesh feeds: every shipment, carrier status and exception on one screen the dispatch team keeps open all day.",
+    tags: ["Fiori", "UI5", "Event Mesh", "Logistics"],
+    data: {
+      client: "Consumer goods importer",
+      industry: "Logistics",
+      metric_value: "4 hrs",
+      metric_label: "saved per dispatcher per day",
+      duration: "7 weeks",
+    },
+    body: `## The problem
+
+Dispatchers juggled four carrier portals and an SAP transaction to answer "where is order 4512?"
+
+## What we built
+
+A single UI5 blotter fed by Event Mesh: deliveries from S/4, tracking from carrier APIs via Integration Suite, and exceptions coloured by an AI classifier that reads carrier free-text notes.
+
+## Result
+
+- Dispatchers reclaimed **about four hours a day**
+- Exceptions handled 3× faster
+- The blotter became the daily stand-up screen`,
+  },
+  {
+    type: "case_study",
+    slug: "returns-alp",
+    title: "Return-order analytics that finance and ops finally agree on",
+    excerpt:
+      "An Analytical List Page over CDS views gave one version of returns truth — with AI-generated commentary for the weekly review.",
+    tags: ["Fiori Elements", "CDS", "Analytics", "AI"],
+    data: {
+      client: "Regional distributor",
+      industry: "Distribution",
+      metric_value: "1",
+      metric_label: "shared source of truth",
+      duration: "5 weeks",
+    },
+    body: `## The problem
+
+Finance and operations each kept their own returns spreadsheet. Weekly reviews were spent reconciling them.
+
+## What we built
+
+Analytical CDS views with proper associations, an Analytical List Page with drill-down to credit memos, and a small BTP service that writes a plain-English summary of week-over-week changes each Monday.
+
+## Result
+
+- One report, both teams
+- Weekly review shortened from 90 to 30 minutes
+- Summaries caught two pricing errors in the first month`,
+  },
+];
+
+const posts: SeedItem[] = [
+  {
+    type: "post",
+    slug: "agents-need-approval-inboxes",
+    title: "Your SAP agent needs an approval inbox, not a chat window",
+    excerpt:
+      "The interface that makes AI safe in SAP isn't conversational — it's a queue of proposed postings a human can scan in seconds.",
+    tags: ["Agents", "Fiori", "Design"],
+    data: { author: "Ravi Soni", reading_time: 5 },
+    body: `Chat is a great way to *explore* a system and a terrible way to *operate* one. When an agent proposes changing a delivery date on 40 sales orders, nobody wants to read that as a paragraph.
+
+## What works instead
+
+An approval inbox: a Fiori list of proposed actions, each with the payload, the reason, and the evidence the agent used. Approve, reject, or edit. Bulk-approve the boring ones.
+
+This is also how you earn trust. In the first weeks, every proposal is reviewed. As precision holds, teams widen the auto-approve rules — deliberately, with numbers.
+
+## Implementation notes
+
+- Store proposals in a CAP entity with draft handling; the approval is the activation
+- Keep the model's reasoning as a text field — auditors ask for it
+- Fire the actual RAP action from the approval, never from the agent
+
+The chat window can stay. Just don't let it hold the pen.`,
+  },
+  {
+    type: "post",
+    slug: "cds-views-are-your-ai-context",
+    title: "CDS views are the best AI context layer you already own",
+    excerpt:
+      "Before you build a vector database, look at the semantic layer SAP already gives you.",
+    tags: ["CDS", "S/4HANA", "RAG"],
+    data: { author: "Ravi Soni", reading_time: 4 },
+    body: `Teams reaching for RAG on SAP data usually start by exporting tables. That throws away the most valuable thing SAP has: the semantics.
+
+A well-annotated CDS view carries labels, units, currencies, associations and authorisation. Expose it through OData and an agent can ask precise questions — "open sales orders for customer X with credit block Y" — without ever learning table names.
+
+## Practical guidance
+
+1. Build *consumption* views for the agent, not raw interface views
+2. Use \`@ObjectModel.text\` and \`@Semantics\` annotations — the model reads them
+3. Return small pages; the agent should filter, not paginate
+4. Log every query the agent runs; you'll learn what it actually needs`,
+  },
+  {
+    type: "post",
+    slug: "duckdb-for-small-web-apps",
+    title: "Why this site runs on DuckDB",
+    excerpt:
+      "One embedded database for content, leads and analytics — transactional writes and analytical reads without a second system.",
+    tags: ["DuckDB", "Next.js", "Architecture"],
+    data: { author: "Ravi Soni", reading_time: 3 },
+    body: `Small sites still need three things: somewhere to keep content, somewhere to keep leads, and a way to see what's happening. Traditionally that's a CMS, a CRM and an analytics vendor.
+
+Torotech.ca uses one embedded DuckDB file for all three. Page views are appended as rows; the admin dashboard runs columnar aggregations over the same file in milliseconds. Custom fields live in a JSON column, so adding "estimated budget" to the lead form is a settings change, not a migration.
+
+When traffic outgrows one server, the same SQL moves to MotherDuck or Postgres. Until then, the whole thing ships as a single Docker container with one volume.`,
+  },
+];
+
+export async function seedContent(db: Seedable) {
+  const items = [...services, ...caseStudies, ...posts];
+  for (const it of items) {
+    await db.exec(
+      `INSERT INTO content (id, type, slug, title, excerpt, body, status, tags, data, sort_order, published_at)
+       VALUES (?, ?, ?, ?, ?, ?, 'published', ?, ?, ?, now())`,
+      [
+        crypto.randomUUID(),
+        it.type,
+        it.slug,
+        it.title,
+        it.excerpt,
+        it.body,
+        JSON.stringify(it.tags ?? []),
+        JSON.stringify(it.data ?? {}),
+        it.sort_order ?? 0,
+      ],
+    );
+  }
+
+  const fields: [string, string, string, string, string[]?][] = [
+    ["service", "icon", "Icon", "select", ["brain", "layers", "layout", "globe", "sparkles", "database"]],
+    ["service", "outcomes", "Key outcomes (one per line)", "list"],
+    ["case_study", "client", "Client", "text"],
+    ["case_study", "industry", "Industry", "text"],
+    ["case_study", "metric_value", "Headline metric", "text"],
+    ["case_study", "metric_label", "Metric label", "text"],
+    ["case_study", "duration", "Engagement length", "text"],
+    ["post", "author", "Author", "text"],
+    ["post", "reading_time", "Reading time (min)", "number"],
+    ["lead", "budget", "Budget range", "select", ["Under $25k", "$25k–$75k", "$75k–$200k", "$200k+"]],
+    ["lead", "timeline", "Timeline", "select", ["ASAP", "This quarter", "Next quarter", "Exploring"]],
+  ];
+  let i = 0;
+  for (const [entity, key, label, type, options] of fields) {
+    await db.exec(
+      `INSERT INTO field_defs (id, entity, key, label, type, options, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [crypto.randomUUID(), entity, key, label, type, JSON.stringify(options ?? []), i++],
+    );
+  }
+}

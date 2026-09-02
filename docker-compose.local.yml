@@ -1,0 +1,13 @@
+# Local preview without Clerk or TLS:  docker compose -f docker-compose.local.yml up --build
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      AUTH_DISABLED: "true"
+      ANALYTICS_SALT: local
+      DATA_DIR: /data
+    volumes:
+      - ./data:/data

@@ -1,36 +1,106 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Torotech.ca
 
-## Getting Started
+Marketing site, content workspace and lead pipeline for **Torotech** — AI solutions for SAP (S/4HANA, BTP, Fiori) and AI-integrated web development.
 
-First, run the development server:
+| Layer | Choice |
+| --- | --- |
+| Frontend | Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS 4 |
+| Auth | Clerk (admin surface only — the public site has no auth dependency) |
+| Backend | Next.js route handlers on Node.js 22 |
+| Database | DuckDB (embedded HTAP): content, leads, page events and no-code field definitions in one file |
+| Content | Built-in `/admin` workspace: Markdown editor, drafts/publish, uploads, custom fields, lead inbox, live analytics, SQL workbench |
+| Deploy | Docker multi-stage image + `docker compose` with Caddy for automatic HTTPS |
+
+## Quick start (local)
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local      # then edit
+npm install
+npm run dev                     # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+For a first look without a Clerk account, set in `.env.local`:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+AUTH_DISABLED=true
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This opens `/admin` without sign-in. It is ignored as soon as a Clerk key is configured, so it can never expose a real deployment.
 
-## Learn More
+The database file is created and seeded automatically on first request at `DATA_DIR/torotech.duckdb` (default `./data`).
 
-To learn more about Next.js, take a look at the following resources:
+## Configure Clerk (production)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Create an application at [dashboard.clerk.com](https://dashboard.clerk.com); enable Email + Google (or whatever you prefer).
+2. Copy the keys into `.env`:
+   - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_…`
+   - `CLERK_SECRET_KEY=sk_live_…`
+3. Set `ADMIN_EMAILS=you@torotech.ca` — only these accounts can open `/admin`. Leave empty during setup to allow any signed-in user.
+4. In Clerk → Paths, set sign-in URL to `/sign-in` and after-sign-in to `/admin`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deploy to a Linux server with Docker
 
-## Deploy on Vercel
+```bash
+# on the server
+git clone https://github.com/ravisoni18/torotech-website.git /opt/torotech
+cd /opt/torotech
+cp .env.example .env && nano .env      # Clerk keys, ADMIN_EMAILS, ANALYTICS_SALT, SITE_DOMAIN
+docker compose up -d --build
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Point `torotech.ca` and `www.torotech.ca` A/AAAA records at the server. Caddy obtains Let's Encrypt certificates automatically and redirects `www` → apex.
+- Data lives in the `torotech-data` volume (`/data` in the container): the DuckDB file and uploaded media.
+- Upgrade: `git pull && docker compose up -d --build`.
+- Backups: `deploy/backup.sh` tars the volume; add it to cron.
+- Logs: `docker compose logs -f web`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Local Docker preview without TLS or Clerk: `npm run docker:local` → http://localhost:3000.
+
+## Content model
+
+Everything editable lives in the `content` table with a `type`:
+
+| Type | Public URL | Purpose |
+| --- | --- | --- |
+| `service` | `/services/<slug>` | Service pages (home page shows the first four by sort order) |
+| `case_study` | `/work/<slug>` | Case studies with a headline metric |
+| `post` | `/blog/<slug>` | Insights / blog |
+| `page` | `/<slug>` | Reserved for extra static pages |
+
+Bodies are Markdown (GFM: tables, task lists, code fences). Each item has a `data` JSON column for **custom fields**, defined under **Admin → Fields** with no code or migration. Custom fields also apply to the contact form (`lead` entity) and are queryable in SQL as `data->>'key'`.
+
+## Analytics
+
+`src/components/marketing/Analytics.tsx` posts a page view on every route change to `/api/track`. The server stores the path, referrer host, device class and a **daily-salted hash** of IP + user agent — never the raw IP — so it is cookie-free and needs no consent banner in most jurisdictions. Admin traffic and bots are excluded from the dashboards.
+
+**Admin → Query** is a read-only SQL workbench over the same DuckDB file (SELECT/WITH only, 500-row cap).
+
+## Environment variables
+
+See `.env.example`. Notables:
+
+| Variable | Purpose |
+| --- | --- |
+| `DATA_DIR` | Directory for the DuckDB file and uploads (`/data` in Docker) |
+| `ANALYTICS_SALT` | Random string mixed into the visitor hash |
+| `ADMIN_EMAILS` | Comma-separated allowlist for `/admin` |
+| `LEAD_WEBHOOK_URL` | Optional — every new lead is POSTed here as JSON (Slack, Zapier, n8n, CRM) |
+| `AUTH_DISABLED` | Local preview only; ignored when a Clerk key is set |
+
+## Project layout
+
+```
+src/
+  app/(marketing)/   public pages
+  app/(admin)/       /admin workspace + /sign-in (Clerk)
+  app/api/           track, leads, health, media, admin/* (auth-gated)
+  components/        marketing/ and admin/ UI
+  lib/               db.ts (DuckDB), content, leads, analytics, fields, auth
+  fonts/             self-hosted Manrope + JetBrains Mono (no external requests)
+deploy/              Caddyfile, backup script
+```
+
+## Scripts
+
+`npm run dev` · `npm run build` · `npm run start` · `npm run lint` · `npm run typecheck` · `npm run docker:build` · `npm run docker:local`
