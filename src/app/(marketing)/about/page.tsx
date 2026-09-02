@@ -52,6 +52,9 @@ export default function AboutPage() {
               </p>
             </div>
             <div className="mt-8 flex flex-wrap gap-3">
+              <Link href="/ravisoni" className="rounded-full bg-ink px-5 py-2.5 font-semibold text-white hover:bg-teal-deep">
+                Full CV
+              </Link>
               <Link href={SITE.linkedin} className="rounded-full border border-line px-5 py-2.5 font-semibold text-ink hover:border-ink">
                 LinkedIn
               </Link>

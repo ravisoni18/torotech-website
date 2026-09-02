@@ -11,7 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     listPublished("post", 500),
     listPublished("product", 100),
   ]);
-  const statics = ["", "/services", "/products", "/work", "/blog", "/about", "/contact"].map((p) => ({
+  const statics = ["", "/services", "/products", "/work", "/blog", "/about", "/contact", "/ravisoni"].map((p) => ({
     url: `${SITE.url}${p}`,
     lastModified: new Date(),
   }));

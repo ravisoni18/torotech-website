@@ -132,3 +132,16 @@ p {
   .marquee-track, .flow-line, .packet, .pulse-ring { animation: none !important; }
   html { scroll-behavior: auto; }
 }
+
+/* CV page — clean output when printed or saved to PDF */
+@media print {
+  body { background: #fff; }
+  header, footer, .cv-no-print { display: none !important; }
+  .cv-page { padding: 0 !important; font-size: 12px; }
+  .cv-page h1 { font-size: 24px; }
+  .cv-page h2 { font-size: 11px; }
+  .cv-page h3 { font-size: 13px; }
+  .cv-page section { border-color: #ccc; padding-top: 16px; page-break-inside: auto; }
+  .cv-page li, .cv-page .break-inside-avoid { break-inside: avoid; }
+  .cv-page a { color: #0b1f3a; text-decoration: none; }
+}
