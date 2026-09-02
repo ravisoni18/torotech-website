@@ -31,7 +31,12 @@ services:
     cap_add:
       - NET_ADMIN        # fail2ban
     networks:
-      - mailnet
+      mailnet: {}
+      web:
+        # The app resolves SMTP_HOST=mail.torotech.ca to this container (cert CN matches),
+        # so transactional mail never leaves the Docker network.
+        aliases:
+          - mail.torotech.ca
 
   roundcube:
     image: roundcube/roundcubemail:1.6.x-apache

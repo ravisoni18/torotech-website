@@ -31,13 +31,17 @@ DNS `A mail` must resolve first so Caddy can issue the cert.
 ```bash
 cd /opt/torotech
 git pull
-docker compose up -d                       # app + Caddy pick up the mail.torotech.ca vhost
-docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile
-curl -sI https://mail.torotech.ca | head -1 # triggers cert issuance (502 is fine here)
+# Caddy bind-mounts deploy/Caddyfile as a single file; git replaces its inode on pull,
+# so a plain reload sees "config unchanged". Force-recreate to pick up Caddyfile edits:
+docker compose up -d --force-recreate --no-deps caddy   # obtains the mail.torotech.ca cert
+docker compose up -d --build                            # app
 
 cd mail
-docker compose up -d                        # mailserver + roundcube
+docker compose up -d                                    # mailserver + roundcube
 ```
+
+> The Contabo network breaks GitHub's HTTP/2, so the server has
+> `git config --global http.version HTTP/1.1` set — keep it.
 
 ## 4. Create mailboxes and DKIM
 
