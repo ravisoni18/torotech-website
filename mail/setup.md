@@ -49,8 +49,7 @@ docker compose up -d                                    # mailserver + roundcube
 cd /opt/torotech/mail
 alias ms='docker compose exec mailserver setup'
 
-ms email add hello@torotech.ca
-ms email add notify@torotech.ca            # used by the app (SMTP_USER)
+ms email add hello@torotech.ca             # also the app's SMTP_USER (SMTP_FROM must match)
 ms email add postmaster@torotech.ca
 ms alias add abuse@torotech.ca postmaster@torotech.ca
 
