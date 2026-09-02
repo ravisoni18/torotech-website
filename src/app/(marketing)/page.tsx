@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { listPublished } from "@/lib/content";
 import { SystemDiagram } from "@/components/marketing/SystemDiagram";
 import { TechMarquee } from "@/components/marketing/TechMarquee";
-import { CaseStudyCard, Container, CtaBand, PostCard, SectionHeading, ServiceCard } from "@/components/marketing/ui";
+import { CaseStudyCard, Container, CtaBand, PostCard, ProductCard, SectionHeading, ServiceCard } from "@/components/marketing/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -27,10 +27,11 @@ const PROCESS = [
 ];
 
 export default async function HomePage() {
-  const [services, work, posts] = await Promise.all([
+  const [services, work, posts, products] = await Promise.all([
     listPublished("service", 4),
     listPublished("case_study", 3),
     listPublished("post", 3),
+    listPublished("product", 3),
   ]);
 
   return (
@@ -137,6 +138,24 @@ export default async function HomePage() {
           </div>
         </Container>
       </section>
+
+      {/* Products */}
+      {products.length > 0 && (
+        <section className="pt-24">
+          <Container>
+            <SectionHeading
+              title="Things we've built."
+              lede="Tools and products, shown in motion — not slideware."
+              action={{ href: "/products", label: "All products" }}
+            />
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {products.map((p) => (
+                <ProductCard key={p.id} item={p} />
+              ))}
+            </div>
+          </Container>
+        </section>
+      )}
 
       {/* Insights */}
       <section className="pt-24">

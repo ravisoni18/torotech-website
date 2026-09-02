@@ -76,9 +76,12 @@ Everything editable lives in the `content` table with a `type`:
 | `service` | `/services/<slug>` | Service pages (home page shows the first four by sort order) |
 | `case_study` | `/work/<slug>` | Case studies with a headline metric |
 | `post` | `/blog/<slug>` | Insights / blog |
+| `product` | `/products/<slug>` | Product showcase — a media gallery of images, GIFs and short clips |
 | `page` | `/<slug>` | Reserved for extra static pages |
 
 Bodies are Markdown (GFM: tables, task lists, code fences). Each item has a `data` JSON column for **custom fields**, defined under **Admin → Fields** with no code or migration. Custom fields also apply to the contact form (`lead` entity) and are queryable in SQL as `data->>'key'`.
+
+**Products** have a dedicated **Admin → Products** grid and a gallery panel in the editor: upload PNG/JPG/WebP images, animated GIFs, or MP4/WebM clips (≤ 50 MB) — stored as `data.gallery`, first item is the card preview. Clips render as muted, looping, autoplaying `<video>`; the media route serves range requests so they seek.
 
 ## Analytics
 

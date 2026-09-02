@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight, Brain, Database, Globe, Layers, LayoutPanelTop, Sparkles, type LucideIcon } from "lucide-react";
 import type { Content } from "@/lib/content";
+import { mediaKind, productGallery, type MediaItem } from "@/lib/content-types";
 
 export function Container({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return <div className={`mx-auto w-full max-w-6xl px-5 md:px-8 ${className}`}>{children}</div>;
@@ -127,6 +128,75 @@ export function PostCard({ item }: { item: Content }) {
 
 export function Tag({ children }: { children: React.ReactNode }) {
   return <span className="rounded-full bg-mist px-2.5 py-1 text-xs font-medium text-ink-soft">{children}</span>;
+}
+
+/** Renders one showcase item — an image / animated GIF as <img>, a clip as a muted looping <video>. */
+export function MediaFrame({
+  item,
+  className = "",
+  priority = false,
+}: {
+  item: MediaItem | { url: string; type?: "image" | "video"; caption?: string };
+  className?: string;
+  priority?: boolean;
+}) {
+  const kind = item.type ?? mediaKind(item.url);
+  if (kind === "video") {
+    return (
+      <video
+        className={className}
+        src={item.url}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload={priority ? "auto" : "metadata"}
+        aria-label={item.caption || undefined}
+      />
+    );
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img className={className} src={item.url} alt={item.caption ?? ""} loading={priority ? "eager" : "lazy"} />
+  );
+}
+
+export function ProductCard({ item }: { item: Content }) {
+  const gallery = productGallery(item.data);
+  const hero: MediaItem | null = item.cover
+    ? { url: item.cover, type: mediaKind(item.cover) }
+    : gallery[0] ?? null;
+  const statusLabel = typeof item.data.status_label === "string" ? item.data.status_label : "";
+  const tagline = typeof item.data.tagline === "string" && item.data.tagline ? item.data.tagline : item.excerpt;
+
+  return (
+    <Link
+      href={`/products/${item.slug}`}
+      className="group flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-line bg-paper transition-colors hover:border-teal"
+    >
+      <div className="relative aspect-[16/10] overflow-hidden bg-mist">
+        {hero ? (
+          <MediaFrame item={hero} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-sm text-muted">No preview yet</div>
+        )}
+        {statusLabel && (
+          <span className="absolute left-3 top-3 rounded-full bg-ink/85 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur">
+            {statusLabel}
+          </span>
+        )}
+      </div>
+      <div className="flex flex-1 flex-col p-6">
+        <h3 className="text-lg font-bold text-ink group-hover:text-teal-deep">{item.title}</h3>
+        {tagline && <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">{tagline}</p>}
+        <div className="mt-auto flex flex-wrap gap-2 pt-5">
+          {item.tags.map((t) => (
+            <Tag key={t}>{t}</Tag>
+          ))}
+        </div>
+      </div>
+    </Link>
+  );
 }
 
 export function formatDate(s: string | null | undefined) {

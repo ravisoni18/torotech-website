@@ -3,8 +3,16 @@
 import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Eye, ImagePlus, Save, Upload } from "lucide-react";
-import { CONTENT_TYPES, contentHref, slugify, type Content, type ContentType } from "@/lib/content-types";
+import { ArrowLeft, ArrowDown, ArrowUp, Eye, Film, ImagePlus, Plus, Save, Trash2, Upload } from "lucide-react";
+import {
+  CONTENT_TYPES,
+  contentHref,
+  mediaKind,
+  slugify,
+  type Content,
+  type ContentType,
+  type MediaItem,
+} from "@/lib/content-types";
 import type { FieldDef } from "@/lib/field-types";
 import { Markdown } from "@/components/marketing/Markdown";
 import { Button, Card, PageHeader, Toast, api, inputCls, labelCls } from "./ui";
@@ -43,11 +51,21 @@ export function Editor({ item, fields, initialType }: { item?: Content; fields: 
   const [toast, setToast] = useState<{ m: string; k: "ok" | "error" } | null>(null);
   const bodyRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const galleryRef = useRef<HTMLInputElement>(null);
 
   const typeFields = useMemo(() => fields.filter((f) => f.entity === d.type), [fields, d.type]);
 
+  const gallery: MediaItem[] = useMemo(
+    () => (Array.isArray(d.data.gallery) ? (d.data.gallery as MediaItem[]) : []),
+    [d.data.gallery],
+  );
+
   function set<K extends keyof Draft>(k: K, v: Draft[K]) {
     setD((prev) => ({ ...prev, [k]: v }));
+  }
+
+  function setGallery(next: MediaItem[]) {
+    setD((prev) => ({ ...prev, data: { ...prev.data, gallery: next } }));
   }
 
   function notify(m: string, k: "ok" | "error" = "ok") {
@@ -81,11 +99,15 @@ export function Editor({ item, fields, initialType }: { item?: Content; fields: 
     }
   }
 
-  async function upload(file: File, insert: boolean) {
+  async function uploadFile(file: File): Promise<{ url: string; kind: "image" | "video" }> {
     const fd = new FormData();
     fd.append("file", file);
+    return api<{ url: string; kind: "image" | "video" }>(`/api/admin/upload`, { method: "POST", body: fd });
+  }
+
+  async function upload(file: File, insert: boolean) {
     try {
-      const res = await api<{ url: string }>(`/api/admin/upload`, { method: "POST", body: fd });
+      const res = await uploadFile(file);
       if (insert) {
         const ta = bodyRef.current;
         const md = `\n![${file.name.replace(/\.[^.]+$/, "")}](${res.url})\n`;
@@ -98,6 +120,34 @@ export function Editor({ item, fields, initialType }: { item?: Content; fields: 
     } catch (e) {
       notify(e instanceof Error ? e.message : "Upload failed", "error");
     }
+  }
+
+  async function addToGallery(files: FileList) {
+    const added: MediaItem[] = [];
+    for (const file of Array.from(files)) {
+      try {
+        const res = await uploadFile(file);
+        added.push({ url: res.url, type: res.kind ?? mediaKind(res.url), caption: "" });
+      } catch (e) {
+        notify(e instanceof Error ? e.message : `Upload failed: ${file.name}`, "error");
+      }
+    }
+    if (added.length) {
+      setGallery([...gallery, ...added]);
+      notify(`Added ${added.length} item${added.length > 1 ? "s" : ""}`);
+    }
+  }
+
+  function updateMedia(i: number, patch: Partial<MediaItem>) {
+    setGallery(gallery.map((m, idx) => (idx === i ? { ...m, ...patch } : m)));
+  }
+
+  function moveMedia(i: number, dir: -1 | 1) {
+    const j = i + dir;
+    if (j < 0 || j >= gallery.length) return;
+    const next = [...gallery];
+    [next[i], next[j]] = [next[j], next[i]];
+    setGallery(next);
   }
 
   return (
@@ -183,6 +233,75 @@ export function Editor({ item, fields, initialType }: { item?: Content; fields: 
             )}
           </Card>
 
+          {d.type === "product" && (
+            <Card
+              title="Product gallery"
+              aside={
+                <>
+                  <Button variant="secondary" onClick={() => galleryRef.current?.click()}>
+                    <Plus size={15} /> Add media
+                  </Button>
+                  <input
+                    ref={galleryRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files?.length) addToGallery(e.target.files);
+                      e.target.value = "";
+                    }}
+                  />
+                </>
+              }
+            >
+              {gallery.length === 0 ? (
+                <p className="py-6 text-center text-sm text-muted">
+                  No media yet. Add PNG/JPG/WebP images, animated GIFs, or MP4/WebM clips (≤ 50 MB). The first item is the preview.
+                </p>
+              ) : (
+                <ul className="grid gap-3">
+                  {gallery.map((m, i) => (
+                    <li key={`${m.url}-${i}`} className="flex gap-3 rounded-lg border border-line p-2">
+                      <div className="h-20 w-28 shrink-0 overflow-hidden rounded-md bg-mist">
+                        {m.type === "video" ? (
+                          <video src={m.url} muted playsInline className="h-full w-full object-cover" />
+                        ) : (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={m.url} alt="" className="h-full w-full object-cover" />
+                        )}
+                      </div>
+                      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                        <div className="flex items-center gap-2 text-xs text-muted">
+                          {m.type === "video" ? <Film size={13} /> : <ImagePlus size={13} />}
+                          <span className="truncate">{m.url.replace("/api/media/", "")}</span>
+                          {i === 0 && <span className="rounded bg-teal-tint px-1.5 py-0.5 font-semibold text-teal-deep">Preview</span>}
+                        </div>
+                        <input
+                          className={`${inputCls} py-1.5 text-sm`}
+                          placeholder="Caption (optional)"
+                          value={m.caption ?? ""}
+                          onChange={(e) => updateMedia(i, { caption: e.target.value })}
+                        />
+                      </div>
+                      <div className="flex shrink-0 flex-col items-center gap-0.5">
+                        <button type="button" onClick={() => moveMedia(i, -1)} disabled={i === 0} className="rounded p-1 text-ink-soft hover:bg-mist disabled:opacity-30" aria-label="Move up">
+                          <ArrowUp size={15} />
+                        </button>
+                        <button type="button" onClick={() => moveMedia(i, 1)} disabled={i === gallery.length - 1} className="rounded p-1 text-ink-soft hover:bg-mist disabled:opacity-30" aria-label="Move down">
+                          <ArrowDown size={15} />
+                        </button>
+                        <button type="button" onClick={() => setGallery(gallery.filter((_, idx) => idx !== i))} className="rounded p-1 text-ink-soft hover:bg-[#fdecea] hover:text-coral" aria-label="Remove">
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Card>
+          )}
+
           {typeFields.length > 0 && (
             <Card title={`${CONTENT_TYPES.find((t) => t.value === d.type)?.label} details`}>
               <div className="grid gap-4 sm:grid-cols-2">
@@ -237,19 +356,25 @@ export function Editor({ item, fields, initialType }: { item?: Content; fields: 
             </div>
           </Card>
 
-          <Card title="Cover image">
+          <Card title={d.type === "product" ? "Preview media" : "Cover image"}>
             {d.cover ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={d.cover} alt="" className="mb-3 aspect-[16/9] w-full rounded-lg object-cover" />
+              mediaKind(d.cover) === "video" ? (
+                <video src={d.cover} muted playsInline loop autoPlay className="mb-3 aspect-[16/9] w-full rounded-lg object-cover" />
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={d.cover} alt="" className="mb-3 aspect-[16/9] w-full rounded-lg object-cover" />
+              )
             ) : (
-              <div className="mb-3 flex aspect-[16/9] items-center justify-center rounded-lg bg-mist text-sm text-muted">No cover yet</div>
+              <div className="mb-3 flex aspect-[16/9] items-center justify-center rounded-lg bg-mist text-sm text-muted">
+                {d.type === "product" ? "Falls back to the first gallery item" : "No cover yet"}
+              </div>
             )}
             <div className="flex gap-2">
               <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-line px-3 py-2 text-sm font-semibold text-ink hover:border-ink">
                 <Upload size={15} /> Upload
                 <input
                   type="file"
-                  accept="image/*"
+                  accept={d.type === "product" ? "image/*,video/mp4,video/webm,video/quicktime" : "image/*"}
                   className="hidden"
                   onChange={(e) => {
                     const f = e.target.files?.[0];
@@ -264,7 +389,7 @@ export function Editor({ item, fields, initialType }: { item?: Content; fields: 
                 </Button>
               )}
             </div>
-            <input className={`${inputCls} mt-3 font-mono text-xs`} value={d.cover} onChange={(e) => set("cover", e.target.value)} placeholder="or paste an image URL" />
+            <input className={`${inputCls} mt-3 font-mono text-xs`} value={d.cover} onChange={(e) => set("cover", e.target.value)} placeholder="or paste a URL" />
           </Card>
         </div>
       </div>

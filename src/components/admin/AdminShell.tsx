@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
-import { BarChart3, FileText, Inbox, SlidersHorizontal, Terminal, ExternalLink } from "lucide-react";
+import { BarChart3, FileText, Inbox, Package, SlidersHorizontal, Terminal, ExternalLink } from "lucide-react";
 import { Logo } from "@/components/marketing/Logo";
 
 const NAV = [
   { href: "/admin", label: "Overview", icon: BarChart3, exact: true },
   { href: "/admin/content", label: "Content", icon: FileText },
+  { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/leads", label: "Leads", icon: Inbox },
   { href: "/admin/fields", label: "Fields", icon: SlidersHorizontal },
   { href: "/admin/query", label: "Query", icon: Terminal },

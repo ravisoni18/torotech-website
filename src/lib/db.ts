@@ -2,7 +2,7 @@ import "server-only";
 import { DuckDBInstance, type DuckDBConnection } from "@duckdb/node-api";
 import fs from "node:fs";
 import path from "node:path";
-import { seedContent } from "./seed";
+import { seedContent, ensureBaselineFields } from "./seed";
 
 /**
  * DuckDB is the single HTAP store for Torotech:
@@ -116,9 +116,11 @@ class Database {
         value VARCHAR
       );
     `);
+    const seedable = { exec: (sql: string, params?: unknown[]) => runRaw(conn, sql, params).then(() => undefined) };
     const [{ n }] = await runRaw<{ n: number }>(conn, "SELECT count(*)::INTEGER AS n FROM content");
     // Seed through the raw connection: the public query() waits on init, which is still running here.
-    if (n === 0) await seedContent({ exec: (sql, params) => runRaw(conn, sql, params).then(() => undefined) });
+    if (n === 0) await seedContent(seedable);
+    await ensureBaselineFields(seedable);
   }
 }
 

@@ -3,7 +3,7 @@ import "server-only";
 type Seedable = { exec: (sql: string, params?: unknown[]) => Promise<void> };
 
 type SeedItem = {
-  type: "service" | "case_study" | "post" | "page";
+  type: "service" | "case_study" | "post" | "page" | "product";
   slug: string;
   title: string;
   excerpt: string;
@@ -318,8 +318,46 @@ When traffic outgrows one server, the same SQL moves to MotherDuck or Postgres. 
   },
 ];
 
+const products: SeedItem[] = [
+  {
+    type: "product",
+    slug: "torotech-ca",
+    title: "This website",
+    excerpt: "The Torotech site itself — a Next.js app with a built-in content workspace, lead pipeline and analytics on one DuckDB file.",
+    tags: ["Next.js", "DuckDB", "Docker"],
+    sort_order: 1,
+    data: {
+      tagline: "Marketing site, CMS, CRM and analytics in a single container.",
+      status_label: "Live",
+      link: "https://torotech.ca",
+      gallery: [],
+    },
+    body: `Everything editable on this site — services, case studies, insights, **and this Products section** — is managed from \`/admin\`: a Markdown editor, drafts and publishing, uploads, no-code custom fields, a lead inbox, live analytics and a SQL workbench.
+
+Add media to a product from the gallery panel in the editor: PNG/JPG/WebP images, animated GIFs, or short MP4/WebM clips. The first item becomes the card preview.`,
+  },
+];
+
+/** Field definitions that ship with the product content type — inserted idempotently on every boot. */
+const PRODUCT_FIELDS: [string, string, string, string, string[]?][] = [
+  ["product", "tagline", "Tagline", "text"],
+  ["product", "status_label", "Status label (e.g. Live, Beta)", "text"],
+  ["product", "link", "External link", "url"],
+];
+
+export async function ensureBaselineFields(db: Seedable) {
+  let i = 100;
+  for (const [entity, key, label, type, options] of PRODUCT_FIELDS) {
+    await db.exec(
+      `INSERT INTO field_defs (id, entity, key, label, type, options, sort_order)
+       VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT (entity, key) DO NOTHING`,
+      [crypto.randomUUID(), entity, key, label, type, JSON.stringify(options ?? []), i++],
+    );
+  }
+}
+
 export async function seedContent(db: Seedable) {
-  const items = [...services, ...caseStudies, ...posts];
+  const items = [...services, ...caseStudies, ...posts, ...products];
   for (const it of items) {
     await db.exec(
       `INSERT INTO content (id, type, slug, title, excerpt, body, status, tags, data, sort_order, published_at)
