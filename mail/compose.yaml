@@ -1,0 +1,71 @@
+# Self-hosted mail for torotech.ca — Postfix/Dovecot (docker-mailserver) + Roundcube webmail.
+# Runs alongside the main app: shares the app's Caddy (torotech_default network) for the
+# webmail vhost and reuses Caddy's Let's Encrypt cert for mail.torotech.ca.
+#
+#   cd /opt/torotech/mail
+#   docker compose up -d
+#
+# See setup.md for DNS records, rDNS, mailbox creation and DKIM.
+name: torotech-mail
+
+services:
+  mailserver:
+    image: ghcr.io/docker-mailserver/docker-mailserver:15.0
+    container_name: mailserver
+    hostname: mail.torotech.ca
+    restart: unless-stopped
+    env_file: mailserver.env
+    # Ports on the host. 80/443 stay with the app's Caddy.
+    ports:
+      - "25:25"      # inbound SMTP (MX)
+      - "465:465"    # submission (implicit TLS)
+      - "587:587"    # submission (STARTTLS)
+      - "993:993"    # IMAPS
+    volumes:
+      - dms-mail:/var/mail
+      - dms-state:/var/mail-state
+      - dms-logs:/var/log/mail
+      - dms-config:/tmp/docker-mailserver
+      # Caddy's cert store (read-only) — SSL_TYPE=manual points at the files below.
+      - caddy-data:/caddy:ro
+    cap_add:
+      - NET_ADMIN        # fail2ban
+    networks:
+      - mailnet
+
+  roundcube:
+    image: roundcube/roundcubemail:1.6-apache
+    container_name: roundcube
+    restart: unless-stopped
+    depends_on:
+      - mailserver
+    environment:
+      ROUNDCUBEMAIL_DB_TYPE: sqlite
+      ROUNDCUBEMAIL_DEFAULT_HOST: ssl://mailserver
+      ROUNDCUBEMAIL_DEFAULT_PORT: 993
+      ROUNDCUBEMAIL_SMTP_SERVER: ssl://mailserver
+      ROUNDCUBEMAIL_SMTP_PORT: 465
+      ROUNDCUBEMAIL_PLUGINS: archive,zipdownload,newmail_notifier
+      ROUNDCUBEMAIL_UPLOAD_MAX_FILESIZE: 25M
+    volumes:
+      - roundcube-db:/var/roundcube/db
+      - ./roundcube/custom.inc.php:/var/roundcube/config/custom.inc.php:ro
+    networks:
+      - mailnet
+      - web        # so the app's Caddy can reverse-proxy to it
+
+networks:
+  mailnet:
+  web:
+    external: true
+    name: torotech_default
+
+volumes:
+  dms-mail:
+  dms-state:
+  dms-logs:
+  dms-config:
+  roundcube-db:
+  caddy-data:
+    external: true
+    name: torotech_caddy-data

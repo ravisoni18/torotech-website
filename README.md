@@ -55,6 +55,16 @@ docker compose up -d --build
 - Backups: `deploy/backup.sh` tars the volume; add it to cron.
 - Logs: `docker compose logs -f web`.
 
+### Email (optional)
+
+`mail/` holds a self-hosted mail stack — [docker-mailserver] for SMTP/IMAP plus
+Roundcube webmail at `mail.torotech.ca`, sharing the app's Caddy. It gives you real
+`@torotech.ca` mailboxes and an SMTP endpoint the app uses for lead notifications and
+enquirer acknowledgements (`SMTP_*` in `.env`). Setup — DNS, reverse DNS, mailbox
+creation, DKIM — is in [`mail/setup.md`](mail/setup.md).
+
+[docker-mailserver]: https://docker-mailserver.github.io/docker-mailserver/latest/
+
 Local Docker preview without TLS or Clerk: `npm run docker:local` → http://localhost:3000.
 
 ## Content model
@@ -85,6 +95,8 @@ See `.env.example`. Notables:
 | `DATA_DIR` | Directory for the DuckDB file and uploads (`/data` in Docker) |
 | `ANALYTICS_SALT` | Random string mixed into the visitor hash |
 | `ADMIN_EMAILS` | Comma-separated allowlist for `/admin` |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` | SMTP for lead notifications + enquirer acknowledgement. Empty `SMTP_HOST` disables email |
+| `SMTP_FROM` / `LEAD_NOTIFY_TO` | From header and where new-lead emails are delivered |
 | `LEAD_WEBHOOK_URL` | Optional — every new lead is POSTed here as JSON (Slack, Zapier, n8n, CRM) |
 | `AUTH_DISABLED` | Local preview only; ignored when a Clerk key is set |
 

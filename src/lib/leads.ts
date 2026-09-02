@@ -1,6 +1,7 @@
 import "server-only";
 import { db, newId } from "./db";
 import { safeJson } from "./content";
+import { sendLeadEmails } from "./mail";
 
 export type LeadStatus = "new" | "contacted" | "qualified" | "won" | "lost";
 export const LEAD_STATUSES: LeadStatus[] = ["new", "contacted", "qualified", "won", "lost"];
@@ -48,6 +49,7 @@ export async function createLead(input: {
     ],
   );
   await notifyWebhook({ id, ...input });
+  await sendLeadEmails({ id, ...input });
   return id;
 }
 

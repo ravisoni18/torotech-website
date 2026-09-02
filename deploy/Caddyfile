@@ -13,3 +13,16 @@
 		-Server
 	}
 }
+
+# Webmail. The mail stack (mail/compose.yaml) joins this Caddy's network as `roundcube`.
+# Obtaining this cert also provisions the TLS material docker-mailserver reuses for SMTP/IMAP.
+mail.{$SITE_DOMAIN} {
+	encode zstd gzip
+	reverse_proxy roundcube:80 {
+		header_up X-Real-IP {remote_host}
+	}
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+}
