@@ -1,0 +1,7 @@
+# Staging overlay: publish the web app directly on a host port, no Caddy/TLS.
+# Used until the domain is pointed at this VPS and port 80/443 are free.
+# Usage: docker compose -f docker-compose.yml -f deploy/docker-compose.staging.yml up -d --build web
+services:
+  web:
+    ports:
+      - "8080:3000"
