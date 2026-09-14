@@ -37,10 +37,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "Incorrect email or password." }, { status: 401 });
   }
 
+  // NODE_ENV is "production" in the container regardless of whether the connection is HTTP or
+  // HTTPS, so the Secure flag has to follow the actual request — otherwise the browser silently
+  // drops the cookie when this runs over plain HTTP (e.g. before Caddy/TLS is in front of it).
+  const proto = req.headers.get("x-forwarded-proto") ?? new URL(req.url).protocol.replace(":", "");
   const { token, maxAge } = await createSessionToken();
   (await cookies()).set(SESSION_COOKIE, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: proto === "https",
     sameSite: "lax",
     maxAge,
     path: "/",
