@@ -1,3 +1,9 @@
+{
+	# Real ACME contact — without this Caddy can end up registering an account with an
+	# invalid placeholder contact, which Let's Encrypt rejects outright.
+	email {$ACME_EMAIL:ravisoni18@gmail.com}
+}
+
 # Automatic Let's Encrypt TLS for the apex and www.
 {$SITE_DOMAIN}, www.{$SITE_DOMAIN} {
 	@www host www.{$SITE_DOMAIN}
