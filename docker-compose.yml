@@ -26,8 +26,10 @@ services:
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped
+    # No 80:80 — that port is used by another app on this host. Caddy still gets a trusted
+    # cert automatically via the TLS-ALPN-01 challenge, which only needs 443 reachable; there's
+    # just no plain-HTTP listener or HTTP->HTTPS redirect on this host.
     ports:
-      - "80:80"
       - "443:443"
       - "443:443/udp"
     environment:
