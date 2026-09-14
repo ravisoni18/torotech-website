@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
-import { AUTH_DISABLED } from "@/lib/auth-config";
+import { AUTH_DISABLED, SIMPLE_AUTH_ENABLED } from "@/lib/auth-config";
 import { AdminShell } from "@/components/admin/AdminShell";
 
 export const metadata = { title: "Admin", robots: { index: false, follow: false } };
@@ -22,7 +22,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     );
   }
   return (
-    <AdminShell email={gate.email} authEnabled={!AUTH_DISABLED}>
+    <AdminShell email={gate.email} authEnabled={!AUTH_DISABLED} simpleAuth={SIMPLE_AUTH_ENABLED}>
       {children}
     </AdminShell>
   );

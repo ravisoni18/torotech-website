@@ -1,6 +1,8 @@
 import "server-only";
+import { cookies } from "next/headers";
 import { auth, currentUser } from "@clerk/nextjs/server";
-import { AUTH_DISABLED } from "./auth-config";
+import { AUTH_DISABLED, SIMPLE_AUTH_ENABLED, SIMPLE_AUTH_EMAIL } from "./auth-config";
+import { SESSION_COOKIE, verifySessionToken } from "./simple-session";
 
 /**
  * Admin access = signed in with Clerk AND (no allowlist configured OR email on ADMIN_EMAILS).
@@ -13,6 +15,11 @@ export async function requireAdmin() {
       warned = true;
     }
     return { ok: true as const, email: "local-preview" };
+  }
+  if (SIMPLE_AUTH_ENABLED) {
+    const token = (await cookies()).get(SESSION_COOKIE)?.value;
+    if (!(await verifySessionToken(token))) return { ok: false as const, reason: "unauthenticated" as const };
+    return { ok: true as const, email: SIMPLE_AUTH_EMAIL ?? null };
   }
   const { userId } = await auth();
   if (!userId) return { ok: false as const, reason: "unauthenticated" as const };

@@ -1,10 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
-import { BarChart3, FileText, Inbox, Package, SlidersHorizontal, Terminal, ExternalLink } from "lucide-react";
+import { BarChart3, FileText, Inbox, Package, SlidersHorizontal, Terminal, ExternalLink, LogOut } from "lucide-react";
 import { Logo } from "@/components/marketing/Logo";
+
+function SignOutButton() {
+  const router = useRouter();
+  async function onClick() {
+    await fetch("/api/simple-auth/logout", { method: "POST" });
+    router.push("/sign-in");
+    router.refresh();
+  }
+  return (
+    <button type="button" onClick={onClick} className="flex items-center gap-1 text-ink-soft hover:text-ink" title="Sign out">
+      <LogOut size={16} />
+    </button>
+  );
+}
 
 const NAV = [
   { href: "/admin", label: "Overview", icon: BarChart3, exact: true },
@@ -15,7 +29,17 @@ const NAV = [
   { href: "/admin/query", label: "Query", icon: Terminal },
 ];
 
-export function AdminShell({ children, email, authEnabled }: { children: React.ReactNode; email: string | null; authEnabled: boolean }) {
+export function AdminShell({
+  children,
+  email,
+  authEnabled,
+  simpleAuth = false,
+}: {
+  children: React.ReactNode;
+  email: string | null;
+  authEnabled: boolean;
+  simpleAuth?: boolean;
+}) {
   const pathname = usePathname();
   return (
     <div className="flex min-h-screen bg-mist">
@@ -46,7 +70,7 @@ export function AdminShell({ children, email, authEnabled }: { children: React.R
             View site <ExternalLink size={14} />
           </Link>
           <div className="flex items-center gap-2.5 border-t border-line pt-3">
-            {authEnabled && <UserButton />}
+            {authEnabled && (simpleAuth ? <SignOutButton /> : <UserButton />)}
             <span className="truncate text-xs text-muted">{email ?? "admin"}</span>
           </div>
         </div>
@@ -54,7 +78,7 @@ export function AdminShell({ children, email, authEnabled }: { children: React.R
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between border-b border-line bg-paper px-4 py-3 md:hidden">
           <Logo />
-          {authEnabled && <UserButton />}
+          {authEnabled && (simpleAuth ? <SignOutButton /> : <UserButton />)}
         </header>
         <nav className="flex gap-1 overflow-x-auto border-b border-line bg-paper px-3 py-2 md:hidden">
           {NAV.map((item) => (
