@@ -19,13 +19,13 @@ const services: SeedItem[] = [
     slug: "ai-for-sap",
     title: "AI agents inside SAP S/4HANA",
     excerpt:
-      "Agents that read your CDS views, call your BAPIs and RAP services, and complete real work — order holds, material verification, returns — with a human approving the edge cases.",
+      "Agents that read your CDS views and OData services, and complete real work — order holds, material verification, returns — with a human approving the edge cases.",
     sort_order: 1,
-    tags: ["S/4HANA", "RAP", "OData", "Agents"],
+    tags: ["S/4HANA", "OData", "Agents", "Fiori"],
     data: {
       icon: "brain",
       outcomes: [
-        "Ship an approved-action agent in 6–8 weeks",
+        "Ship a simple agent-driven app in 1–2 days",
         "Every action traceable to an SAP change document",
         "Works on ECC and S/4HANA, on-prem or cloud",
       ],
@@ -38,7 +38,7 @@ A Torotech agent is a small, auditable service on BTP that:
 
 - reads business context through **ABAP CDS views** and **OData V4** services (no direct table access, ever)
 - reasons with a model of your choice (Anthropic Claude, Azure OpenAI, or SAP AI Core)
-- proposes actions as **RAP** or **BAPI** calls, with the full payload shown to an approver
+- summarises data, forms a query, compares records, or proposes an action — entirely through the app's own OData services, with the request shown to an approver before anything writes back
 - writes back only after approval rules pass, and logs every step to a change document
 
 ## Typical first projects
@@ -51,10 +51,10 @@ A Torotech agent is a small, auditable service on BTP that:
 
 ## How an engagement runs
 
-1. **Process walk-through (1 week).** We sit with the people who do the work today and map the exceptions, not the happy path.
-2. **Read-only agent (2–3 weeks).** The agent explains what it *would* do on live data. Your team grades it.
-3. **Approved actions (3–4 weeks).** We wire write-backs behind an approval inbox in Fiori or Teams.
-4. **Hand-over.** Runbooks, monitoring dashboards, and prompt/eval suites live in your repo.
+1. **Map the workflow (same day).** We sit with the people who do the work today and identify which OData services and entities the app already uses — and the exceptions that actually matter.
+2. **Build and wire it (1–2 days for a simple app).** Chat shell, orchestrator, narrow LLM, OData calls — wired into the app that already exists. Nothing gets rebuilt underneath it.
+3. **Test it with the people who'll use it.** Real phrasing, real edge cases, before anyone else sees it.
+4. **Go live.** One integration, live for every user immediately — write-backs sit behind an approval inbox until the numbers earn wider auto-approval. More complex, multi-system workflows take longer, but the pattern itself doesn't change.
 
 ## Stack
 

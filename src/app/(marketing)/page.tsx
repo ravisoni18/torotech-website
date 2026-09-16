@@ -69,7 +69,7 @@ export default async function HomePage() {
               </div>
               <div>
                 <dt className="text-sm text-muted">First agent live</dt>
-                <dd className="mt-1 text-2xl font-extrabold text-ink">6–8 wks</dd>
+                <dd className="mt-1 text-2xl font-extrabold text-ink">1–2 days</dd>
               </div>
               <div>
                 <dt className="text-sm text-muted">Unapproved postings</dt>
