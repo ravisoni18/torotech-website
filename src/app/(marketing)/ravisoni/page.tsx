@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Mail, Phone, Link2, MapPin, Award } from "lucide-react";
-import { Container } from "@/components/marketing/ui";
+import { Container, MediaFrame } from "@/components/marketing/ui";
 import { PrintButton } from "@/components/marketing/PrintButton";
+import { listPublished } from "@/lib/content";
+import { productGallery } from "@/lib/content-types";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Ravikumar Soni — CV",
@@ -145,105 +149,6 @@ const EXPERIENCE: {
   },
 ];
 
-const PROJECTS: { name: string; client: string; tech: string; desc: string }[] = [
-  {
-    name: "Field Visit App",
-    client: "Porky Products",
-    tech: "SAPUI5 (custom)",
-    desc: "Field reps capture visits with English/Spanish translation and per-visit comments.",
-  },
-  {
-    name: "EDI Fulfillment Tracker",
-    client: "Porky Products",
-    tech: "SAPUI5 (custom)",
-    desc: "Tracks incoming iDocs and documents; JSON/XML/PDF viewer and a document-flow tree.",
-  },
-  {
-    name: "Order Entry App",
-    client: "Porky Products",
-    tech: "SAPUI5 (custom)",
-    desc: "Three-page shopping-cart layout for placing orders.",
-  },
-  {
-    name: "One-Click Notification Flow",
-    client: "US water utility",
-    tech: "SAP Screen Personas",
-    desc: "Triggers notification and service-order creation in one click with minimal input.",
-  },
-  {
-    name: "EWM Barcode Scanner",
-    client: "Kuwait furniture retailer",
-    tech: "SAPUI5 + Cordova",
-    desc: "Warehouse inventory, bin-to-bin transfers, stock graphs, complaints and reorder.",
-  },
-  {
-    name: "Create PR App (SAP + Hybris)",
-    client: "Australian mining company",
-    tech: "SAPUI5 (custom)",
-    desc: "Three-screen PR create/change with smart table and filter; material and service items.",
-  },
-  {
-    name: "Supply Tracking Suite",
-    client: "Australian mining company",
-    tech: "SAPUI5 (custom)",
-    desc: "Two apps for manifests, GIs/GDs, inbound goods and assignments — complex line items.",
-  },
-  {
-    name: "Village Notification App",
-    client: "Australian mining company",
-    tech: "SAPUI5 (custom)",
-    desc: "Single-screen mobile notification creation with attachments and auto-suggestions.",
-  },
-  {
-    name: "Vendor Onboarding Apps",
-    client: "Australian mining company",
-    tech: "SAPUI5 (custom)",
-    desc: "Registration requests, certificate/proof uploads and approval tracking for vendors.",
-  },
-  {
-    name: "PM Fiori Elements Adaptations",
-    client: "Australian mining company",
-    tech: "Fiori Elements",
-    desc: "Adapted 6 standard PM apps for custom search and actions across notifications and orders.",
-  },
-  {
-    name: "Standard Fiori App Extensions",
-    client: "Australian mining company",
-    tech: "Fiori extension framework",
-    desc: "Heavily extended My Inbox, My Timesheet and Find Maintenance Notification.",
-  },
-  {
-    name: "Rapid Fiori Deployment",
-    client: "Australian mining company",
-    tech: "Standard S/4HANA apps",
-    desc: "400 standard apps deployed across PM, MM and QM.",
-  },
-  {
-    name: "HANA Smart Business KPIs",
-    client: "Philips Global",
-    tech: "HANA Smart Business, Fiori",
-    desc: "KPI apps for sales-order fulfillment issues and material availability via the KPI modeler.",
-  },
-  {
-    name: "Finance Reporting Fiori Rollout",
-    client: "Philips Global",
-    tech: "Embedded BW, Fiori, WebDynpro",
-    desc: "Led 13 standard finance apps to global market, including a new embedded BW system.",
-  },
-  {
-    name: "B2C Rewards App",
-    client: "Kuwait furniture vendor",
-    tech: "Android, iOS, PHP, OData",
-    desc: "Fetches and shows customer reward points from SAP.",
-  },
-  {
-    name: "Burrp",
-    client: "Network18",
-    tech: "Blackberry (native)",
-    desc: "End-to-end development of a local restaurant and events search app.",
-  },
-];
-
 const EDUCATION = [
   {
     degree: "MBA — Information Technology (full-time, residential)",
@@ -284,7 +189,8 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-export default function RaviSoniCvPage() {
+export default async function RaviSoniCvPage() {
+  const projects = await listPublished("cv_project", 50);
   return (
     <div className="cv-page py-14 md:py-20">
       <Container className="max-w-4xl">
@@ -350,17 +256,31 @@ export default function RaviSoniCvPage() {
 
           <Section title="Selected projects">
             <div className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
-              {PROJECTS.map((p) => (
-                <div key={p.name} className="break-inside-avoid">
-                  <h3 className="text-[15px] font-bold text-ink">{p.name}</h3>
-                  <p className="text-xs text-muted">
-                    {p.client} · {p.tech}
-                  </p>
-                  <p className="mt-1 text-[14px] leading-relaxed text-ink-soft">{p.desc}</p>
-                </div>
-              ))}
+              {projects.map((p) => {
+                const client = typeof p.data.client === "string" ? p.data.client : "";
+                const tech = typeof p.data.tech === "string" ? p.data.tech : "";
+                const duration = typeof p.data.duration === "string" ? p.data.duration : "";
+                const media = productGallery(p.data);
+                return (
+                  <div key={p.id} className="break-inside-avoid">
+                    <h3 className="text-[15px] font-bold text-ink">{p.title}</h3>
+                    <p className="text-xs text-muted">
+                      {[client, tech, duration].filter(Boolean).join(" · ")}
+                    </p>
+                    <p className="mt-1 text-[14px] leading-relaxed text-ink-soft">{p.excerpt}</p>
+                    {media.length > 0 && (
+                      <div className="cv-no-print mt-2 flex gap-2">
+                        {media.map((m, i) => (
+                          <div key={`${m.url}-${i}`} className="h-16 w-24 shrink-0 overflow-hidden rounded-md border border-line bg-mist">
+                            <MediaFrame item={m} className="h-full w-full object-cover" />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-            <p className="mt-5 text-sm text-muted">A fuller list of 24 projects is available on request.</p>
           </Section>
 
           <Section title="Skills">

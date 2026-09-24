@@ -3,11 +3,11 @@ import "server-only";
 type Seedable = { exec: (sql: string, params?: unknown[]) => Promise<void> };
 
 type SeedItem = {
-  type: "service" | "case_study" | "post" | "page" | "product";
+  type: "service" | "case_study" | "post" | "page" | "product" | "cv_project";
   slug: string;
   title: string;
   excerpt: string;
-  body: string;
+  body?: string;
   tags?: string[];
   data?: Record<string, unknown>;
   sort_order?: number;
@@ -338,6 +338,25 @@ Add media to a product from the gallery panel in the editor: PNG/JPG/WebP images
   },
 ];
 
+const cvProjects: SeedItem[] = [
+  { type: "cv_project", slug: "field-visit-app", title: "Field Visit App", excerpt: "Field reps capture visits with English/Spanish translation and per-visit comments.", sort_order: 1, tags: [], data: { client: "Porky Products", tech: "SAPUI5 (custom)" } },
+  { type: "cv_project", slug: "edi-fulfillment-tracker", title: "EDI Fulfillment Tracker", excerpt: "Tracks incoming iDocs and documents; JSON/XML/PDF viewer and a document-flow tree.", sort_order: 2, tags: [], data: { client: "Porky Products", tech: "SAPUI5 (custom)" } },
+  { type: "cv_project", slug: "order-entry-app", title: "Order Entry App", excerpt: "Three-page shopping-cart layout for placing orders.", sort_order: 3, tags: [], data: { client: "Porky Products", tech: "SAPUI5 (custom)" } },
+  { type: "cv_project", slug: "one-click-notification-flow", title: "One-Click Notification Flow", excerpt: "Triggers notification and service-order creation in one click with minimal input.", sort_order: 4, tags: [], data: { client: "US water utility", tech: "SAP Screen Personas" } },
+  { type: "cv_project", slug: "ewm-barcode-scanner", title: "EWM Barcode Scanner", excerpt: "Warehouse inventory, bin-to-bin transfers, stock graphs, complaints and reorder.", sort_order: 5, tags: [], data: { client: "Kuwait furniture retailer", tech: "SAPUI5 + Cordova" } },
+  { type: "cv_project", slug: "create-pr-app", title: "Create PR App (SAP + Hybris)", excerpt: "Three-screen PR create/change with smart table and filter; material and service items.", sort_order: 6, tags: [], data: { client: "Australian mining company", tech: "SAPUI5 (custom)" } },
+  { type: "cv_project", slug: "supply-tracking-suite", title: "Supply Tracking Suite", excerpt: "Two apps for manifests, GIs/GDs, inbound goods and assignments — complex line items.", sort_order: 7, tags: [], data: { client: "Australian mining company", tech: "SAPUI5 (custom)" } },
+  { type: "cv_project", slug: "village-notification-app", title: "Village Notification App", excerpt: "Single-screen mobile notification creation with attachments and auto-suggestions.", sort_order: 8, tags: [], data: { client: "Australian mining company", tech: "SAPUI5 (custom)" } },
+  { type: "cv_project", slug: "vendor-onboarding-apps", title: "Vendor Onboarding Apps", excerpt: "Registration requests, certificate/proof uploads and approval tracking for vendors.", sort_order: 9, tags: [], data: { client: "Australian mining company", tech: "SAPUI5 (custom)" } },
+  { type: "cv_project", slug: "pm-fiori-elements-adaptations", title: "PM Fiori Elements Adaptations", excerpt: "Adapted 6 standard PM apps for custom search and actions across notifications and orders.", sort_order: 10, tags: [], data: { client: "Australian mining company", tech: "Fiori Elements" } },
+  { type: "cv_project", slug: "standard-fiori-app-extensions", title: "Standard Fiori App Extensions", excerpt: "Heavily extended My Inbox, My Timesheet and Find Maintenance Notification.", sort_order: 11, tags: [], data: { client: "Australian mining company", tech: "Fiori extension framework" } },
+  { type: "cv_project", slug: "rapid-fiori-deployment", title: "Rapid Fiori Deployment", excerpt: "400 standard apps deployed across PM, MM and QM.", sort_order: 12, tags: [], data: { client: "Australian mining company", tech: "Standard S/4HANA apps" } },
+  { type: "cv_project", slug: "hana-smart-business-kpis", title: "HANA Smart Business KPIs", excerpt: "KPI apps for sales-order fulfillment issues and material availability via the KPI modeler.", sort_order: 13, tags: [], data: { client: "Philips Global", tech: "HANA Smart Business, Fiori" } },
+  { type: "cv_project", slug: "finance-reporting-fiori-rollout", title: "Finance Reporting Fiori Rollout", excerpt: "Led 13 standard finance apps to global market, including a new embedded BW system.", sort_order: 14, tags: [], data: { client: "Philips Global", tech: "Embedded BW, Fiori, WebDynpro" } },
+  { type: "cv_project", slug: "b2c-rewards-app", title: "B2C Rewards App", excerpt: "Fetches and shows customer reward points from SAP.", sort_order: 15, tags: [], data: { client: "Kuwait furniture vendor", tech: "Android, iOS, PHP, OData" } },
+  { type: "cv_project", slug: "burrp", title: "Burrp", excerpt: "End-to-end development of a local restaurant and events search app.", sort_order: 16, tags: [], data: { client: "Network18", tech: "Blackberry (native)" } },
+];
+
 /** Field definitions that ship with the product content type — inserted idempotently on every boot. */
 const PRODUCT_FIELDS: [string, string, string, string, string[]?][] = [
   ["product", "tagline", "Tagline", "text"],
@@ -345,9 +364,16 @@ const PRODUCT_FIELDS: [string, string, string, string, string[]?][] = [
   ["product", "link", "External link", "url"],
 ];
 
+/** Field definitions for CV projects on /ravisoni — inserted idempotently on every boot. */
+const CV_PROJECT_FIELDS: [string, string, string, string, string[]?][] = [
+  ["cv_project", "client", "Client", "text"],
+  ["cv_project", "tech", "Technology stack", "text"],
+  ["cv_project", "duration", "Duration (e.g. 3 months)", "text"],
+];
+
 export async function ensureBaselineFields(db: Seedable) {
   let i = 100;
-  for (const [entity, key, label, type, options] of PRODUCT_FIELDS) {
+  for (const [entity, key, label, type, options] of [...PRODUCT_FIELDS, ...CV_PROJECT_FIELDS]) {
     await db.exec(
       `INSERT INTO field_defs (id, entity, key, label, type, options, sort_order)
        VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT (entity, key) DO NOTHING`,
@@ -357,7 +383,7 @@ export async function ensureBaselineFields(db: Seedable) {
 }
 
 export async function seedContent(db: Seedable) {
-  const items = [...services, ...caseStudies, ...posts, ...products];
+  const items = [...services, ...caseStudies, ...posts, ...products, ...cvProjects];
   for (const it of items) {
     await db.exec(
       `INSERT INTO content (id, type, slug, title, excerpt, body, status, tags, data, sort_order, published_at)
@@ -368,7 +394,7 @@ export async function seedContent(db: Seedable) {
         it.slug,
         it.title,
         it.excerpt,
-        it.body,
+        it.body ?? null,
         JSON.stringify(it.tags ?? []),
         JSON.stringify(it.data ?? {}),
         it.sort_order ?? 0,

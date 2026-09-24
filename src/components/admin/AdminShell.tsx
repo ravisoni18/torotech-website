@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
-import { BarChart3, FileText, Inbox, Package, SlidersHorizontal, Terminal, ExternalLink, LogOut } from "lucide-react";
+import { BarChart3, FileText, Inbox, Package, SlidersHorizontal, Terminal, ExternalLink, LogOut, Briefcase } from "lucide-react";
 import { Logo } from "@/components/marketing/Logo";
 
 function SignOutButton() {
@@ -24,6 +24,7 @@ const NAV = [
   { href: "/admin", label: "Overview", icon: BarChart3, exact: true },
   { href: "/admin/content", label: "Content", icon: FileText },
   { href: "/admin/products", label: "Products", icon: Package },
+  { href: "/admin/content?type=cv_project", label: "CV projects", icon: Briefcase },
   { href: "/admin/leads", label: "Leads", icon: Inbox },
   { href: "/admin/fields", label: "Fields", icon: SlidersHorizontal },
   { href: "/admin/query", label: "Query", icon: Terminal },

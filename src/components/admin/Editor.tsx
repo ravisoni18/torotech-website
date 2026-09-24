@@ -54,6 +54,7 @@ export function Editor({ item, fields, initialType }: { item?: Content; fields: 
   const galleryRef = useRef<HTMLInputElement>(null);
 
   const typeFields = useMemo(() => fields.filter((f) => f.entity === d.type), [fields, d.type]);
+  const hasGallery = d.type === "product" || d.type === "cv_project";
 
   const gallery: MediaItem[] = useMemo(
     () => (Array.isArray(d.data.gallery) ? (d.data.gallery as MediaItem[]) : []),
@@ -233,9 +234,9 @@ export function Editor({ item, fields, initialType }: { item?: Content; fields: 
             )}
           </Card>
 
-          {d.type === "product" && (
+          {hasGallery && (
             <Card
-              title="Product gallery"
+              title={d.type === "product" ? "Product gallery" : "Project media"}
               aside={
                 <>
                   <Button variant="secondary" onClick={() => galleryRef.current?.click()}>
@@ -356,7 +357,7 @@ export function Editor({ item, fields, initialType }: { item?: Content; fields: 
             </div>
           </Card>
 
-          <Card title={d.type === "product" ? "Preview media" : "Cover image"}>
+          <Card title={hasGallery ? "Preview media" : "Cover image"}>
             {d.cover ? (
               mediaKind(d.cover) === "video" ? (
                 <video src={d.cover} muted playsInline loop autoPlay className="mb-3 aspect-[16/9] w-full rounded-lg object-cover" />
@@ -366,7 +367,7 @@ export function Editor({ item, fields, initialType }: { item?: Content; fields: 
               )
             ) : (
               <div className="mb-3 flex aspect-[16/9] items-center justify-center rounded-lg bg-mist text-sm text-muted">
-                {d.type === "product" ? "Falls back to the first gallery item" : "No cover yet"}
+                {hasGallery ? "Falls back to the first gallery item" : "No cover yet"}
               </div>
             )}
             <div className="flex gap-2">
@@ -374,7 +375,7 @@ export function Editor({ item, fields, initialType }: { item?: Content; fields: 
                 <Upload size={15} /> Upload
                 <input
                   type="file"
-                  accept={d.type === "product" ? "image/*,video/mp4,video/webm,video/quicktime" : "image/*"}
+                  accept={hasGallery ? "image/*,video/mp4,video/webm,video/quicktime" : "image/*"}
                   className="hidden"
                   onChange={(e) => {
                     const f = e.target.files?.[0];
