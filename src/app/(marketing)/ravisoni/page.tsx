@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Mail, Phone, Link2, MapPin, Award } from "lucide-react";
-import { Container, MediaFrame } from "@/components/marketing/ui";
+import { Container } from "@/components/marketing/ui";
 import { PrintButton } from "@/components/marketing/PrintButton";
+import { CvProjectGrid } from "@/components/marketing/CvProjectGrid";
 import { listPublished } from "@/lib/content";
-import { productGallery } from "@/lib/content-types";
 
 export const dynamic = "force-dynamic";
 
@@ -255,32 +255,7 @@ export default async function RaviSoniCvPage() {
           </Section>
 
           <Section title="Selected projects">
-            <div className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
-              {projects.map((p) => {
-                const client = typeof p.data.client === "string" ? p.data.client : "";
-                const tech = typeof p.data.tech === "string" ? p.data.tech : "";
-                const duration = typeof p.data.duration === "string" ? p.data.duration : "";
-                const media = productGallery(p.data);
-                return (
-                  <div key={p.id} className="break-inside-avoid">
-                    <h3 className="text-[15px] font-bold text-ink">{p.title}</h3>
-                    <p className="text-xs text-muted">
-                      {[client, tech, duration].filter(Boolean).join(" · ")}
-                    </p>
-                    <p className="mt-1 text-[14px] leading-relaxed text-ink-soft">{p.excerpt}</p>
-                    {media.length > 0 && (
-                      <div className="cv-no-print mt-2 flex gap-2">
-                        {media.map((m, i) => (
-                          <div key={`${m.url}-${i}`} className="h-16 w-24 shrink-0 overflow-hidden rounded-md border border-line bg-mist">
-                            <MediaFrame item={m} className="h-full w-full object-cover" />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+            <CvProjectGrid projects={projects} />
           </Section>
 
           <Section title="Skills">

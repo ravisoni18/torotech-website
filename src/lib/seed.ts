@@ -367,8 +367,9 @@ const PRODUCT_FIELDS: [string, string, string, string, string[]?][] = [
 /** Field definitions for CV projects on /ravisoni — inserted idempotently on every boot. */
 const CV_PROJECT_FIELDS: [string, string, string, string, string[]?][] = [
   ["cv_project", "client", "Client", "text"],
-  ["cv_project", "tech", "Technology stack", "text"],
+  ["cv_project", "tech", "Technology stack (comma-separated)", "text"],
   ["cv_project", "duration", "Duration (e.g. 3 months)", "text"],
+  ["cv_project", "link", "External link", "url"],
 ];
 
 export async function ensureBaselineFields(db: Seedable) {
