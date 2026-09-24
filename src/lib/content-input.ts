@@ -4,7 +4,7 @@ import { slugify, type ContentType } from "./content";
 import { listFields, coerceFieldValue } from "./fields";
 
 export const contentSchema = z.object({
-  type: z.enum(["service", "case_study", "post", "page", "product"]),
+  type: z.enum(["service", "case_study", "post", "page", "product", "cv_project"]),
   slug: z.string().trim().max(80).optional(),
   title: z.string().trim().min(1).max(200),
   excerpt: z.string().max(1000).optional().nullable(),
