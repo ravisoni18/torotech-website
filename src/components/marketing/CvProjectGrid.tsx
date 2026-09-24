@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ExternalLink, X } from "lucide-react";
+import { ExternalLink, Maximize2, X } from "lucide-react";
 import { MediaFrame, Tag } from "./ui";
 import { Markdown } from "./Markdown";
-import { productGallery, type Content } from "@/lib/content-types";
+import { productGallery, type Content, type MediaItem } from "@/lib/content-types";
+
+type ZoomTarget = MediaItem | { url: string };
 
 function splitTech(tech: string) {
   return tech
@@ -13,16 +15,53 @@ function splitTech(tech: string) {
     .filter(Boolean);
 }
 
+function Lightbox({ item, onClose }: { item: ZoomTarget; onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85 p-4" onClick={onClose}>
+      <button
+        type="button"
+        onClick={onClose}
+        className="absolute right-4 top-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
+        aria-label="Close"
+      >
+        <X size={22} />
+      </button>
+      <div onClick={(e) => e.stopPropagation()}>
+        <MediaFrame item={item} priority className="max-h-[90vh] max-w-[90vw] object-contain" />
+      </div>
+    </div>
+  );
+}
+
+function ZoomableMedia({ item, className, onZoom }: { item: ZoomTarget; className: string; onZoom: () => void }) {
+  return (
+    <button type="button" onClick={onZoom} className="group relative block w-full cursor-zoom-in" aria-label="View larger">
+      <MediaFrame item={item} className={className} />
+      <span className="absolute inset-0 flex items-center justify-center bg-ink/0 opacity-0 transition-opacity group-hover:bg-ink/30 group-hover:opacity-100">
+        <Maximize2 size={22} className="text-white" />
+      </span>
+    </button>
+  );
+}
+
 function ProjectModal({ item, onClose }: { item: Content; onClose: () => void }) {
+  const [zoomed, setZoomed] = useState<ZoomTarget | null>(null);
+
   useEffect(() => {
     document.body.style.overflow = "hidden";
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && (zoomed ? setZoomed(null) : onClose());
     window.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", onKey);
     };
-  }, [onClose]);
+  }, [onClose, zoomed]);
 
   const client = typeof item.data.client === "string" ? item.data.client : "";
   const tech = typeof item.data.tech === "string" ? item.data.tech : "";
@@ -50,7 +89,7 @@ function ProjectModal({ item, onClose }: { item: Content; onClose: () => void })
         <div className="max-h-[70vh] overflow-y-auto p-5">
           {hero && (
             <div className="mb-5 overflow-hidden rounded-[var(--radius-card)] border border-line bg-mist">
-              <MediaFrame item={hero} priority className="h-auto w-full" />
+              <ZoomableMedia item={hero} className="h-auto w-full" onZoom={() => setZoomed(hero)} />
             </div>
           )}
           {link && (
@@ -68,7 +107,7 @@ function ProjectModal({ item, onClose }: { item: Content; onClose: () => void })
             <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
               {rest.map((m, i) => (
                 <div key={`${m.url}-${i}`} className="overflow-hidden rounded-lg border border-line bg-mist">
-                  <MediaFrame item={m} className="h-auto w-full" />
+                  <ZoomableMedia item={m} className="h-auto w-full" onZoom={() => setZoomed(m)} />
                 </div>
               ))}
             </div>
@@ -82,6 +121,7 @@ function ProjectModal({ item, onClose }: { item: Content; onClose: () => void })
           )}
         </div>
       </div>
+      {zoomed && <Lightbox item={zoomed} onClose={() => setZoomed(null)} />}
     </div>
   );
 }
