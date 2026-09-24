@@ -2,6 +2,13 @@
 	# Real ACME contact — without this Caddy can end up registering an account with an
 	# invalid placeholder contact, which Let's Encrypt rejects outright.
 	email {$ACME_EMAIL:ravisoni18@gmail.com}
+
+	# HTTP/3 (QUIC) large multipart uploads were arriving corrupted at the backend —
+	# admin video uploads failed with "Failed to parse body as FormData" over h3 while
+	# the identical request succeeded over h2. Disabling h3 until that's tracked down.
+	servers {
+		protocols h1 h2
+	}
 }
 
 # Automatic Let's Encrypt TLS for the apex and www.
