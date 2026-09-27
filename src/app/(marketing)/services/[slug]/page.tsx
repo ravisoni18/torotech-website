@@ -59,6 +59,30 @@ export default async function ServicePage({ params }: Props) {
                 </dl>
               </div>
             )}
+            {slug === "mobile-app-development" && (
+              <div className="mt-10">
+                <div className="overflow-hidden rounded-[28px] border border-line bg-[#0f172a]">
+                  <iframe
+                    src="/demos/mobile-swipe-demo.html"
+                    title="Enterprise product discovery app — swipe demo"
+                    className="h-[700px] w-full md:h-[780px]"
+                    loading="lazy"
+                  />
+                </div>
+                <p className="mt-3 text-sm text-ink-soft">
+                  A working demo, not a mockup — swipe a card or tap the buttons. Same pattern (gesture-driven,
+                  stateful, offline-friendly) we build in React Native for a real app.{" "}
+                  <a
+                    href="/demos/mobile-swipe-demo.html"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-semibold text-teal-deep hover:underline"
+                  >
+                    Open full-screen ↗
+                  </a>
+                </p>
+              </div>
+            )}
             <div className="mt-12">
               <Markdown source={item.body ?? ""} />
             </div>
