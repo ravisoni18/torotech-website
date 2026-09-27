@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getPublished, listPublished } from "@/lib/content";
 import { Container, CtaBand, ServiceIcon, Tag } from "@/components/marketing/ui";
 import { Markdown } from "@/components/marketing/Markdown";
+import { SystemDiagram } from "@/components/marketing/SystemDiagram";
 
 export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ slug: string }> };
@@ -36,6 +37,28 @@ export default async function ServicePage({ params }: Props) {
                 <Tag key={t}>{t}</Tag>
               ))}
             </div>
+            {slug === "sap-btp-development" && (
+              <div className="mt-10">
+                <div className="relative">
+                  <div className="absolute -inset-6 -z-10 rounded-[28px] bg-mist" />
+                  <SystemDiagram className="h-auto w-full" />
+                </div>
+                <dl className="mt-8 grid max-w-lg grid-cols-3 gap-6 border-t border-line pt-6">
+                  <div>
+                    <dt className="text-sm text-muted">SAP experience</dt>
+                    <dd className="mt-1 text-2xl font-extrabold text-ink">12+ yrs</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm text-muted">First agent live</dt>
+                    <dd className="mt-1 text-2xl font-extrabold text-ink">1–2 days</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm text-muted">Unapproved postings</dt>
+                    <dd className="mt-1 text-2xl font-extrabold text-ink">0</dd>
+                  </div>
+                </dl>
+              </div>
+            )}
             <div className="mt-12">
               <Markdown source={item.body ?? ""} />
             </div>

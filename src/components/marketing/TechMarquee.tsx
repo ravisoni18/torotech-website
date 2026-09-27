@@ -1,19 +1,17 @@
 const TECH = [
-  "SAP S/4HANA",
-  "SAP BTP",
-  "Fiori Elements",
-  "SAPUI5",
-  "CAP · Node.js",
-  "RAP · ABAP CDS",
-  "HANA Cloud",
-  "Integration Suite",
-  "Event Mesh",
-  "Anthropic Claude",
-  "SAP AI Core",
   "Next.js",
   "TypeScript",
+  "React Native",
+  "SAP S/4HANA",
+  "SAP BTP",
+  "CAP · Node.js",
+  "Fiori Elements",
+  "Playwright",
+  "N8N",
   "DuckDB",
+  "PostgreSQL",
   "Docker",
+  "Anthropic Claude",
 ];
 
 /** Wordmarks of the platforms we build on. Text, not logos — nothing to license, nothing to fake. */

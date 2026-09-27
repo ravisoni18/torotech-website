@@ -1,9 +1,17 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { listPublished } from "@/lib/content";
-import { SystemDiagram } from "@/components/marketing/SystemDiagram";
 import { TechMarquee } from "@/components/marketing/TechMarquee";
-import { CaseStudyCard, Container, CtaBand, PostCard, ProductCard, SectionHeading, ServiceCard } from "@/components/marketing/ui";
+import {
+  CaseStudyCard,
+  Container,
+  CtaBand,
+  PostCard,
+  ProductCard,
+  SectionHeading,
+  ServiceCard,
+  ServiceIcon,
+} from "@/components/marketing/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -14,15 +22,15 @@ const PROCESS = [
   },
   {
     title: "Read-only agent",
-    body: "The agent explains what it would do on live SAP data. Your team grades every proposal; nothing is written back.",
+    body: "The agent or dashboard explains what it would do against your real data. Your team grades every proposal before anything goes live.",
   },
   {
     title: "Approved actions",
-    body: "Write-backs go behind a Fiori or Teams approval inbox. Auto-approval widens only as the precision numbers earn it.",
+    body: "Write-backs and automations go behind an approval inbox — Fiori, Teams, Slack, whatever you already use. Auto-approval widens only as the precision numbers earn it.",
   },
   {
     title: "Hand-over",
-    body: "Runbooks, dashboards, prompt and eval suites — all in your repo, on your BTP subaccount. No lock-in to us.",
+    body: "Runbooks, dashboards, prompt and eval suites — all in your repo, on your own infrastructure. No lock-in to us.",
   },
 ];
 
@@ -41,12 +49,12 @@ export default async function HomePage() {
         <Container className="grid items-center gap-12 pb-16 pt-14 md:grid-cols-[1.05fr_1fr] md:pb-24 md:pt-20">
           <div>
             <h1 className="text-[2.6rem] font-extrabold leading-[1.05] text-ink md:text-[3.6rem]">
-              AI that does real work inside SAP.
+              Software that ships — from your website to SAP.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft md:text-xl">
-              Torotech builds agents, BTP extensions and Fiori apps that read your S/4HANA data, propose
-              the next action, and post it back — with a person approving the edge cases. We also build
-              web applications with AI features that earn their place.
+              Torotech builds and ships six things well: websites and mobile apps with AI built in, BI
+              dashboards you can trust, SAP BTP development and integration, automated testing, and
+              workflow automation — each scoped to one process and one number you can check.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link
@@ -56,30 +64,43 @@ export default async function HomePage() {
                 Book a call <ArrowRight size={18} />
               </Link>
               <Link
-                href="/services/sap-btp-development"
+                href="/services"
                 className="rounded-full border border-line px-6 py-3 font-semibold text-ink transition-colors hover:border-ink"
               >
-                How the agents work
+                See all services
               </Link>
             </div>
             <dl className="mt-12 grid max-w-lg grid-cols-3 gap-6 border-t border-line pt-8">
               <div>
-                <dt className="text-sm text-muted">SAP experience</dt>
-                <dd className="mt-1 text-2xl font-extrabold text-ink">12+ yrs</dd>
+                <dt className="text-sm text-muted">Practice areas</dt>
+                <dd className="mt-1 text-2xl font-extrabold text-ink">6</dd>
               </div>
               <div>
-                <dt className="text-sm text-muted">First agent live</dt>
+                <dt className="text-sm text-muted">First app live</dt>
                 <dd className="mt-1 text-2xl font-extrabold text-ink">1–2 days</dd>
               </div>
               <div>
-                <dt className="text-sm text-muted">Unapproved postings</dt>
-                <dd className="mt-1 text-2xl font-extrabold text-ink">0</dd>
+                <dt className="text-sm text-muted">Years building software</dt>
+                <dd className="mt-1 text-2xl font-extrabold text-ink">12+</dd>
               </div>
             </dl>
           </div>
           <div className="relative">
             <div className="absolute -inset-6 -z-10 rounded-[28px] bg-mist" />
-            <SystemDiagram className="h-auto w-full" />
+            <div className="grid grid-cols-2 gap-3.5">
+              {services.map((s) => (
+                <Link
+                  key={s.id}
+                  href={`/services/${s.slug}`}
+                  className="flex items-center gap-3 rounded-2xl border border-line bg-paper p-4 transition-colors hover:border-teal"
+                >
+                  <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-tint text-ink">
+                    <ServiceIcon name={s.data.icon} className="h-[18px] w-[18px]" />
+                  </span>
+                  <span className="text-sm font-semibold leading-snug text-ink">{s.title}</span>
+                </Link>
+              ))}
+            </div>
           </div>
         </Container>
       </section>
