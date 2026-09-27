@@ -69,7 +69,7 @@ export function ServiceCard({ item, index }: { item: Content; index: number }) {
   return (
     <Link
       href={`/services/${item.slug}`}
-      className="group flex flex-col rounded-[var(--radius-card)] border border-line bg-paper p-7 transition-colors hover:border-teal"
+      className="group flex flex-col rounded-[var(--radius-card)] border border-line bg-paper p-7 transition-all duration-300 hover:-translate-y-1 hover:border-teal hover:shadow-lg"
     >
       <span className={`inline-flex h-11 w-11 items-center justify-center rounded-xl ${tint} text-ink`}>
         <ServiceIcon name={item.data.icon} className="h-5 w-5" />
@@ -99,7 +99,7 @@ export function CaseStudyCard({ item }: { item: Content }) {
   return (
     <Link
       href={`/work/${item.slug}`}
-      className="group grid gap-6 rounded-[var(--radius-card)] border border-line bg-paper p-7 transition-colors hover:border-teal md:grid-cols-[auto_1fr] md:gap-10"
+      className="group grid gap-6 rounded-[var(--radius-card)] border border-line bg-paper p-7 transition-all duration-300 hover:-translate-y-1 hover:border-teal hover:shadow-lg md:grid-cols-[auto_1fr] md:gap-10"
     >
       <div className="flex flex-col justify-between md:w-40">
         <div>
@@ -127,7 +127,7 @@ export function CaseStudyCard({ item }: { item: Content }) {
 export function PostCard({ item }: { item: Content }) {
   const d = item.data as Record<string, string | number | undefined>;
   return (
-    <Link href={`/blog/${item.slug}`} className="group flex flex-col rounded-[var(--radius-card)] border border-line bg-paper p-7 transition-colors hover:border-teal">
+    <Link href={`/blog/${item.slug}`} className="group flex flex-col rounded-[var(--radius-card)] border border-line bg-paper p-7 transition-all duration-300 hover:-translate-y-1 hover:border-teal hover:shadow-lg">
       <div className="text-sm text-muted">
         {formatDate(item.published_at)}
         {d.reading_time ? ` · ${d.reading_time} min read` : ""}
@@ -189,7 +189,7 @@ export function ProductCard({ item }: { item: Content }) {
   return (
     <Link
       href={`/products/${item.slug}`}
-      className="group flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-line bg-paper transition-colors hover:border-teal"
+      className="group flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-line bg-paper transition-all duration-300 hover:-translate-y-1 hover:border-teal hover:shadow-lg"
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-mist">
         {hero ? (
