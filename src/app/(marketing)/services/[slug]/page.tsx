@@ -57,6 +57,26 @@ export default async function ServicePage({ params }: Props) {
                     <dd className="mt-1 text-2xl font-extrabold text-ink">0</dd>
                   </div>
                 </dl>
+                <div className="mt-10 overflow-hidden rounded-[28px] border border-line bg-[#e2e8f0]">
+                  <iframe
+                    src="/demos/sap-fiori-approval-demo.html"
+                    title="Fiori purchase-order approval — swipe demo"
+                    className="h-[700px] w-full md:h-[780px]"
+                    loading="lazy"
+                  />
+                </div>
+                <p className="mt-3 text-sm text-ink-soft">
+                  This is the approval inbox we mean — swipe or tap to approve or reject a purchase order.
+                  Fiori Elements styling, the same propose-then-approve pattern, running as a real app shell.{" "}
+                  <a
+                    href="/demos/sap-fiori-approval-demo.html"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-semibold text-teal-deep hover:underline"
+                  >
+                    Open full-screen ↗
+                  </a>
+                </p>
               </div>
             )}
             {slug === "mobile-app-development" && (

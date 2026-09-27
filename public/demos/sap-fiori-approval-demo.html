@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fiori PO Approval</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=72:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sap: {
+                            blue: '#0070F2',
+                            darkblue: '#354A5F',
+                            bg: '#F2F2F2',
+                            card: '#FFFFFF',
+                            text: '#32363A',
+                            success: '#107E3E',
+                            error: '#BB0000',
+                            warning: '#E9730C'
+                        }
+                    },
+                    fontFamily: {
+                        // SAP typically uses '72', falling back to Inter
+                        sans: ['"72"', 'Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        /* Phone Hardware Frame */
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background-color: #000000;
+            border-radius: 50px;
+            box-shadow: 0 0 0 10px #1e293b, 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            position: relative;
+            overflow: hidden;
+            transform: scale(0.9);
+            transform-origin: center;
+            border: 8px solid #ffffff;
+        }
+
+        @media (max-width: 400px) {
+            .phone-frame {
+                transform: scale(0.85);
+            }
+        }
+
+        /* Dynamic Island / Notch */
+        .dynamic-island {
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 25px;
+            background-color: #000000;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        /* App Layout */
+        .app-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background-color: #F2F2F2; /* SAP UI5 Shell Background */
+        }
+
+        /* Fiori Header */
+        .fiori-header {
+            padding: 45px 20px 15px;
+            background-color: #354A5F; /* Fiori Dark Header */
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 50;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Card Stack */
+        .card-stack {
+            flex-grow: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        .swipe-card {
+            position: absolute;
+            width: calc(100% - 40px);
+            height: calc(100% - 60px);
+            background: #FFFFFF;
+            border-radius: 8px; /* Fiori cards are usually less rounded */
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-direction: column;
+            will-change: transform;
+            touch-action: none;
+            user-select: none;
+            transition: transform 0.3s ease-out;
+            border-top: 4px solid #0070F2; /* Accent line */
+        }
+
+        .swipe-card.dragging {
+            transition: none;
+            cursor: grabbing;
+        }
+
+        /* Status Stamps */
+        .stamp {
+            position: absolute;
+            top: 60px;
+            padding: 8px 16px;
+            border: 4px solid;
+            border-radius: 8px;
+            font-size: 2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            opacity: 0;
+            z-index: 10;
+            transform: scale(0.5);
+            transition: opacity 0.2s, transform 0.2s;
+            pointer-events: none;
+        }
+
+        .stamp.approve {
+            color: #107E3E; /* Fiori Success */
+            border-color: #107E3E;
+            left: 20px;
+            transform: rotate(-15deg);
+        }
+
+        .stamp.reject {
+            color: #BB0000; /* Fiori Error */
+            border-color: #BB0000;
+            right: 20px;
+            transform: rotate(15deg);
+        }
+
+        /* Navigation */
+        .bottom-nav {
+            height: 70px;
+            background: #FFFFFF;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 15px;
+            border-top: 1px solid #E4E4E4;
+            z-index: 50;
+        }
+
+        .nav-item {
+            color: #5C666A;
+            font-size: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.2s;
+            cursor: pointer;
+            width: 60px;
+        }
+
+        .nav-item span {
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+
+        .nav-item.active {
+            color: #0070F2;
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 40px;
+            height: 3px;
+            background-color: #0070F2;
+            border-radius: 0 0 3px 3px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            position: absolute;
+            bottom: 25px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            z-index: 40;
+            pointer-events: none;
+        }
+
+        .action-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            pointer-events: auto;
+            transition: transform 0.1s, box-shadow 0.1s, background-color 0.2s;
+            border: 1px solid #E4E4E4;
+        }
+
+        .action-btn:active {
+            transform: scale(0.92);
+        }
+
+        .btn-reject { color: #BB0000; }
+        .btn-reject:hover { background-color: #FFF0F0; }
+
+        .btn-approve { color: #107E3E; }
+        .btn-approve:hover { background-color: #F0FAF0; }
+
+        .view-container {
+            flex-grow: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        .view-container.hidden {
+            display: none !important;
+        }
+
+        .view-container::-webkit-scrollbar { display: none; }
+        .view-container { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Fiori List Item */
+        .fiori-list-item {
+            background: #FFF;
+            border-bottom: 1px solid #E4E4E4;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <div class="dynamic-island"></div>
+
+        <div class="app-container">
+            <!-- SAP Fiori Header -->
+            <div class="fiori-header">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded bg-sap-blue flex items-center justify-center text-white font-bold text-sm shadow">
+                        SAP
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold leading-tight">My Inbox</h1>
+                        <p class="text-xs text-blue-200 opacity-90">Purchase Orders</p>
+                    </div>
+                </div>
+                <div class="flex gap-4 text-xl">
+                    <i class="fa-solid fa-magnifying-glass cursor-pointer hover:text-blue-200 transition"></i>
+                </div>
+            </div>
+
+            <!-- Home View: Approval Queue -->
+            <div id="view-home" class="view-container">
+                <div class="px-5 py-3 flex justify-between items-center bg-white border-b border-gray-200">
+                    <span class="text-sm font-semibold text-sap-text">Pending Approvals</span>
+                    <span id="pending-count" class="bg-sap-blue text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+                </div>
+
+                <div class="card-stack" id="card-container">
+                    <div class="text-center text-gray-500 p-8 absolute z-0 flex flex-col items-center">
+                        <i class="fa-regular fa-circle-check text-5xl mb-4 text-sap-success opacity-50"></i>
+                        <h3 class="text-lg font-bold text-sap-text">All Caught Up!</h3>
+                        <p class="text-sm mt-2">No pending purchase orders require your attention.</p>
+                        <button onclick="resetApp()" class="mt-6 px-6 py-2 border border-sap-blue text-sap-blue font-semibold rounded hover:bg-blue-50 transition">
+                            Refresh Inbox
+                        </button>
+                    </div>
+
+                    <!-- Manual Action Buttons (overlay) -->
+                    <div class="action-buttons">
+                        <button class="action-btn btn-reject" onclick="handleManualAction('left')" title="Reject">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                        <button class="action-btn btn-approve" onclick="handleManualAction('right')" title="Approve">
+                            <i class="fa-solid fa-check"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History View -->
+            <div id="view-history" class="view-container hidden bg-sap-bg">
+                <div class="bg-white px-4 py-3 border-b border-gray-200 sticky top-0 z-10">
+                    <h2 class="text-lg font-bold text-sap-text">Processing History</h2>
+                </div>
+                <div id="history-list" class="flex-grow">
+                    <!-- History items injected here -->
+                    <div class="p-8 text-center text-gray-500">No history available.</div>
+                </div>
+            </div>
+
+            <!-- Profile/Settings View -->
+            <div id="view-profile" class="view-container hidden bg-white">
+                <div class="p-6 border-b border-gray-200 bg-sap-darkblue text-white flex flex-col items-center pt-8">
+                    <div class="w-20 h-20 rounded-full bg-gray-200 border-4 border-sap-blue flex items-center justify-center overflow-hidden mb-4">
+                        <img src="https://placehold.co/100x100/e2e8f0/64748b?text=JD" alt="Profile" class="w-full h-full object-cover">
+                    </div>
+                    <h2 class="text-xl font-bold">John Doe</h2>
+                    <p class="text-sm text-blue-200">Senior Procurement Manager</p>
+                </div>
+
+                <div class="p-4 text-sap-text font-semibold bg-sap-bg text-sm uppercase tracking-wide">Account Settings</div>
+                <div class="fiori-list-item flex-row justify-between items-center cursor-pointer hover:bg-gray-50">
+                    <div class="flex items-center gap-3"><i class="fa-solid fa-building text-gray-400"></i> Department</div>
+                    <div class="text-sm text-gray-500">Global IT <i class="fa-solid fa-chevron-right ml-2 text-xs"></i></div>
+                </div>
+                <div class="fiori-list-item flex-row justify-between items-center cursor-pointer hover:bg-gray-50">
+                    <div class="flex items-center gap-3"><i class="fa-solid fa-bell text-gray-400"></i> Notifications</div>
+                    <div class="text-sm text-gray-500">Enabled <i class="fa-solid fa-chevron-right ml-2 text-xs"></i></div>
+                </div>
+                <div class="fiori-list-item flex-row justify-between items-center cursor-pointer hover:bg-gray-50">
+                    <div class="flex items-center gap-3"><i class="fa-solid fa-plane-departure text-gray-400"></i> Out of Office Delegate</div>
+                    <div class="text-sm text-gray-500">None <i class="fa-solid fa-chevron-right ml-2 text-xs"></i></div>
+                </div>
+
+                <div class="p-4 mt-6">
+                    <button class="w-full py-3 bg-white border border-gray-300 rounded text-sap-text font-bold hover:bg-gray-50 transition shadow-sm">
+                        Log Off
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="bottom-nav">
+                <div id="nav-home" class="nav-item relative active" onclick="switchView('home')">
+                    <i class="fa-solid fa-inbox"></i>
+                    <span>Inbox</span>
+                </div>
+                <div id="nav-history" class="nav-item relative" onclick="switchView('history')">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>History</span>
+                </div>
+                <div id="nav-profile" class="nav-item relative" onclick="switchView('profile')">
+                    <i class="fa-solid fa-user"></i>
+                    <span>Profile</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock Purchase Order Data
+        const initialPOs = [
+            {
+                id: "PO-7782910",
+                vendor: "Dell Technologies",
+                title: "Developer Workstation Refresh",
+                amount: "$124,500.00",
+                currency: "USD",
+                date: "Oct 12, 2026",
+                requestor: "Sarah Jenkins",
+                department: "Engineering",
+                priority: "High",
+                priorityColor: "sap-error",
+                items: [
+                    { name: "Precision 5000 Series x 40", price: "$110,000.00" },
+                    { name: "UltraSharp 27 Monitors x 40", price: "$14,500.00" }
+                ]
+            },
+            {
+                id: "PO-7782911",
+                vendor: "Salesforce Inc.",
+                title: "Annual CRM License Renewal",
+                amount: "$85,000.00",
+                currency: "USD",
+                date: "Oct 13, 2026",
+                requestor: "Michael Chang",
+                department: "Sales",
+                priority: "Normal",
+                priorityColor: "sap-success",
+                items: [
+                    { name: "Enterprise Edition (100 users)", price: "$75,000.00" },
+                    { name: "Premier Success Plan", price: "$10,000.00" }
+                ]
+            },
+            {
+                id: "PO-7782912",
+                vendor: "WeWork",
+                title: "Q4 Flex Office Space",
+                amount: "$12,400.00",
+                currency: "USD",
+                date: "Oct 14, 2026",
+                requestor: "Elena Rostova",
+                department: "HR",
+                priority: "Normal",
+                priorityColor: "sap-success",
+                items: [
+                    { name: "All Access Passes x 20", price: "$6,000.00" },
+                    { name: "Dedicated Desks x 8", price: "$6,400.00" }
+                ]
+            },
+            {
+                id: "PO-7782913",
+                vendor: "Amazon Web Services",
+                title: "Cloud Infrastructure - Sept",
+                amount: "$210,890.50",
+                currency: "USD",
+                date: "Oct 14, 2026",
+                requestor: "David Alaba",
+                department: "DevOps",
+                priority: "Urgent",
+                priorityColor: "sap-error",
+                items: [
+                    { name: "EC2 Compute Instances", price: "$145,000.00" },
+                    { name: "S3 Storage & Data Transfer", price: "$65,890.50" }
+                ]
+            },
+            {
+                id: "PO-7782914",
+                vendor: "Ernst & Young",
+                title: "Q3 Audit Consulting",
+                amount: "$45,000.00",
+                currency: "USD",
+                date: "Oct 15, 2026",
+                requestor: "Amanda Smith",
+                department: "Finance",
+                priority: "Medium",
+                priorityColor: "sap-warning",
+                items: [
+                    { name: "Risk Advisory Services (150h)", price: "$45,000.00" }
+                ]
+            }
+        ];
+
+        let pendingPOs = [...initialPOs];
+        let processedHistory = [];
+
+        const container = document.getElementById('card-container');
+        let cardElement = null;
+        let isDragging = false;
+        let startX = 0, startY = 0;
+        let currentX = 0, currentY = 0;
+        const SWIPE_THRESHOLD = 110;
+
+        // --- View Navigation ---
+        window.switchView = function(viewName) {
+            document.querySelectorAll('.view-container').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`view-${viewName}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`nav-${viewName}`).classList.add('active');
+
+            if(viewName === 'history') {
+                renderHistoryView();
+            }
+        };
+
+        // --- Core Rendering Logic ---
+        function updateCounter() {
+            document.getElementById('pending-count').textContent = pendingPOs.length;
+        }
+
+        function renderCards() {
+            // Remove existing
+            document.querySelectorAll('.swipe-card').forEach(c => c.remove());
+            updateCounter();
+
+            // Render top 3 for stacking effect
+            const cardsToRender = pendingPOs.slice(0, 3).reverse();
+
+            cardsToRender.forEach((po, index) => {
+                const card = document.createElement('div');
+                card.className = 'swipe-card flex flex-col p-0';
+
+                const isTopCard = index === cardsToRender.length - 1;
+                if (isTopCard) card.id = 'top-card';
+
+                // Stack styling
+                const scale = isTopCard ? 1 : 1 - ((cardsToRender.length - 1 - index) * 0.04);
+                const translateY = isTopCard ? 0 : ((cardsToRender.length - 1 - index) * -12);
+
+                card.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+                card.style.zIndex = index + 10;
+
+                if (!isTopCard) {
+                    card.style.filter = `brightness(${1 - (cardsToRender.length - 1 - index) * 0.05})`;
+                }
+
+                // Construct PO Item UI (Fiori Style)
+                const itemsHtml = po.items.map(item => `
+                    <div class="flex justify-between py-2 border-b border-gray-100 last:border-0 text-sm">
+                        <span class="text-gray-700 truncate pr-4">${item.name}</span>
+                        <span class="text-sap-text font-medium whitespace-nowrap">${item.price}</span>
+                    </div>
+                `).join('');
+
+                card.innerHTML = `
+                    <div class="stamp approve">APPROVED</div>
+                    <div class="stamp reject">REJECTED</div>
+
+                    <!-- Card Header -->
+                    <div class="p-5 border-b border-gray-100 bg-gray-50/50 rounded-t-lg">
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="text-xs font-bold text-gray-500 tracking-wider">${po.id}</span>
+                            <span class="text-xs font-bold px-2 py-1 rounded bg-gray-100 text-${po.priorityColor}">${po.priority}</span>
+                        </div>
+                        <h2 class="text-xl font-bold text-sap-text leading-tight mt-2">${po.title}</h2>
+                        <p class="text-sm text-sap-blue font-medium mt-1">${po.vendor}</p>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="p-5 flex-grow flex flex-col">
+                        <div class="mb-4">
+                            <span class="text-xs text-gray-500 uppercase tracking-wide">Total Value</span>
+                            <div class="text-3xl font-light text-sap-text">${po.amount} <span class="text-lg text-gray-400">${po.currency}</span></div>
+                        </div>
+
+                        <div class="bg-gray-50 rounded p-3 mb-4 flex-grow">
+                            <div class="text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide border-b border-gray-200 pb-1">Line Items</div>
+                            ${itemsHtml}
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 mt-auto pt-4 border-t border-gray-100">
+                            <div>
+                                <span class="block text-xs text-gray-400 mb-1">Requested By</span>
+                                <span class="block text-sm font-medium text-sap-text flex items-center gap-2">
+                                    <i class="fa-solid fa-user-circle text-gray-300"></i> ${po.requestor}
+                                </span>
+                            </div>
+                            <div>
+                                <span class="block text-xs text-gray-400 mb-1">Cost Center</span>
+                                <span class="block text-sm font-medium text-sap-text"><i class="fa-solid fa-building text-gray-300 mr-1"></i> ${po.department}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                container.insertBefore(card, container.querySelector('.action-buttons'));
+
+                if (isTopCard) {
+                    attachEvents(card);
+                }
+            });
+        }
+
+        // --- Interaction Logic ---
+        function attachEvents(card) {
+            cardElement = card;
+            card.addEventListener('pointerdown', handlePointerDown);
+            window.addEventListener('pointermove', handlePointerMove);
+            window.addEventListener('pointerup', handlePointerUp);
+            window.addEventListener('pointercancel', handlePointerUp);
+        }
+
+        function removeEvents() {
+            if (cardElement) {
+                cardElement.removeEventListener('pointerdown', handlePointerDown);
+            }
+            window.removeEventListener('pointermove', handlePointerMove);
+            window.removeEventListener('pointerup', handlePointerUp);
+            window.removeEventListener('pointercancel', handlePointerUp);
+        }
+
+        function handlePointerDown(e) {
+            if (cardElement.style.transition.includes('transform 0.5s')) return;
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            cardElement.classList.add('dragging');
+        }
+
+        function handlePointerMove(e) {
+            if (!isDragging) return;
+
+            currentX = e.clientX - startX;
+            currentY = e.clientY - startY;
+            const rotate = currentX * 0.04;
+
+            cardElement.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${rotate}deg)`;
+
+            const approveStamp = cardElement.querySelector('.stamp.approve');
+            const rejectStamp = cardElement.querySelector('.stamp.reject');
+
+            if (currentX > 0) {
+                approveStamp.style.opacity = Math.min(currentX / 100, 1);
+                rejectStamp.style.opacity = 0;
+                cardElement.style.borderColor = `rgba(16, 126, 62, ${Math.min(currentX / 100, 1)})`; // sap-success
+            } else {
+                rejectStamp.style.opacity = Math.min(Math.abs(currentX) / 100, 1);
+                approveStamp.style.opacity = 0;
+                cardElement.style.borderColor = `rgba(187, 0, 0, ${Math.min(Math.abs(currentX) / 100, 1)})`; // sap-error
+            }
+        }
+
+        function handlePointerUp(e) {
+            if (!isDragging) return;
+            isDragging = false;
+            cardElement.classList.remove('dragging');
+
+            if (currentX > SWIPE_THRESHOLD) {
+                animateOut('right');
+            } else if (currentX < -SWIPE_THRESHOLD) {
+                animateOut('left');
+            } else {
+                // Snap back
+                cardElement.style.transform = `translate(0px, 0px) rotate(0deg)`;
+                cardElement.style.borderColor = '#FFFFFF';
+                cardElement.querySelector('.stamp.approve').style.opacity = 0;
+                cardElement.querySelector('.stamp.reject').style.opacity = 0;
+            }
+
+            currentX = 0;
+            currentY = 0;
+        }
+
+        function animateOut(direction) {
+            removeEvents();
+
+            const screenWidth = window.innerWidth;
+            const targetX = direction === 'right' ? screenWidth + 100 : -screenWidth - 100;
+            const targetY = currentY + (direction === 'right' ? 30 : -30);
+            const rotate = direction === 'right' ? 25 : -25;
+
+            cardElement.style.transition = 'transform 0.4s ease-out';
+            cardElement.style.transform = `translate(${targetX}px, ${targetY}px) rotate(${rotate}deg)`;
+
+            const activePO = pendingPOs[0];
+
+            if (direction === 'right') {
+                cardElement.querySelector('.stamp.approve').style.opacity = 1;
+                cardElement.style.borderColor = '#107E3E';
+                processItem(activePO, 'Approved');
+            } else {
+                cardElement.querySelector('.stamp.reject').style.opacity = 1;
+                cardElement.style.borderColor = '#BB0000';
+                processItem(activePO, 'Rejected');
+            }
+
+            setTimeout(() => {
+                pendingPOs.shift();
+                renderCards();
+                cardElement = null; // Clean up reference safely AFTER animation
+            }, 350);
+        }
+
+        window.handleManualAction = function(direction) {
+            const card = document.getElementById('top-card');
+            if (!card) return;
+            cardElement = card;
+
+            if(direction === 'right') {
+                card.querySelector('.stamp.approve').style.opacity = 1;
+            } else {
+                card.querySelector('.stamp.reject').style.opacity = 1;
+            }
+            animateOut(direction);
+        };
+
+        // --- History Logic ---
+        function processItem(po, status) {
+            processedHistory.unshift({
+                ...po,
+                processStatus: status,
+                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+            // Show badge on history nav if we aren't looking at it
+            if(document.getElementById('view-history').classList.contains('hidden')){
+                const nav = document.getElementById('nav-history');
+                nav.classList.add('text-sap-blue'); // Highlight it lightly
+                setTimeout(() => nav.classList.remove('text-sap-blue'), 1000);
+            }
+        }
+
+        function renderHistoryView() {
+            const historyContainer = document.getElementById('history-list');
+
+            if (processedHistory.length === 0) {
+                historyContainer.innerHTML = '<div class="p-8 text-center text-gray-500"><i class="fa-solid fa-box-archive text-3xl mb-3 text-gray-300 block"></i> No items processed yet.</div>';
+                return;
+            }
+
+            historyContainer.innerHTML = processedHistory.map(item => {
+                const isApproved = item.processStatus === 'Approved';
+                const statusColor = isApproved ? 'text-sap-success' : 'text-sap-error';
+                const statusBg = isApproved ? 'bg-green-50' : 'bg-red-50';
+                const icon = isApproved ? 'fa-check-circle' : 'fa-xmark-circle';
+
+                return `
+                <div class="fiori-list-item flex-row gap-4 items-start ${statusBg} border-l-4 ${isApproved ? 'border-l-sap-success' : 'border-l-sap-error'}">
+                    <div class="mt-1 ${statusColor}">
+                        <i class="fa-solid ${icon} text-xl"></i>
+                    </div>
+                    <div class="flex-grow">
+                        <div class="flex justify-between items-start">
+                            <span class="text-sm font-bold text-sap-text">${item.title}</span>
+                            <span class="text-xs font-bold ${statusColor} ml-2 whitespace-nowrap">${item.processStatus}</span>
+                        </div>
+                        <div class="text-xs text-sap-blue font-medium mt-0.5">${item.vendor} • ${item.id}</div>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-sm font-semibold">${item.amount}</span>
+                            <span class="text-xs text-gray-500"><i class="fa-regular fa-clock"></i> ${item.timestamp}</span>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        window.resetApp = function() {
+            pendingPOs = [...initialPOs];
+            processedHistory = [];
+            renderCards();
+            updateCounter();
+        };
+
+        // Init
+        window.onload = () => {
+            renderCards();
+        };
+    </script>
+</body>
+</html>
