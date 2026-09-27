@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiori PO Approval Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=72:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sap: {
+                            blue: '#0070F2',
+                            darkblue: '#354A5F',
+                            bg: '#F2F2F2',
+                            card: '#FFFFFF',
+                            text: '#32363A',
+                            success: '#107E3E',
+                            error: '#BB0000',
+                            warning: '#E9730C',
+                            border: '#D9D9D9'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"72"', 'Inter', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'fiori': '0 0 0 1px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.08)',
+                        'fiori-hover': '0 0 0 1px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.12)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #F2F2F2; /* SAP UI5 Shell Background */
+            margin: 0;
+            overflow: hidden; /* Main window won't scroll, inner areas will */
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            color: #32363A;
+        }
+
+        /* Fiori Shell Header */
+        .fiori-header {
+            height: 44px;
+            background-color: #354A5F;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+            z-index: 100;
+            flex-shrink: 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .header-logo {
+            font-weight: bold;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .header-icon {
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .header-icon:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        /* Main Desktop Layout Grid */
+        .main-layout {
+            display: flex;
+            flex-grow: 1;
+            overflow: hidden;
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Side Navigation */
+        .side-nav {
+            width: 250px;
+            background-color: #FFFFFF;
+            border-right: 1px solid #D9D9D9;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            z-index: 40;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-group-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #666;
+            font-weight: 600;
+            padding: 1.5rem 1rem 0.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            color: #32363A;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background-color: #F7F7F7;
+        }
+
+        .nav-item.active {
+            background-color: #F0F7FF;
+            color: #0070F2;
+            border-left-color: #0070F2;
+            font-weight: 600;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+            color: inherit;
+            opacity: 0.7;
+        }
+
+        .nav-item.active i {
+            opacity: 1;
+        }
+
+        .badge {
+            margin-left: auto;
+            background-color: #0070F2;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background-color: transparent;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .view-section {
+            display: none;
+            height: 100%;
+            flex-direction: column;
+        }
+
+        .view-section.active {
+            display: flex;
+        }
+
+        /* Dashboard Header */
+        .dashboard-header {
+            margin-bottom: 2rem;
+        }
+
+        /* Interactive Card Area (Home View) */
+        .approval-workspace {
+            display: flex;
+            gap: 2rem;
+            flex-grow: 1;
+            align-items: stretch;
+        }
+
+        /* Center Column: The Swipe Card */
+        .card-stage-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            min-width: 450px;
+        }
+
+        .card-stack {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 600px;
+            perspective: 1000px;
+        }
+
+        .swipe-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #FFFFFF;
+            border-radius: 4px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-direction: column;
+            will-change: transform;
+            touch-action: none;
+            user-select: none;
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            border-top: 4px solid #0070F2;
+            border-left: 1px solid #E5E7EB;
+            border-right: 1px solid #E5E7EB;
+            border-bottom: 1px solid #E5E7EB;
+            overflow: hidden;
+        }
+
+        .swipe-card.dragging {
+            transition: none;
+            cursor: grabbing;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Fiori Card Internal Layout */
+        .card-header {
+            padding: 1.5rem;
+            background-color: #FAFAFA;
+            border-bottom: 1px solid #E4E4E4;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* Status Stamps */
+        .stamp {
+            position: absolute;
+            top: 40px;
+            padding: 8px 20px;
+            border: 4px solid;
+            border-radius: 4px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            opacity: 0;
+            z-index: 10;
+            transform: scale(0.8);
+            transition: opacity 0.2s, transform 0.2s;
+            pointer-events: none;
+            letter-spacing: 2px;
+            background: rgba(255,255,255,0.9);
+        }
+
+        .stamp.approve {
+            color: #107E3E;
+            border-color: #107E3E;
+            left: 50%;
+            transform: translateX(-50%) rotate(-10deg) scale(0.8);
+        }
+
+        .stamp.reject {
+            color: #BB0000;
+            border-color: #BB0000;
+            left: 50%;
+            transform: translateX(-50%) rotate(10deg) scale(0.8);
+        }
+
+        /* Action Buttons Area */
+        .action-tray {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+            z-index: 40;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0.75rem 2rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            min-width: 160px;
+        }
+
+        .action-btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-reject {
+            background-color: #FFFFFF;
+            color: #BB0000;
+            border-color: #BB0000;
+        }
+        .btn-reject:hover { background-color: #FFF0F0; }
+
+        .btn-approve {
+            background-color: #107E3E;
+            color: #FFFFFF;
+        }
+        .btn-approve:hover { background-color: #0E6B34; box-shadow: 0 4px 8px rgba(16, 126, 62, 0.2); }
+
+
+        /* Right Column: Context/Details */
+        .context-panel {
+            width: 350px;
+            background: #FFFFFF;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .context-header {
+            padding: 1rem;
+            border-bottom: 1px solid #D9D9D9;
+            font-weight: 600;
+            background: #FAFAFA;
+        }
+
+        .context-body {
+            padding: 1rem;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        /* History View Styles */
+        .fiori-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #FFF;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .fiori-table th {
+            background-color: #FAFAFA;
+            color: #666;
+            font-weight: normal;
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid #E4E4E4;
+            font-size: 0.85rem;
+        }
+
+        .fiori-table td {
+            padding: 16px;
+            border-bottom: 1px solid #F0F0F0;
+            vertical-align: middle;
+        }
+
+        .fiori-table tr:hover {
+            background-color: #F8F8F8;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .approval-workspace { flex-direction: column; }
+            .context-panel { width: 100%; height: auto; min-height: 200px; }
+            .card-stack { height: 500px; }
+        }
+
+        @media (max-width: 768px) {
+            .side-nav { position: absolute; height: calc(100vh - 44px); transform: translateX(-100%); }
+            .side-nav.open { transform: translateX(0); box-shadow: 4px 0 16px rgba(0,0,0,0.1); }
+            .menu-toggle { display: block !important; }
+        }
+
+        .menu-toggle { display: none; }
+    </style>
+</head>
+<body>
+    <!-- SAP Fiori Shell Header -->
+    <header class="fiori-header">
+        <div class="header-logo">
+            <button class="menu-toggle header-icon" onclick="toggleMenu()" style="margin-right: 8px;">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="bg-blue-500 text-white font-bold text-xs px-2 py-1 rounded shadow-inner" style="background-color: #0070F2;">
+                SAP
+            </div>
+            <span>My Inbox</span>
+        </div>
+        <div class="header-actions">
+            <div class="header-icon" title="Search"><i class="fa-solid fa-magnifying-glass"></i></div>
+            <div class="header-icon" title="Notifications"><i class="fa-regular fa-bell"></i></div>
+            <div class="header-icon" title="User Profile">
+                <div class="w-7 h-7 rounded-full bg-blue-200 text-sap-darkblue flex items-center justify-center font-bold text-xs border border-white">
+                    JD
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <!-- Side Navigation -->
+        <nav class="side-nav" id="sideNav">
+            <div class="nav-group-title">Approvals</div>
+            <div class="nav-item active" onclick="switchView('home')" id="nav-home">
+                <i class="fa-solid fa-inbox"></i>
+                Purchase Orders
+                <span class="badge" id="pending-badge">0</span>
+            </div>
+            <div class="nav-item" onclick="switchView('history')" id="nav-history">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                Outbox
+            </div>
+
+            <div class="nav-group-title mt-4">Procurement</div>
+            <div class="nav-item text-gray-400">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+                Invoices
+            </div>
+            <div class="nav-item text-gray-400">
+                <i class="fa-solid fa-file-contract"></i>
+                Contracts
+            </div>
+
+            <div class="mt-auto border-t border-gray-200">
+                <div class="nav-item" onclick="switchView('settings')" id="nav-settings">
+                    <i class="fa-solid fa-gear"></i>
+                    Settings
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="content-area">
+
+            <!-- VIEW: Home (Queue) -->
+            <div id="view-home" class="view-section active">
+                <div class="dashboard-header flex justify-between items-end">
+                    <div>
+                        <h1 class="text-2xl font-normal text-sap-text mb-1">Purchase Order Approvals</h1>
+                        <p class="text-sm text-gray-500">Review and action pending requests</p>
+                    </div>
+                    <div class="text-sm text-gray-500">
+                        <span id="header-count-text">Loading...</span>
+                    </div>
+                </div>
+
+                <div class="approval-workspace">
+                    <!-- Left/Center: Swipe Area -->
+                    <div class="card-stage-container">
+
+                        <div class="card-stack" id="card-container">
+                            <!-- Empty State (behind cards) -->
+                            <div class="absolute inset-0 flex flex-col items-center justify-center text-center bg-white border border-gray-200 rounded-lg shadow-sm z-0">
+                                <div class="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mb-6 text-sap-success">
+                                    <i class="fa-solid fa-check text-5xl"></i>
+                                </div>
+                                <h3 class="text-xl font-normal text-sap-text mb-2">Inbox is Empty</h3>
+                                <p class="text-gray-500 max-w-md">You have processed all pending purchase orders. Great job keeping the business moving!</p>
+                                <button onclick="resetApp()" class="mt-8 px-6 py-2 border border-sap-blue text-sap-blue font-semibold rounded hover:bg-blue-50 transition">
+                                    Load Test Data
+                                </button>
+                            </div>
+
+                            <!-- Cards will be injected here via JS -->
+                        </div>
+
+                        <!-- Action Buttons Tray -->
+                        <div class="action-tray">
+                            <button class="action-btn btn-reject shadow-sm" onclick="handleManualAction('left')" title="Reject (Swipe Left)">
+                                <i class="fa-solid fa-xmark"></i> Reject
+                            </button>
+                            <button class="action-btn btn-approve shadow-sm" onclick="handleManualAction('right')" title="Approve (Swipe Right)">
+                                <i class="fa-solid fa-check"></i> Approve
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-4 text-center">Hint: You can click and drag cards to sort quickly.</p>
+                    </div>
+
+                    <!-- Right: Context/Details Panel -->
+                    <div class="context-panel hidden lg:flex">
+                        <div class="context-header">
+                            Context & Analytics
+                        </div>
+                        <div class="context-body">
+                            <!-- Dynamic Content based on Top Card -->
+                            <div id="context-content" class="h-full flex flex-col">
+                                <div class="text-center text-gray-400 mt-10">Select a card to view context</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: History -->
+            <div id="view-history" class="view-section">
+                <div class="dashboard-header">
+                    <h1 class="text-2xl font-normal text-sap-text mb-1">Processed Items (Outbox)</h1>
+                    <p class="text-sm text-gray-500">Recently approved or rejected purchase orders</p>
+                </div>
+
+                <div class="bg-white rounded border border-gray-200 shadow-sm overflow-hidden flex-grow">
+                    <div class="overflow-x-auto">
+                        <table class="fiori-table">
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>PO Number</th>
+                                    <th>Description</th>
+                                    <th>Vendor</th>
+                                    <th>Value</th>
+                                    <th>Processed Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-table-body">
+                                <!-- History rows injected here -->
+                                <tr>
+                                    <td colspan="6" class="text-center text-gray-500 py-10">No items processed yet.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: Settings -->
+            <div id="view-settings" class="view-section">
+                <div class="dashboard-header">
+                    <h1 class="text-2xl font-normal text-sap-text mb-1">Settings</h1>
+                </div>
+                <div class="bg-white p-8 rounded border border-gray-200 shadow-sm max-w-2xl">
+                    <p class="text-gray-500 mb-6">User preferences and system configuration.</p>
+
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Default Action on Swipe Right</label>
+                            <select class="w-full border border-gray-300 rounded p-2 focus:border-sap-blue focus:outline-none">
+                                <option>Approve immediately</option>
+                                <option>Require confirmation</option>
+                                <option>Add note before approving</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Notification Preferences</label>
+                            <div class="flex items-center gap-2 mb-2">
+                                <input type="checkbox" id="notif1" checked> <label for="notif1">Email on new high-priority PO</label>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" id="notif2"> <label for="notif2">Daily digest email</label>
+                            </div>
+                        </div>
+                        <div class="pt-4 border-t border-gray-100">
+                            <button class="px-4 py-2 bg-sap-blue text-white rounded font-semibold hover:bg-blue-700 transition">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // Mock Purchase Order Data (Enhanced for Desktop)
+        const initialPOs = [
+            {
+                id: "PO-7782910",
+                vendor: "Dell Technologies",
+                title: "Developer Workstation Refresh",
+                amount: "124,500.00",
+                currency: "USD",
+                date: "Oct 12, 2026",
+                requestor: "Sarah Jenkins",
+                department: "Engineering",
+                costCenter: "CC-4091-ENG",
+                priority: "High",
+                priorityColor: "sap-error",
+                budgetUsed: 82, // percentage
+                items: [
+                    { name: "Precision 5000 Series (x40)", qty: 40, price: "$2,750.00", total: "$110,000.00" },
+                    { name: "UltraSharp 27 Monitors (x40)", qty: 40, price: "$362.50", total: "$14,500.00" }
+                ],
+                notes: "Replacement of hardware older than 3 years for core platform team."
+            },
+            {
+                id: "PO-7782911",
+                vendor: "Salesforce Inc.",
+                title: "Annual CRM License Renewal",
+                amount: "85,000.00",
+                currency: "USD",
+                date: "Oct 13, 2026",
+                requestor: "Michael Chang",
+                department: "Sales Global",
+                costCenter: "CC-2001-SLS",
+                priority: "Normal",
+                priorityColor: "sap-success",
+                budgetUsed: 45,
+                items: [
+                    { name: "Enterprise Edition Licenses", qty: 100, price: "$750.00", total: "$75,000.00" },
+                    { name: "Premier Success Plan", qty: 1, price: "$10,000.00", total: "$10,000.00" }
+                ],
+                notes: "Standard annual renewal. Terms negotiated by procurement in Q3."
+            },
+            {
+                id: "PO-7782912",
+                vendor: "WeWork",
+                title: "Q4 Flex Office Space",
+                amount: "12,400.00",
+                currency: "EUR",
+                date: "Oct 14, 2026",
+                requestor: "Elena Rostova",
+                department: "Human Resources",
+                costCenter: "CC-9011-HR",
+                priority: "Normal",
+                priorityColor: "sap-success",
+                budgetUsed: 95,
+                items: [
+                    { name: "All Access Passes", qty: 20, price: "€300.00", total: "€6,000.00" },
+                    { name: "Dedicated Desks (Berlin)", qty: 8, price: "€800.00", total: "€6,400.00" }
+                ],
+                notes: "Temporary space needed while Frankfurt office renovation completes."
+            },
+            {
+                id: "PO-7782913",
+                vendor: "Amazon Web Services",
+                title: "Cloud Infrastructure - Sept Overage",
+                amount: "210,890.50",
+                currency: "USD",
+                date: "Oct 14, 2026",
+                requestor: "David Alaba",
+                department: "IT Infrastructure",
+                costCenter: "CC-4100-IT",
+                priority: "Urgent",
+                priorityColor: "sap-error",
+                budgetUsed: 110,
+                items: [
+                    { name: "EC2 Compute Instances", qty: 1, price: "$145,000.00", total: "$145,000.00" },
+                    { name: "S3 Storage & Data Transfer", qty: 1, price: "$65,890.50", total: "$65,890.50" }
+                ],
+                notes: "Warning: This PO exceeds the monthly allocated budget by 10%. Due to spike in ML training jobs."
+            },
+            {
+                id: "PO-7782914",
+                vendor: "Ernst & Young",
+                title: "Q3 Audit Consulting Services",
+                amount: "45,000.00",
+                currency: "USD",
+                date: "Oct 15, 2026",
+                requestor: "Amanda Smith",
+                department: "Finance",
+                costCenter: "CC-1050-FIN",
+                priority: "Medium",
+                priorityColor: "sap-warning",
+                budgetUsed: 60,
+                items: [
+                    { name: "Risk Advisory Services", qty: 150, price: "$300.00/hr", total: "$45,000.00" }
+                ],
+                notes: "Pre-approved by CFO. Statement of Work attached in system."
+            }
+        ];
+
+        let pendingPOs = [...initialPOs];
+        let processedHistory = [];
+
+        const container = document.getElementById('card-container');
+        let cardElement = null;
+        let isDragging = false;
+        let startX = 0, startY = 0;
+        let currentX = 0, currentY = 0;
+        // Require a wider swipe on desktop for safety
+        const SWIPE_THRESHOLD = 150;
+
+        // --- STREAMING_CHUNK:Navigation and View Management ---
+        function toggleMenu() {
+            document.getElementById('sideNav').classList.toggle('open');
+        }
+
+        window.switchView = function(viewName) {
+            // Hide all views
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            // Show target view
+            document.getElementById(`view-${viewName}`).classList.add('active');
+
+            // Update Nav State
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`nav-${viewName}`).classList.add('active');
+
+            // Close mobile menu if open
+            document.getElementById('sideNav').classList.remove('open');
+
+            if(viewName === 'history') {
+                renderHistoryTable();
+            }
+        };
+
+        // --- STREAMING_CHUNK:Rendering Logic (Desktop Cards and Context) ---
+        function updateCounters() {
+            const count = pendingPOs.length;
+            document.getElementById('pending-badge').textContent = count;
+
+            const headerText = count > 0
+                ? `${count} item${count !== 1 ? 's' : ''} to review`
+                : "All items reviewed";
+            document.getElementById('header-count-text').textContent = headerText;
+
+            // Hide action buttons if no cards
+            const tray = document.querySelector('.action-tray');
+            if(count === 0) {
+                tray.style.opacity = '0';
+                tray.style.pointerEvents = 'none';
+                updateContextPanel(null);
+            } else {
+                tray.style.opacity = '1';
+                tray.style.pointerEvents = 'auto';
+            }
+        }
+
+        function updateContextPanel(po) {
+            const panel = document.getElementById('context-content');
+            if (!po) {
+                panel.innerHTML = '<div class="text-center text-gray-400 mt-10">Inbox empty.</div>';
+                return;
+            }
+
+            const budgetColor = po.budgetUsed > 100 ? 'text-sap-error' : (po.budgetUsed > 85 ? 'text-sap-warning' : 'text-sap-success');
+            const budgetBarColor = po.budgetUsed > 100 ? 'bg-red-500' : (po.budgetUsed > 85 ? 'bg-orange-500' : 'bg-green-500');
+            const cappedBudget = Math.min(po.budgetUsed, 100);
+
+            panel.innerHTML = `
+                <div class="mb-6">
+                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Budget Allocation</h4>
+                    <div class="flex justify-between items-end mb-1">
+                        <span class="text-sm text-gray-600">${po.department}</span>
+                        <span class="text-sm font-bold ${budgetColor}">${po.budgetUsed}% used</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="${budgetBarColor} h-2 rounded-full" style="width: ${cappedBudget}%"></div>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Vendor Information</h4>
+                    <div class="bg-gray-50 p-3 rounded border border-gray-100">
+                        <div class="font-semibold text-sap-text">${po.vendor}</div>
+                        <div class="text-sm text-gray-500 mt-1">Vendor ID: V-${Math.floor(Math.random() * 90000) + 10000}</div>
+                        <div class="text-sm text-blue-600 mt-2 cursor-pointer hover:underline">View Vendor Scorecard</div>
+                    </div>
+                </div>
+
+                <div class="mb-6 flex-grow">
+                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Requestor Notes</h4>
+                    <div class="p-3 bg-blue-50 border-l-4 border-sap-blue text-sm text-gray-700 italic">
+                        "${po.notes}"
+                    </div>
+                </div>
+
+                <div class="mt-auto pt-4 border-t border-gray-100 text-xs text-gray-400 text-center">
+                    Created: ${po.date}
+                </div>
+            `;
+        }
+
+        function renderCards() {
+            document.querySelectorAll('.swipe-card').forEach(c => c.remove());
+            updateCounters();
+
+            // Render top 3 for stacking effect
+            const cardsToRender = pendingPOs.slice(0, 3).reverse();
+
+            if(cardsToRender.length > 0) {
+                 updateContextPanel(pendingPOs[0]); // Update right panel with top card data
+            }
+
+            cardsToRender.forEach((po, index) => {
+                const card = document.createElement('div');
+                card.className = 'swipe-card';
+
+                const isTopCard = index === cardsToRender.length - 1;
+                if (isTopCard) card.id = 'top-card';
+
+                // Desktop Stack styling - tighter stacking than mobile
+                const scale = isTopCard ? 1 : 1 - ((cardsToRender.length - 1 - index) * 0.03);
+                const translateY = isTopCard ? 0 : ((cardsToRender.length - 1 - index) * -8);
+
+                card.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+                card.style.zIndex = index + 10;
+
+                if (!isTopCard) {
+                    card.style.filter = `brightness(${1 - (cardsToRender.length - 1 - index) * 0.03})`;
+                }
+
+                const itemsHtml = po.items.map(item => `
+                    <tr class="border-b border-gray-100 last:border-0 text-sm">
+                        <td class="py-2 text-gray-700">${item.name}</td>
+                        <td class="py-2 text-right text-gray-500">${item.qty}</td>
+                        <td class="py-2 text-right font-medium text-sap-text">${item.total}</td>
+                    </tr>
+                `).join('');
+
+                card.innerHTML = `
+                    <div class="stamp approve">APPROVED</div>
+                    <div class="stamp reject">REJECTED</div>
+
+                    <!-- Card Header -->
+                    <div class="card-header">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-sm font-semibold text-gray-500 bg-gray-200 px-2 py-0.5 rounded">${po.id}</span>
+                            <span class="text-xs font-bold px-2 py-1 rounded bg-gray-100 text-${po.priorityColor}">${po.priority} Priority</span>
+                        </div>
+                        <h2 class="text-2xl font-bold text-sap-text leading-tight">${po.title}</h2>
+                        <div class="text-sap-blue font-medium mt-1"><i class="fa-solid fa-building mr-1"></i> ${po.vendor}</div>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="card-body">
+                        <div class="mb-6 flex justify-between items-end">
+                            <div>
+                                <span class="text-xs font-bold text-gray-400 uppercase tracking-wide">Total Value</span>
+                                <div class="text-4xl font-light text-sap-text mt-1">${po.amount} <span class="text-xl text-gray-400 font-normal">${po.currency}</span></div>
+                            </div>
+                            <div class="text-right">
+                                <span class="block text-xs font-bold text-gray-400 uppercase tracking-wide mb-1">Cost Center</span>
+                                <span class="text-sm font-medium text-sap-text bg-gray-100 px-2 py-1 rounded border border-gray-200">${po.costCenter}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex-grow">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="text-xs font-bold text-gray-400 uppercase tracking-wide border-b border-gray-200">
+                                        <th class="text-left pb-2">Line Items</th>
+                                        <th class="text-right pb-2">Qty</th>
+                                        <th class="text-right pb-2">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${itemsHtml}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="mt-6 pt-4 border-t border-gray-100 flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold border border-gray-300">
+                                ${po.requestor.split(' ').map(n=>n[0]).join('')}
+                            </div>
+                            <div>
+                                <span class="block text-xs text-gray-500">Requested By</span>
+                                <span class="block text-sm font-semibold text-sap-text">${po.requestor}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+
+                if (isTopCard) {
+                    attachEvents(card);
+                }
+            });
+        }
+
+        // --- STREAMING_CHUNK:Interaction Logic (Swiping & Physics) ---
+        function attachEvents(card) {
+            cardElement = card;
+            card.addEventListener('pointerdown', handlePointerDown);
+            window.addEventListener('pointermove', handlePointerMove);
+            window.addEventListener('pointerup', handlePointerUp);
+            window.addEventListener('pointercancel', handlePointerUp);
+        }
+
+        function removeEvents() {
+            if (cardElement) {
+                cardElement.removeEventListener('pointerdown', handlePointerDown);
+            }
+            window.removeEventListener('pointermove', handlePointerMove);
+            window.removeEventListener('pointerup', handlePointerUp);
+            window.removeEventListener('pointercancel', handlePointerUp);
+        }
+
+        function handlePointerDown(e) {
+            // Prevent interference with native dragging if they click text
+            if(e.target.tagName.toLowerCase() === 'td' || e.target.tagName.toLowerCase() === 'th') return;
+
+            if (cardElement.style.transition.includes('transform 0.')) return; // Prevent grabbing mid-animation
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            cardElement.classList.add('dragging');
+        }
+
+        function handlePointerMove(e) {
+            if (!isDragging) return;
+            e.preventDefault(); // Prevent text selection while dragging
+
+            currentX = e.clientX - startX;
+            currentY = e.clientY - startY;
+            // Less rotation on desktop feels more solid
+            const rotate = currentX * 0.025;
+
+            cardElement.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${rotate}deg)`;
+
+            const approveStamp = cardElement.querySelector('.stamp.approve');
+            const rejectStamp = cardElement.querySelector('.stamp.reject');
+
+            if (currentX > 0) {
+                approveStamp.style.opacity = Math.min(currentX / (SWIPE_THRESHOLD * 0.8), 1);
+                rejectStamp.style.opacity = 0;
+                cardElement.style.borderColor = `rgba(16, 126, 62, ${Math.min(currentX / 100, 1)})`;
+            } else {
+                rejectStamp.style.opacity = Math.min(Math.abs(currentX) / (SWIPE_THRESHOLD * 0.8), 1);
+                approveStamp.style.opacity = 0;
+                cardElement.style.borderColor = `rgba(187, 0, 0, ${Math.min(Math.abs(currentX) / 100, 1)})`;
+            }
+        }
+
+        function handlePointerUp(e) {
+            if (!isDragging) return;
+            isDragging = false;
+            cardElement.classList.remove('dragging');
+
+            if (currentX > SWIPE_THRESHOLD) {
+                animateOut('right');
+            } else if (currentX < -SWIPE_THRESHOLD) {
+                animateOut('left');
+            } else {
+                // Snap back
+                cardElement.style.transform = `translate(0px, 0px) rotate(0deg)`;
+                cardElement.style.borderColor = 'transparent';
+                cardElement.style.borderTopColor = '#0070F2'; // Restore standard top border
+                cardElement.style.borderLeftColor = '#E5E7EB';
+                cardElement.style.borderRightColor = '#E5E7EB';
+                cardElement.style.borderBottomColor = '#E5E7EB';
+                cardElement.querySelector('.stamp.approve').style.opacity = 0;
+                cardElement.querySelector('.stamp.reject').style.opacity = 0;
+            }
+
+            currentX = 0;
+            currentY = 0;
+        }
+
+        function animateOut(direction) {
+            removeEvents();
+
+            const screenWidth = window.innerWidth;
+            const targetX = direction === 'right' ? screenWidth : -screenWidth;
+            const targetY = currentY + (direction === 'right' ? 50 : -50);
+            const rotate = direction === 'right' ? 30 : -30;
+
+            cardElement.style.transition = 'transform 0.5s cubic-bezier(0.1, 0.9, 0.2, 1)';
+            cardElement.style.transform = `translate(${targetX}px, ${targetY}px) rotate(${rotate}deg)`;
+
+            const activePO = pendingPOs[0];
+
+            if (direction === 'right') {
+                cardElement.querySelector('.stamp.approve').style.opacity = 1;
+                cardElement.style.borderColor = '#107E3E';
+                processItem(activePO, 'Approved');
+            } else {
+                cardElement.querySelector('.stamp.reject').style.opacity = 1;
+                cardElement.style.borderColor = '#BB0000';
+                processItem(activePO, 'Rejected');
+            }
+
+            setTimeout(() => {
+                pendingPOs.shift();
+                renderCards();
+                cardElement = null;
+            }, 400); // Wait for animation to mostly finish before re-rendering
+        }
+
+        window.handleManualAction = function(direction) {
+            const card = document.getElementById('top-card');
+            if (!card) return;
+            cardElement = card;
+
+            if(direction === 'right') {
+                card.querySelector('.stamp.approve').style.opacity = 1;
+                card.style.borderColor = '#107E3E';
+            } else {
+                card.querySelector('.stamp.reject').style.opacity = 1;
+                card.style.borderColor = '#BB0000';
+            }
+            animateOut(direction);
+        };
+
+        // --- STREAMING_CHUNK:History Processing and Data Management ---
+        function processItem(po, status) {
+            processedHistory.unshift({
+                ...po,
+                processStatus: status,
+                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+        }
+
+        function renderHistoryTable() {
+            const tbody = document.getElementById('history-table-body');
+
+            if (processedHistory.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-gray-500 py-10">No items processed yet.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = processedHistory.map(item => {
+                const isApproved = item.processStatus === 'Approved';
+                const statusColor = isApproved ? 'text-sap-success' : 'text-sap-error';
+                const statusBg = isApproved ? 'bg-green-100' : 'bg-red-100';
+                const icon = isApproved ? 'fa-check' : 'fa-xmark';
+
+                return `
+                <tr>
+                    <td>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${statusColor} ${statusBg}">
+                            <i class="fa-solid ${icon}"></i> ${item.processStatus}
+                        </span>
+                    </td>
+                    <td class="font-medium text-sap-blue">${item.id}</td>
+                    <td class="text-sap-text font-medium">${item.title}</td>
+                    <td class="text-gray-600">${item.vendor}</td>
+                    <td class="font-semibold text-sap-text">${item.amount} ${item.currency}</td>
+                    <td class="text-gray-500 text-sm"><i class="fa-regular fa-clock mr-1"></i> ${item.timestamp}</td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        window.resetApp = function() {
+            pendingPOs = [...initialPOs];
+            processedHistory = [];
+            renderCards();
+        };
+
+        // Initialize App
+        window.onload = () => {
+            renderCards();
+        };
+    </script>
+</body>
+</html>
