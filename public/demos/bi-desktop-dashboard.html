@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise BI & Analytics Dashboard</title>
+    <!-- Tailwind CSS for rapid, responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+
+        /* Custom Scrollbar for the table */
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .table-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        /* Smooth transitions for interactive elements */
+        .card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .clickable-chart {
+            cursor: pointer;
+        }
+
+        /* Overlay for Drill-down state */
+        .drilldown-active {
+            position: relative;
+        }
+        .drilldown-active::after {
+            content: 'Click "Clear Filter" to reset';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 0.75rem;
+            color: #6b7280;
+            background: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+            pointer-events: none;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-brand-900 text-white shadow-md z-10 flex-shrink-0">
+        <div class="px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-brand-500 rounded flex items-center justify-center font-bold">
+                    <i class="fa-solid fa-chart-pie"></i>
+                </div>
+                <h1 class="text-xl font-semibold tracking-wide">Nexus Analytics</h1>
+            </div>
+
+            <div class="flex items-center gap-6 text-sm">
+                <div class="hidden md:flex items-center gap-2 text-brand-100">
+                    <i class="fa-regular fa-calendar"></i>
+                    <span>Q4 2026</span>
+                </div>
+                <div class="flex items-center gap-2 cursor-pointer hover:text-brand-100 transition">
+                    <div class="w-8 h-8 rounded-full bg-white text-brand-900 flex items-center justify-center font-bold text-xs">
+                        AD
+                    </div>
+                    <span class="hidden sm:inline font-medium">Admin User</span>
+                    <i class="fa-solid fa-chevron-down text-xs ml-1"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Application Area -->
+    <div class="flex flex-1 overflow-hidden">
+
+        <!-- Sidebar (Desktop only) -->
+        <aside class="w-64 bg-white border-r border-gray-200 flex-shrink-0 hidden lg:flex flex-col">
+            <div class="p-6">
+                <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Dashboards</h2>
+                <nav class="space-y-2">
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 bg-brand-50 text-brand-600 rounded-md font-medium">
+                        <i class="fa-solid fa-chart-line w-5 text-center"></i> Sales Overview
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-md transition font-medium">
+                        <i class="fa-solid fa-users w-5 text-center"></i> Customers
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-md transition font-medium">
+                        <i class="fa-solid fa-box w-5 text-center"></i> Inventory
+                    </a>
+                </nav>
+            </div>
+
+            <div class="p-6 mt-auto border-t border-gray-100">
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <h3 class="text-sm font-semibold mb-2">Interactive Guide</h3>
+                    <p class="text-xs text-gray-500 mb-3">Click on any bar or pie slice to drill down into the specific data segment.</p>
+                    <button onclick="resetDashboard()" id="btn-reset-sidebar" class="w-full py-1.5 text-xs font-medium bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50 disabled:opacity-50 transition" disabled>
+                        Reset Filters
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Scrollable Dashboard Content -->
+        <main class="flex-1 overflow-y-auto bg-gray-100 p-4 sm:p-6 lg:p-8">
+
+            <!-- Dashboard Controls (Mobile/Tablet) -->
+            <div class="flex justify-between items-center mb-6 lg:hidden">
+                <h2 class="text-xl font-bold text-gray-800">Sales Overview</h2>
+                <button onclick="resetDashboard()" id="btn-reset-mobile" class="px-3 py-1.5 text-sm font-medium bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50 disabled:opacity-50 transition" disabled>
+                    <i class="fa-solid fa-rotate-left mr-1"></i> Reset
+                </button>
+            </div>
+
+            <div class="hidden lg:flex justify-between items-end mb-6">
+                 <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Global Sales Performance</h2>
+                    <p class="text-sm text-gray-500 mt-1" id="filter-status-text">Showing All Data (Click charts to drill down)</p>
+                 </div>
+
+                 <!-- Time Range Filter Mockup -->
+                 <div class="flex bg-white rounded-md shadow-sm border border-gray-200 p-1">
+                    <button class="px-3 py-1 text-sm font-medium rounded bg-gray-100 text-gray-800">YTD</button>
+                    <button class="px-3 py-1 text-sm font-medium rounded text-gray-500 hover:text-gray-800">Q4</button>
+                    <button class="px-3 py-1 text-sm font-medium rounded text-gray-500 hover:text-gray-800">M12</button>
+                 </div>
+            </div>
+
+            <!-- KPI Cards Grid -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
+                <!-- KPI 1 -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 card">
+                    <div class="flex justify-between items-start mb-2">
+                        <p class="text-sm font-medium text-gray-500">Total Revenue</p>
+                        <div class="p-1.5 bg-green-50 text-green-600 rounded">
+                            <i class="fa-solid fa-dollar-sign"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-2xl sm:text-3xl font-bold text-gray-800" id="kpi-revenue">$0</h3>
+                    <p class="text-xs text-green-600 font-medium mt-2 flex items-center">
+                        <i class="fa-solid fa-arrow-trend-up mr-1"></i> 12.5% vs last period
+                    </p>
+                </div>
+
+                <!-- KPI 2 -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 card">
+                    <div class="flex justify-between items-start mb-2">
+                        <p class="text-sm font-medium text-gray-500">Total Units Sold</p>
+                        <div class="p-1.5 bg-blue-50 text-blue-600 rounded">
+                            <i class="fa-solid fa-box-open"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-2xl sm:text-3xl font-bold text-gray-800" id="kpi-units">0</h3>
+                    <p class="text-xs text-green-600 font-medium mt-2 flex items-center">
+                        <i class="fa-solid fa-arrow-trend-up mr-1"></i> 8.2% vs last period
+                    </p>
+                </div>
+
+                <!-- KPI 3 -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 card">
+                    <div class="flex justify-between items-start mb-2">
+                        <p class="text-sm font-medium text-gray-500">Avg. Order Value</p>
+                        <div class="p-1.5 bg-purple-50 text-purple-600 rounded">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-2xl sm:text-3xl font-bold text-gray-800" id="kpi-aov">$0</h3>
+                    <p class="text-xs text-red-500 font-medium mt-2 flex items-center">
+                        <i class="fa-solid fa-arrow-trend-down mr-1"></i> -1.4% vs last period
+                    </p>
+                </div>
+
+                <!-- KPI 4 -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 card">
+                    <div class="flex justify-between items-start mb-2">
+                        <p class="text-sm font-medium text-gray-500">Active Customers</p>
+                        <div class="p-1.5 bg-orange-50 text-orange-600 rounded">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-2xl sm:text-3xl font-bold text-gray-800" id="kpi-customers">0</h3>
+                    <p class="text-xs text-green-600 font-medium mt-2 flex items-center">
+                        <i class="fa-solid fa-arrow-trend-up mr-1"></i> 4.1% vs last period
+                    </p>
+                </div>
+            </div>
+
+            <!-- Main Charts Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+
+                <!-- Regional Sales (Bar Chart - Clickable) -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 lg:col-span-2 relative" id="region-card">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-base font-semibold text-gray-800">Revenue by Region</h3>
+                        <div class="flex gap-2">
+                            <button onclick="changeChartType('regionChart', 'bar')" class="text-xs p-1 text-gray-400 hover:text-brand-600 transition" title="Bar Chart"><i class="fa-solid fa-chart-column"></i></button>
+                            <button onclick="changeChartType('regionChart', 'line')" class="text-xs p-1 text-gray-400 hover:text-brand-600 transition" title="Line Chart"><i class="fa-solid fa-chart-line"></i></button>
+                        </div>
+                    </div>
+                    <div class="h-64 w-full">
+                        <canvas id="regionChart" class="clickable-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Category Split (Doughnut Chart - Clickable) -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 relative" id="category-card">
+                    <h3 class="text-base font-semibold text-gray-800 mb-4">Product Category Share</h3>
+                    <div class="h-64 w-full flex justify-center">
+                        <canvas id="categoryChart" class="clickable-chart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Detail / Drill-down Section -->
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+                <!-- Trend Chart (Line Chart - Updates based on selection) -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 xl:col-span-1">
+                    <h3 class="text-base font-semibold text-gray-800 mb-1" id="trend-title">Monthly Trend</h3>
+                    <p class="text-xs text-gray-500 mb-4" id="trend-subtitle">Overall Revenue</p>
+                    <div class="h-60 w-full">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Detail Data Table -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col xl:col-span-2">
+                    <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                        <div>
+                            <h3 class="text-base font-semibold text-gray-800" id="table-title">Detailed Transactions</h3>
+                            <p class="text-xs text-gray-500" id="table-subtitle">Top 50 Recent Orders</p>
+                        </div>
+                        <button class="text-sm text-brand-600 font-medium hover:text-brand-800 transition flex items-center gap-1">
+                            <i class="fa-solid fa-download"></i> Export
+                        </button>
+                    </div>
+
+                    <div class="table-container overflow-y-auto max-h-64 flex-1">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="sticky top-0 bg-white shadow-sm z-10">
+                                <tr>
+                                    <th class="py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Order ID</th>
+                                    <th class="py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th class="py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Region</th>
+                                    <th class="py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Category</th>
+                                    <th class="py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detail-table-body" class="divide-y divide-gray-100">
+                                <!-- Table rows injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // --- 1. Mock Data Generation ---
+        // Generating a robust dataset to allow meaningful drill-downs
+        const regions = ['North America', 'Europe', 'Asia Pacific', 'Latin America'];
+        const categories = ['Hardware', 'Software', 'Services', 'Subscriptions'];
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        let rawData = [];
+        let currentFilter = { type: null, value: null }; // Tracks active drill-down
+
+        function generateData() {
+            const data = [];
+            for (let i = 0; i < 500; i++) {
+                const region = regions[Math.floor(Math.random() * regions.length)];
+                const category = categories[Math.floor(Math.random() * categories.length)];
+
+                // Add some artificial weight so charts look interesting
+                let amountBase = 1000;
+                if(region === 'North America') amountBase *= 1.5;
+                if(category === 'Software') amountBase *= 2;
+
+                const amount = Math.floor(Math.random() * amountBase) + 200;
+                const date = new Date(2026, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1);
+
+                data.push({
+                    id: `ORD-${10000 + i}`,
+                    date: date,
+                    monthStr: months[date.getMonth()],
+                    monthIndex: date.getMonth(),
+                    region: region,
+                    category: category,
+                    amount: amount,
+                    units: Math.floor(Math.random() * 10) + 1
+                });
+            }
+            // Sort by date descending
+            return data.sort((a, b) => b.date - a.date);
+        }
+
+        rawData = generateData();
+
+        // --- 2. Chart Configurations & Colors ---
+        const colors = {
+            primary: ['#0ea5e9', '#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316'],
+            background: ['rgba(14, 165, 233, 0.7)', 'rgba(59, 130, 246, 0.7)', 'rgba(139, 92, 246, 0.7)', 'rgba(236, 72, 153, 0.7)'],
+            border: ['#0284c7', '#2563eb', '#7c3aed', '#db2777'],
+            hover: ['#38bdf8', '#60a5fa', '#a78bfa', '#f472b6']
+        };
+
+        // Chart instances
+        let regionChartInstance = null;
+        let categoryChartInstance = null;
+        let trendChartInstance = null;
+
+        // Common Chart.js options for aesthetics
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.color = '#6b7280';
+
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(17, 24, 39, 0.9)',
+                    titleFont: { size: 13, family: 'Inter' },
+                    bodyFont: { size: 14, weight: 'bold', family: 'Inter' },
+                    padding: 10,
+                    cornerRadius: 6,
+                    displayColors: true
+                }
+            }
+        };
+
+        // --- Data Aggregation Helpers ---
+        // Helper to format currency
+        const formatCurrency = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
+        const formatNumber = (val) => new Intl.NumberFormat('en-US').format(val);
+
+        // Data processing functions
+        function aggregateBy(data, key) {
+            const agg = {};
+            data.forEach(item => {
+                if (!agg[item[key]]) agg[item[key]] = 0;
+                agg[item[key]] += item.amount;
+            });
+            return agg;
+        }
+
+        function aggregateTrend(data) {
+            // Initialize all months to 0
+            const agg = {};
+            months.forEach(m => agg[m] = 0);
+
+            data.forEach(item => {
+                agg[item.monthStr] += item.amount;
+            });
+            return agg;
+        }
+
+        function calculateKPIs(data) {
+            let rev = 0, units = 0;
+            data.forEach(item => {
+                rev += item.amount;
+                units += item.units;
+            });
+            // Mock active customers based on unique orders roughly
+            const customers = Math.floor(data.length * 0.85);
+            const aov = data.length > 0 ? rev / data.length : 0;
+
+            return { rev, units, aov, customers };
+        }
+
+        // --- Rendering Engine ---
+        // Core function to update the entire UI based on current data slice
+        function renderDashboard(dataSlice, filterContext = "Overall") {
+
+            // 1. Update KPIs
+            const kpis = calculateKPIs(dataSlice);
+
+            // Simple animation function for numbers
+            animateValue("kpi-revenue", 0, kpis.rev, 800, true);
+            animateValue("kpi-units", 0, kpis.units, 800, false);
+            animateValue("kpi-aov", 0, kpis.aov, 800, true);
+            animateValue("kpi-customers", 0, kpis.customers, 800, false);
+
+            // 2. Prepare Chart Data
+            const regionData = aggregateBy(dataSlice, 'region');
+            const categoryData = aggregateBy(dataSlice, 'category');
+            const trendData = aggregateTrend(dataSlice);
+
+            // 3. Update or Create Charts
+            updateRegionChart(regionData);
+            updateCategoryChart(categoryData);
+            updateTrendChart(trendData, filterContext);
+
+            // 4. Update Detail Table
+            updateTable(dataSlice);
+
+            // 5. Update UI States based on filter
+            const statusText = document.getElementById('filter-status-text');
+            const resetBtns = [document.getElementById('btn-reset-mobile'), document.getElementById('btn-reset-sidebar')];
+
+            if (currentFilter.type) {
+                statusText.innerHTML = `<span class="bg-brand-100 text-brand-800 px-2 py-0.5 rounded font-medium">Filtered by ${currentFilter.type}: ${currentFilter.value}</span>`;
+                resetBtns.forEach(btn => btn.disabled = false);
+            } else {
+                statusText.textContent = "Showing All Data (Click charts to drill down)";
+                resetBtns.forEach(btn => btn.disabled = true);
+            }
+        }
+
+        // --- Chart Initialization & Updating ---
+        function updateRegionChart(aggData) {
+            const labels = Object.keys(aggData);
+            const values = Object.values(aggData);
+
+            // Determine if a specific item is selected to fade others
+            const bgColors = labels.map(label => {
+                if(currentFilter.type === 'Region' && currentFilter.value !== label) return 'rgba(229, 231, 235, 0.6)'; // grey out
+                return colors.primary[0]; // brand blue
+            });
+
+            if (regionChartInstance) {
+                regionChartInstance.data.labels = labels;
+                regionChartInstance.data.datasets[0].data = values;
+                regionChartInstance.data.datasets[0].backgroundColor = bgColors;
+                regionChartInstance.update();
+            } else {
+                const ctx = document.getElementById('regionChart').getContext('2d');
+                regionChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Revenue',
+                            data: values,
+                            backgroundColor: bgColors,
+                            borderRadius: 4,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        ...commonOptions,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: '#f3f4f6', drawBorder: false },
+                                ticks: { callback: (val) => '$' + (val/1000) + 'k' }
+                            },
+                            x: { grid: { display: false, drawBorder: false } }
+                        },
+                        onClick: (event, elements) => handleChartClick(elements, 'regionChart', labels, 'Region'),
+                        onHover: (event, elements) => {
+                            event.native.target.style.cursor = elements.length ? 'pointer' : 'default';
+                        }
+                    }
+                });
+            }
+        }
+
+        function updateCategoryChart(aggData) {
+            const labels = Object.keys(aggData);
+            const values = Object.values(aggData);
+
+            const bgColors = labels.map((label, idx) => {
+                if(currentFilter.type === 'Category' && currentFilter.value !== label) return 'rgba(229, 231, 235, 0.6)';
+                return colors.background[idx % colors.background.length];
+            });
+
+            if (categoryChartInstance) {
+                categoryChartInstance.data.labels = labels;
+                categoryChartInstance.data.datasets[0].data = values;
+                categoryChartInstance.data.datasets[0].backgroundColor = bgColors;
+                categoryChartInstance.update();
+            } else {
+                const ctx = document.getElementById('categoryChart').getContext('2d');
+                categoryChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: values,
+                            backgroundColor: bgColors,
+                            borderColor: '#ffffff',
+                            borderWidth: 2,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        ...commonOptions,
+                        cutout: '65%',
+                        plugins: {
+                            ...commonOptions.plugins,
+                            legend: { display: true, position: 'right', labels: { usePointStyle: true, padding: 20 } }
+                        },
+                        onClick: (event, elements) => handleChartClick(elements, 'categoryChart', labels, 'Category'),
+                        onHover: (event, elements) => {
+                            event.native.target.style.cursor = elements.length ? 'pointer' : 'default';
+                        }
+                    }
+                });
+            }
+        }
+
+        function updateTrendChart(aggData, context) {
+            const labels = months;
+            const values = labels.map(m => aggData[m] || 0);
+
+            document.getElementById('trend-subtitle').textContent = context;
+
+            if (trendChartInstance) {
+                trendChartInstance.data.datasets[0].data = values;
+                trendChartInstance.update();
+            } else {
+                const ctx = document.getElementById('trendChart').getContext('2d');
+
+                // Create gradient
+                let gradient = ctx.createLinearGradient(0, 0, 0, 300);
+                gradient.addColorStop(0, 'rgba(14, 165, 233, 0.5)'); // brand blue fading
+                gradient.addColorStop(1, 'rgba(14, 165, 233, 0.0)');
+
+                trendChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Revenue',
+                            data: values,
+                            borderColor: colors.primary[0],
+                            backgroundColor: gradient,
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4, // smooth curves
+                            pointBackgroundColor: '#ffffff',
+                            pointBorderColor: colors.primary[0],
+                            pointBorderWidth: 2,
+                            pointRadius: 3,
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: {
+                        ...commonOptions,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: '#f3f4f6', drawBorder: false },
+                                ticks: { maxTicksLimit: 6, callback: (val) => '$' + (val/1000) + 'k' }
+                            },
+                            x: { grid: { display: false, drawBorder: false } }
+                        },
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        }
+                    }
+                });
+            }
+        }
+
+        // --- Interaction & Utility Logic ---
+
+        // Handle Drill-down Clicks
+        function handleChartClick(elements, chartId, labels, filterType) {
+            if (elements.length > 0) {
+                const index = elements[0].index;
+                const selectedValue = labels[index];
+
+                // If clicking already active filter, reset it
+                if (currentFilter.type === filterType && currentFilter.value === selectedValue) {
+                    resetDashboard();
+                    return;
+                }
+
+                applyFilter(filterType, selectedValue);
+
+                // Visual cues for active drilldown
+                document.getElementById('region-card').classList.toggle('drilldown-active', filterType === 'Region');
+                document.getElementById('category-card').classList.toggle('drilldown-active', filterType === 'Category');
+            }
+        }
+
+        function applyFilter(type, value) {
+            currentFilter = { type, value };
+
+            // Filter raw data
+            const filteredData = rawData.filter(item => {
+                if (type === 'Region') return item.region === value;
+                if (type === 'Category') return item.category === value;
+                return true;
+            });
+
+            // Re-render everything with filtered data
+            renderDashboard(filteredData, `${type}: ${value}`);
+        }
+
+        window.resetDashboard = function() {
+            currentFilter = { type: null, value: null };
+            document.querySelectorAll('.drilldown-active').forEach(el => el.classList.remove('drilldown-active'));
+            renderDashboard(rawData, "Overall Revenue");
+        }
+
+        // Allows changing region chart type (Bar/Line toggle mockup)
+        window.changeChartType = function(chartId, newType) {
+            if (chartId === 'regionChart' && regionChartInstance) {
+                regionChartInstance.config.type = newType;
+                // adjust specific styling based on type
+                if(newType === 'line') {
+                    regionChartInstance.data.datasets[0].borderColor = colors.primary[0];
+                    regionChartInstance.data.datasets[0].fill = false;
+                    regionChartInstance.data.datasets[0].tension = 0.1;
+                } else {
+                    // Re-apply array of background colors for bar
+                    const bgColors = regionChartInstance.data.labels.map(l =>
+                        (currentFilter.type === 'Region' && currentFilter.value !== l) ? 'rgba(229, 231, 235, 0.6)' : colors.primary[0]
+                    );
+                    regionChartInstance.data.datasets[0].backgroundColor = bgColors;
+                }
+                regionChartInstance.update();
+            }
+        }
+
+        function updateTable(dataSlice) {
+            const tbody = document.getElementById('detail-table-body');
+            tbody.innerHTML = ''; // clear
+
+            // Show top 50
+            const displayData = dataSlice.slice(0, 50);
+
+            if(displayData.length === 0) {
+                 tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-gray-500">No data found for this selection.</td></tr>`;
+                 return;
+            }
+
+            displayData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 transition";
+
+                const dateStr = `${row.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+
+                tr.innerHTML = `
+                    <td class="py-3 px-4 text-sm text-gray-900 font-medium">${row.id}</td>
+                    <td class="py-3 px-4 text-sm text-gray-500">${dateStr}</td>
+                    <td class="py-3 px-4 text-sm text-gray-700">${row.region}</td>
+                    <td class="py-3 px-4">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                            ${row.category}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 text-sm font-semibold text-gray-900 text-right">${formatCurrency(row.amount)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('table-subtitle').textContent = `Showing ${displayData.length} Recent Orders`;
+        }
+
+        // Helper for Number Animation
+        function animateValue(id, start, end, duration, isCurrency) {
+            const obj = document.getElementById(id);
+            if (!obj) return;
+
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+
+                // easeOutQuart
+                const easeProgress = 1 - Math.pow(1 - progress, 4);
+                const currentVal = Math.floor(easeProgress * (end - start) + start);
+
+                obj.textContent = isCurrency ? formatCurrency(currentVal) : formatNumber(currentVal);
+
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    obj.textContent = isCurrency ? formatCurrency(end) : formatNumber(end);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // --- Initialization ---
+        window.addEventListener('DOMContentLoaded', () => {
+            // Initial render with all data
+            renderDashboard(rawData, "Overall Revenue");
+        });
+
+    </script>
+</body>
+</html>

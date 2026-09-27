@@ -87,6 +87,31 @@ export default async function ServicePage({ params }: Props) {
                 </p>
               </div>
             )}
+            {slug === "business-intelligence-ai" && (
+              <div className="mt-10">
+                <div className="overflow-hidden rounded-[28px] border border-line bg-[#f3f4f6]">
+                  <iframe
+                    src="/demos/bi-desktop-dashboard.html"
+                    title="Enterprise BI dashboard — drill-down demo"
+                    className="h-[720px] w-full md:h-[820px]"
+                    loading="lazy"
+                  />
+                </div>
+                <p className="mt-3 text-sm text-ink-soft">
+                  A live dashboard, not a screenshot — click a region bar or a category slice to drill down;
+                  every KPI, chart and table updates together. That's the semantic-layer pattern we build:
+                  one data model, no duplicate logic.{" "}
+                  <a
+                    href="/demos/bi-desktop-dashboard.html"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-semibold text-teal-deep hover:underline"
+                  >
+                    Open full-screen ↗
+                  </a>
+                </p>
+              </div>
+            )}
             <div className="mt-12">
               <Markdown source={item.body ?? ""} />
             </div>
