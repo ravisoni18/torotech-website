@@ -5,6 +5,7 @@ import { TechMarquee } from "@/components/marketing/TechMarquee";
 import { HeroBackdrop } from "@/components/marketing/HeroBackdrop";
 import { Reveal } from "@/components/marketing/Reveal";
 import { Counter } from "@/components/marketing/Counter";
+import { ApprovalGame } from "@/components/marketing/ApprovalGame";
 import {
   CaseStudyCard,
   Container,
@@ -160,6 +161,21 @@ export default async function HomePage() {
               </Reveal>
             ))}
           </ol>
+        </Container>
+      </section>
+
+      {/* Play the approver */}
+      <section className="pt-24">
+        <Container>
+          <Reveal>
+            <SectionHeading
+              title="Think you'd call it right?"
+              lede="This is the exact decision our agents hand to a human — twenty seconds, real scenarios, no do-overs."
+            />
+          </Reveal>
+          <Reveal delay={0.1}>
+            <ApprovalGame />
+          </Reveal>
         </Container>
       </section>
 
