@@ -6,6 +6,7 @@ import { Container, CtaBand, ServiceIcon, Tag } from "@/components/marketing/ui"
 import { Markdown } from "@/components/marketing/Markdown";
 import { SystemDiagram } from "@/components/marketing/SystemDiagram";
 import { SapApprovalDemo } from "@/components/marketing/SapApprovalDemo";
+import { N8nGame } from "@/components/marketing/N8nGame";
 
 export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ slug: string }> };
@@ -138,26 +139,10 @@ export default async function ServicePage({ params }: Props) {
             )}
             {slug === "workflow-automation-n8n" && (
               <div className="mt-10">
-                <div className="overflow-hidden rounded-[28px] border border-line bg-[#0f1117]">
-                  <iframe
-                    src="/demos/toro-automator-n8n.html"
-                    title="Toro Automator — n8n workflow builder game"
-                    className="h-[720px] w-full md:h-[820px]"
-                    loading="lazy"
-                  />
-                </div>
+                <N8nGame />
                 <p className="mt-3 text-sm text-ink-soft">
-                  Build the pipeline yourself — drag nodes from the toolbox, connect them, hit "Execute
-                  Workflow" and watch the console validate it. Three missions, same node-and-connection model
-                  as a real n8n canvas.{" "}
-                  <a
-                    href="/demos/toro-automator-n8n.html"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="font-semibold text-teal-deep hover:underline"
-                  >
-                    Open full-screen ↗
-                  </a>
+                  Build the pipeline yourself — tap a node, then tap another to join them, and hit "Execute."
+                  Same node-and-connection model as a real n8n canvas, three missions, works on a phone.
                 </p>
               </div>
             )}
