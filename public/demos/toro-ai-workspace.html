@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toro AI - Toro Enterprise AI Workspace</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        toro: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            500: '#8b5cf6', // Toro Purple
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            900: '#4c1d95',
+                            dark: '#0f0c1b',
+                            card: '#18132b',
+                            border: '#2b2347'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #090612;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(139, 92, 246, 0.3);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(139, 92, 246, 0.6);
+        }
+
+        .glass-panel {
+            background: rgba(24, 19, 43, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+        }
+
+        .chat-glow {
+            box-shadow: 0 0 40px -10px rgba(139, 92, 246, 0.15);
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen select-none">
+
+    <header class="h-14 border-b border-toro-border bg-toro-dark/90 flex items-center justify-between px-6 z-30">
+        <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-toro-600 to-purple-400 flex items-center justify-center shadow-lg shadow-toro-600/30">
+                <i class="fa-solid fa-cube text-white text-sm"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-base tracking-wide text-white flex items-center gap-2">
+                    Toro AI <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-toro-600/20 text-toro-400 border border-toro-500/30">Enterprise Workspace</span>
+                </h1>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center bg-toro-card border border-toro-border rounded-lg px-3 py-1.5 text-xs text-slate-400">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse mr-2"></span>
+                <span>Model: <strong class="text-white">Toro-Enterprise-Ultra v4.2</strong></span>
+            </div>
+            <div class="h-6 w-[1px] bg-toro-border"></div>
+            <div class="flex items-center space-x-3">
+                <button class="w-8 h-8 rounded-lg bg-toro-card border border-toro-border flex items-center justify-center text-slate-300 hover:text-white hover:border-toro-500 transition-colors">
+                    <i class="fa-solid fa-bell text-xs"></i>
+                </button>
+                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold border border-purple-400/30">
+                    EX
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 border-r border-toro-border bg-toro-dark/50 flex flex-col justify-between p-4 z-20">
+            <div class="space-y-6">
+                <!-- Navigation Group -->
+                <div>
+                    <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-3 px-3">AI Agents</p>
+                    <nav class="space-y-1">
+                        <button onclick="switchTab('chat')" id="nav-chat" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium bg-toro-600 text-white shadow-lg shadow-toro-600/20 transition-all">
+                            <i class="fa-solid fa-comments w-5 text-center"></i>
+                            <span>Enterprise Chat</span>
+                        </button>
+                        <button onclick="switchTab('analytics')" id="nav-analytics" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-toro-card/60 transition-all">
+                            <i class="fa-solid fa-chart-line w-5 text-center"></i>
+                            <span>Analytics & ROI</span>
+                        </button>
+                        <button onclick="switchTab('documents')" id="nav-documents" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-toro-card/60 transition-all">
+                            <i class="fa-solid fa-folder-tree w-5 text-center"></i>
+                            <span>Knowledge Base</span>
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Recent Sessions -->
+                <div>
+                    <div class="flex items-center justify-between px-3 mb-2">
+                        <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Active Threads</p>
+                        <button class="text-xs text-toro-400 hover:underline"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div class="space-y-1 text-xs text-slate-400">
+                        <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-toro-card hover:text-white truncate transition-colors flex items-center gap-2">
+                            <i class="fa-regular fa-message text-[10px] text-toro-400"></i> Q3 Financial Forecast
+                        </button>
+                        <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-toro-card hover:text-white truncate transition-colors flex items-center gap-2">
+                            <i class="fa-regular fa-message text-[10px] text-toro-400"></i> Cloud Cost Optimization
+                        </button>
+                        <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-toro-card hover:text-white truncate transition-colors flex items-center gap-2">
+                            <i class="fa-regular fa-message text-[10px] text-toro-400"></i> API Security Audit
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workspace Status Footer -->
+            <div class="p-3 rounded-xl bg-toro-card border border-toro-border">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-medium text-slate-300">Token Quota</span>
+                    <span class="text-[10px] text-toro-400 font-bold">84%</span>
+                </div>
+                <div class="w-full bg-toro-border h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-gradient-to-r from-toro-500 to-purple-400 h-full w-[84%] rounded-full"></div>
+                </div>
+                <p class="text-[10px] text-slate-500 mt-2">Enterprise Plan • Unlimited GPU</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col bg-[#0b0817] relative overflow-hidden">
+
+            <!-- VIEW 1: ENTERPRISE CHAT WORKSPACE -->
+            <div id="view-chat" class="app-view flex-1 flex flex-col h-full">
+
+                <!-- Chat Header Toolbar -->
+                <div class="h-14 border-b border-toro-border px-6 flex items-center justify-between bg-toro-dark/30">
+                    <div class="flex items-center space-x-3">
+                        <h2 class="font-bold text-white text-sm">Strategic Operations Agent</h2>
+                        <span class="text-xs px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Secure Channel</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="clearChat()" class="px-3 py-1.5 rounded-lg bg-toro-card border border-toro-border text-xs text-slate-300 hover:text-white transition-colors">
+                            <i class="fa-solid fa-rotate-right mr-1.5"></i> Clear Context
+                        </button>
+                        <button class="px-3 py-1.5 rounded-lg bg-toro-600 hover:bg-toro-700 text-xs font-medium text-white shadow transition-colors">
+                            <i class="fa-solid fa-download mr-1.5"></i> Export Transcript
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Chat Messages Stream -->
+                <div id="chat-container" class="flex-1 overflow-y-auto p-6 space-y-6">
+                    <!-- Initial Welcome Message -->
+                    <div class="flex items-start space-x-4 max-w-3xl">
+                        <div class="w-9 h-9 rounded-xl bg-toro-600 flex items-center justify-center flex-shrink-0 text-white font-bold shadow-lg shadow-toro-600/30">
+                            TAI
+                        </div>
+                        <div class="space-y-2">
+                            <div class="glass-panel p-4 rounded-2xl text-sm text-slate-200 chat-glow leading-relaxed">
+                                Hello! Welcome to the <strong>Toro Enterprise Workspace</strong>. I am your secure corporate intelligence assistant. How can I accelerate your workflows today?
+                            </div>
+                            <p class="text-[11px] text-slate-500 ml-1">Today at 12:26 PM • Toro AI Core</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="p-4 border-t border-toro-border bg-toro-dark/50">
+                    <div class="max-w-4xl mx-auto">
+                        <div class="glass-panel rounded-2xl p-2 flex items-center space-x-2 focus-within:border-toro-500 transition-colors">
+                            <button class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-toro-card transition-colors">
+                                <i class="fa-solid fa-paperclip text-sm"></i>
+                            </button>
+                            <input id="chat-input" type="text" placeholder="Ask Toro AI anything or type '/' for enterprise commands..." class="flex-1 bg-transparent border-none outline-none text-sm text-white placeholder-slate-500 px-2" onkeypress="handleKeyPress(event)">
+                            <button onclick="sendChatMessage()" class="w-10 h-10 rounded-xl bg-toro-600 hover:bg-toro-700 text-white flex items-center justify-center transition-all shadow-lg shadow-toro-600/30 active:scale-95">
+                                <i class="fa-solid fa-arrow-up text-sm"></i>
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-between mt-2 px-2 text-[11px] text-slate-500">
+                            <span>Pro tip: Ask for automated financial breakdowns or security protocols.</span>
+                            <span>Secure AES-256 Encrypted Session</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 2: ANALYTICS & ROI DASHBOARD -->
+            <div id="view-analytics" class="app-view hidden flex-1 flex flex-col h-full overflow-y-auto p-6 space-y-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-white">Toro AI Analytics & ROI</h2>
+                        <p class="text-xs text-slate-400">Real-time telemetry and automation performance metrics</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <span class="px-3 py-1.5 rounded-lg bg-toro-card border border-toro-border text-xs text-slate-300">Last 30 Days</span>
+                    </div>
+                </div>
+
+                <!-- KPI Grid -->
+                <div class="grid grid-cols-4 gap-4">
+                    <div class="glass-panel p-4 rounded-2xl">
+                        <p class="text-xs text-slate-400 font-medium mb-1">Total API Calls</p>
+                        <h3 class="text-2xl font-bold text-white">1.42M</h3>
+                        <p class="text-[10px] text-emerald-400 font-semibold mt-1"><i class="fa-solid fa-arrow-up"></i> +18.4% this month</p>
+                    </div>
+                    <div class="glass-panel p-4 rounded-2xl">
+                        <p class="text-xs text-slate-400 font-medium mb-1">Token Efficiency</p>
+                        <h3 class="text-2xl font-bold text-white">99.4%</h3>
+                        <p class="text-[10px] text-emerald-400 font-semibold mt-1"><i class="fa-solid fa-arrow-up"></i> Optimized throughput</p>
+                    </div>
+                    <div class="glass-panel p-4 rounded-2xl">
+                        <p class="text-xs text-slate-400 font-medium mb-1">Cost Savings</p>
+                        <h3 class="text-2xl font-bold text-white">$42,800</h3>
+                        <p class="text-[10px] text-toro-400 font-semibold mt-1">Vs Standard LLM API</p>
+                    </div>
+                    <div class="glass-panel p-4 rounded-2xl">
+                        <p class="text-xs text-slate-400 font-medium mb-1">Active AI Agents</p>
+                        <h3 class="text-2xl font-bold text-white">12/12</h3>
+                        <p class="text-[10px] text-emerald-400 font-semibold mt-1">All systems operational</p>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="glass-panel p-5 rounded-2xl">
+                        <h3 class="text-sm font-bold text-white mb-4">Enterprise Token Consumption (Weekly)</h3>
+                        <div class="h-64 relative">
+                            <canvas id="toroUsageChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-5 rounded-2xl">
+                        <h3 class="text-sm font-bold text-white mb-4">Department Workload Distribution</h3>
+                        <div class="h-64 relative flex items-center justify-center">
+                            <canvas id="toroDeptChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 3: KNOWLEDGE BASE -->
+            <div id="view-documents" class="app-view hidden flex-1 flex flex-col h-full overflow-y-auto p-6 space-y-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-white">Toro Knowledge Base</h2>
+                        <p class="text-xs text-slate-400">Indexed corporate documents and RAG vector store</p>
+                    </div>
+                    <button class="px-4 py-2 rounded-xl bg-toro-600 hover:bg-toro-700 text-xs font-medium text-white transition-all shadow-lg shadow-toro-600/30">
+                        <i class="fa-solid fa-plus mr-1.5"></i> Ingest Document
+                    </button>
+                </div>
+
+                <div class="glass-panel rounded-2xl overflow-hidden">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="bg-toro-card/50 border-b border-toro-border text-slate-400 uppercase text-[10px] tracking-wider">
+                            <tr>
+                                <th class="p-4">Document Title</th>
+                                <th class="p-4">Category</th>
+                                <th class="p-4">Vector Status</th>
+                                <th class="p-4">Last Indexed</th>
+                                <th class="p-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-toro-border">
+                            <tr class="hover:bg-toro-card/30 transition-colors">
+                                <td class="p-4 font-medium text-white flex items-center gap-2"><i class="fa-solid fa-file-pdf text-rose-400"></i> Q3_Financial_Projections_v4.pdf</td>
+                                <td class="p-4">Finance</td>
+                                <td class="p-4"><span class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Indexed (100%)</span></td>
+                                <td class="p-4 text-slate-400">2 hours ago</td>
+                                <td class="p-4 text-right"><button class="text-toro-400 hover:underline">Inspect</button></td>
+                            </tr>
+                            <tr class="hover:bg-toro-card/30 transition-colors">
+                                <td class="p-4 font-medium text-white flex items-center gap-2"><i class="fa-solid fa-file-word text-blue-400"></i> Global_Security_Compliance_2026.docx</td>
+                                <td class="p-4">Legal & Compliance</td>
+                                <td class="p-4"><span class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Indexed (100%)</span></td>
+                                <td class="p-4 text-slate-400">Yesterday</td>
+                                <td class="p-4 text-right"><button class="text-toro-400 hover:underline">Inspect</button></td>
+                            </tr>
+                            <tr class="hover:bg-toro-card/30 transition-colors">
+                                <td class="p-4 font-medium text-white flex items-center gap-2"><i class="fa-solid fa-file-code text-purple-400"></i> Toro_API_Microservices_Spec.json</td>
+                                <td class="p-4">Engineering</td>
+                                <td class="p-4"><span class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Indexed (100%)</span></td>
+                                <td class="p-4 text-slate-400">3 days ago</td>
+                                <td class="p-4 text-right"><button class="text-toro-400 hover:underline">Inspect</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        function switchTab(tabName) {
+            document.querySelectorAll('.app-view').forEach(v => v.classList.add('hidden'));
+            document.getElementById('view-' + tabName).classList.remove('hidden');
+
+            // Update sidebar navigation active state
+            ['chat', 'analytics', 'documents'].forEach(t => {
+                const btn = document.getElementById('nav-' + t);
+                if (t === tabName) {
+                    btn.className = 'w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium bg-toro-600 text-white shadow-lg shadow-toro-600/20 transition-all';
+                } else {
+                    btn.className = 'w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-toro-card/60 transition-all';
+                }
+            });
+
+            // Initialize charts if analytics tab is selected
+            if (tabName === 'analytics' && !window.chartsInitialized) {
+                initCharts();
+                window.chartsInitialized = true;
+            }
+        }
+
+        // Chat functionality
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const container = document.getElementById('chat-container');
+
+            // Append User Message
+            container.innerHTML += `
+                <div class="flex items-start justify-end space-x-4 max-w-3xl ml-auto">
+                    <div class="space-y-2 text-right">
+                        <div class="bg-toro-600 p-4 rounded-2xl text-sm text-white shadow-lg shadow-toro-600/20 leading-relaxed text-left">
+                            ${escapeHtml(message)}
+                        </div>
+                        <p class="text-[11px] text-slate-500 mr-1">Just now • You</p>
+                    </div>
+                    <div class="w-9 h-9 rounded-xl bg-purple-500 flex items-center justify-center flex-shrink-0 text-white font-bold text-xs shadow-lg">
+                        EX
+                    </div>
+                </div>
+            `;
+
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+
+            // Simulate Toro AI Thinking & Response
+            setTimeout(() => {
+                const aiResponses = [
+                    "Analyzing enterprise data vectors... All metrics indicate optimal performance across global nodes.",
+                    "I have reviewed your query against our corporate RAG vector database. The quarterly efficiency margin has improved by 14.2%.",
+                    "Security audit passed with zero vulnerabilities detected. Would you like me to generate the executive report?",
+                    "Processing automated workflow request through Toro AI Core. Task successfully queued."
+                ];
+                const randomResponse = aiResponses[Math.floor(Math.random() * aiResponses.length)];
+
+                container.innerHTML += `
+                    <div class="flex items-start space-x-4 max-w-3xl animate-[fadeIn_0.3s_ease-out]">
+                        <div class="w-9 h-9 rounded-xl bg-toro-600 flex items-center justify-center flex-shrink-0 text-white font-bold shadow-lg shadow-toro-600/30">
+                            TAI
+                        </div>
+                        <div class="space-y-2">
+                            <div class="glass-panel p-4 rounded-2xl text-sm text-slate-200 chat-glow leading-relaxed">
+                                ${randomResponse}
+                            </div>
+                            <p class="text-[11px] text-slate-500 ml-1">Just now • Toro AI Enterprise</p>
+                        </div>
+                    </div>
+                `;
+                container.scrollTop = container.scrollHeight;
+            }, 800);
+        }
+
+        function clearChat() {
+            const container = document.getElementById('chat-container');
+            container.innerHTML = `
+                <div class="flex items-start space-x-4 max-w-3xl">
+                    <div class="w-9 h-9 rounded-xl bg-toro-600 flex items-center justify-center flex-shrink-0 text-white font-bold shadow-lg shadow-toro-600/30">
+                        TAI
+                    </div>
+                    <div class="space-y-2">
+                        <div class="glass-panel p-4 rounded-2xl text-sm text-slate-200 chat-glow leading-relaxed">
+                            Context cleared. How else can <strong>Toro AI</strong> assist your enterprise today?
+                        </div>
+                        <p class="text-[11px] text-slate-500 ml-1">Just now • Toro AI Core</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function escapeHtml(text) {
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        // Initialize Analytics Charts
+        function initCharts() {
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.color = '#94a3b8';
+
+            // Usage Trend Line Chart
+            const ctxUsage = document.getElementById('toroUsageChart').getContext('2d');
+            let gradient = ctxUsage.createLinearGradient(0, 0, 0, 200);
+            gradient.addColorStop(0, 'rgba(139, 92, 246, 0.4)');
+            gradient.addColorStop(1, 'rgba(139, 92, 246, 0.0)');
+
+            new Chart(ctxUsage, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        data: [120, 190, 150, 280, 320, 240, 390],
+                        borderColor: '#8b5cf6',
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { font: { size: 10 } } },
+                        x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+                    }
+                }
+            });
+
+            // Department Doughnut Chart
+            const ctxDept = document.getElementById('toroDeptChart').getContext('2d');
+            new Chart(ctxDept, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Engineering', 'Finance', 'Legal', 'Operations'],
+                    datasets: [{
+                        data: [45, 25, 20, 10],
+                        backgroundColor: ['#8b5cf6', '#a78bfa', '#c4b5fd', '#6d28d9'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { position: 'right', labels: { boxWidth: 10, font: { size: 11 } } }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -112,6 +112,30 @@ export default async function ServicePage({ params }: Props) {
                 </p>
               </div>
             )}
+            {slug === "web-development" && (
+              <div className="mt-10">
+                <div className="overflow-hidden rounded-[28px] border border-line bg-[#090612]">
+                  <iframe
+                    src="/demos/toro-ai-workspace.html"
+                    title="Toro AI enterprise workspace — chat, analytics and knowledge base demo"
+                    className="h-[720px] w-full md:h-[820px]"
+                    loading="lazy"
+                  />
+                </div>
+                <p className="mt-3 text-sm text-ink-soft">
+                  Toro AI, the chat layer we build into apps like this one — enterprise chat, usage analytics and
+                  a RAG knowledge base in one workspace. Switch tabs on the left to try each view.{" "}
+                  <a
+                    href="/demos/toro-ai-workspace.html"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-semibold text-teal-deep hover:underline"
+                  >
+                    Open full-screen ↗
+                  </a>
+                </p>
+              </div>
+            )}
             <div className="mt-12">
               <Markdown source={item.body ?? ""} />
             </div>
