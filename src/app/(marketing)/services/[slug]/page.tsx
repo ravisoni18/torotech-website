@@ -136,6 +136,31 @@ export default async function ServicePage({ params }: Props) {
                 </p>
               </div>
             )}
+            {slug === "workflow-automation-n8n" && (
+              <div className="mt-10">
+                <div className="overflow-hidden rounded-[28px] border border-line bg-[#0f1117]">
+                  <iframe
+                    src="/demos/toro-automator-n8n.html"
+                    title="Toro Automator — n8n workflow builder game"
+                    className="h-[720px] w-full md:h-[820px]"
+                    loading="lazy"
+                  />
+                </div>
+                <p className="mt-3 text-sm text-ink-soft">
+                  Build the pipeline yourself — drag nodes from the toolbox, connect them, hit "Execute
+                  Workflow" and watch the console validate it. Three missions, same node-and-connection model
+                  as a real n8n canvas.{" "}
+                  <a
+                    href="/demos/toro-automator-n8n.html"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-semibold text-teal-deep hover:underline"
+                  >
+                    Open full-screen ↗
+                  </a>
+                </p>
+              </div>
+            )}
             <div className="mt-12">
               <Markdown source={item.body ?? ""} />
             </div>
