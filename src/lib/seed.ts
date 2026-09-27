@@ -16,128 +16,11 @@ type SeedItem = {
 const services: SeedItem[] = [
   {
     type: "service",
-    slug: "ai-for-sap",
-    title: "AI agents inside SAP S/4HANA",
-    excerpt:
-      "Agents that read your CDS views and OData services, and complete real work — order holds, material verification, returns — with a human approving the edge cases.",
-    sort_order: 1,
-    tags: ["S/4HANA", "OData", "Agents", "Fiori"],
-    data: {
-      icon: "brain",
-      outcomes: [
-        "Ship a simple agent-driven app in 1–2 days",
-        "Every action traceable to an SAP change document",
-        "Works on ECC and S/4HANA, on-prem or cloud",
-      ],
-    },
-    body: `## What we build
-
-Most "AI for SAP" demos stop at a chat window that summarises a screen. We build agents that **do the work** — safely, inside your authorisation concept.
-
-A Torotech agent is a small, auditable service on BTP that:
-
-- reads business context through **ABAP CDS views** and **OData V4** services (no direct table access, ever)
-- reasons with a model of your choice (Anthropic Claude, Azure OpenAI, or SAP AI Core)
-- summarises data, forms a query, compares records, or proposes an action — entirely through the app's own OData services, with the request shown to an approver before anything writes back
-- writes back only after approval rules pass, and logs every step to a change document
-
-## Typical first projects
-
-| Process | What the agent does | Guardrail |
-| --- | --- | --- |
-| Sales order holds | Reads block reasons, credit exposure and delivery dates; drafts the release or the customer note | Release above a threshold needs a human |
-| Material verification | Compares inbound ASN, PO and goods-receipt data; flags mismatches with a suggested resolution | Never posts a GR on its own |
-| Returns triage | Classifies return reasons from free text and photos; proposes disposition and credit | Credit memo is always approved |
-
-## How an engagement runs
-
-1. **Map the workflow (same day).** We sit with the people who do the work today and identify which OData services and entities the app already uses — and the exceptions that actually matter.
-2. **Build and wire it (1–2 days for a simple app).** Chat shell, orchestrator, narrow LLM, OData calls — wired into the app that already exists. Nothing gets rebuilt underneath it.
-3. **Test it with the people who'll use it.** Real phrasing, real edge cases, before anyone else sees it.
-4. **Go live.** One integration, live for every user immediately — write-backs sit behind an approval inbox until the numbers earn wider auto-approval. More complex, multi-system workflows take longer, but the pattern itself doesn't change.
-
-## Stack
-
-SAP BTP Cloud Foundry or Kyma · CAP (Node.js/TypeScript) · SAP Cloud Connector · Destination service · Anthropic Claude / SAP AI Core · Fiori Elements approval app.`,
-  },
-  {
-    type: "service",
-    slug: "btp-extensions",
-    title: "BTP extensions & integration",
-    excerpt:
-      "Side-by-side extensions on SAP BTP with CAP, Event Mesh and Integration Suite — so the core stays clean and upgrades stay boring.",
-    sort_order: 2,
-    tags: ["BTP", "CAP", "Integration Suite", "Event Mesh"],
-    data: {
-      icon: "layers",
-      outcomes: [
-        "Clean-core extensions with zero custom code in S/4",
-        "Event-driven integrations with EDI, cXML and 3PL partners",
-        "One BTP subaccount layout you can actually explain",
-      ],
-    },
-    body: `## Keep the core clean without slowing the business
-
-Every customisation you put in S/4HANA is a tax on the next upgrade. We build the things your business needs *next to* SAP on BTP — and connect them with events, not batch jobs.
-
-## What we deliver
-
-- **CAP services** in TypeScript with proper authorisation, draft handling and OData V4 exposure
-- **Integration Suite** flows for EDI 850/856/810, cXML punch-out, and 3PL shipment feeds
-- **Event Mesh** subscriptions so BTP apps react to SAP business events in seconds
-- **Cloud Connector & Destinations** configured once, documented, and reproducible with Terraform
-- **CI/CD** with MTA builds, Cloud Transport Management and GitHub Actions
-
-## Reference architecture
-
-\`\`\`
-S/4HANA ──(events)──▶ Event Mesh ──▶ CAP service ──▶ HANA Cloud
-   ▲                                       │
-   └────────(OData / BAPI via Cloud Connector)◀┘
-\`\`\`
-
-We've run this pattern in food distribution, healthcare and manufacturing, on both ECC and S/4HANA.`,
-  },
-  {
-    type: "service",
-    slug: "fiori-apps",
-    title: "Fiori & UI5 applications",
-    excerpt:
-      "Fiori Elements where it fits, freestyle UI5 where it doesn't. Fast, accessible apps that people open on the warehouse floor and in the boardroom.",
-    sort_order: 3,
-    tags: ["Fiori", "UI5", "Fiori Elements", "Launchpad"],
-    data: {
-      icon: "layout",
-      outcomes: [
-        "Apps built on annotations, so they stay upgrade-safe",
-        "Offline-tolerant scanning apps for warehouses",
-        "Launchpad content you can govern",
-      ],
-    },
-    body: `## Apps people actually want to open
-
-We build Fiori apps with the same care we'd give a consumer product — clear flows, quick loads, keyboard and scanner friendly.
-
-## Where we're strongest
-
-- **Fiori Elements** (List Report, Object Page, Analytical List Page) driven by CDS annotations and RAP behaviour definitions
-- **Freestyle UI5 / TypeScript** for scanning, planning boards, blotters and anything a template can't express
-- **Launchpad & Build Work Zone** design: catalogs, spaces and pages that match how teams work
-- **AI-assisted UI**: inline explanation, smart defaults and natural-language filters powered by the same agents we build for S/4
-
-## Recent work
-
-- Shipment blotter with live carrier status and exception colouring
-- Material verification app with camera scanning and side-by-side PO comparison
-- Return-order summary analytical list page with drill-down to credit memos`,
-  },
-  {
-    type: "service",
     slug: "web-development",
-    title: "Web apps with AI built in",
+    title: "Website Development and AI Integration",
     excerpt:
       "Next.js, TypeScript and Node.js products — customer portals, internal tools and marketing sites — with AI features that earn their place.",
-    sort_order: 4,
+    sort_order: 1,
     tags: ["Next.js", "TypeScript", "Node.js", "Docker"],
     data: {
       icon: "globe",
@@ -164,6 +47,218 @@ We build on **Next.js**, **TypeScript** and **Node.js**, deploy with **Docker**,
 Semantic search across documents, assistants that answer from *your* content, form auto-fill from uploads, and summarisation for support teams. We scope each AI feature to a number you can check — deflection rate, time-to-answer, conversion — and measure it in the same dashboard.
 
 This site is built exactly this way. Ask us for the repo tour.`,
+  },
+  {
+    type: "service",
+    slug: "mobile-app-development",
+    title: "Mobile Apps Development",
+    excerpt:
+      "Native and cross-platform apps — iOS, Android and React Native — built for real field use: offline-tolerant, camera and scanner friendly, fast to ship.",
+    sort_order: 2,
+    tags: ["React Native", "iOS", "Android", "Offline-first"],
+    data: {
+      icon: "smartphone",
+      outcomes: [
+        "One React Native codebase for iOS and Android",
+        "Offline-tolerant sync for warehouse and field crews",
+        "Store submission and release pipeline included",
+      ],
+    },
+    body: `## Apps built for where the work actually happens
+
+Field crews, warehouse floors and delivery routes don't have great signal. We build mobile apps that keep working when the network doesn't.
+
+## What we deliver
+
+- **React Native / TypeScript** apps sharing one codebase across iOS and Android, dropping to native modules where it matters
+- **Offline-first sync** with conflict resolution, so a scan or a form submitted underground still lands correctly later
+- **Camera, barcode and NFC scanning** wired directly into your backend workflows
+- **Push notifications, deep links and background sync** configured once, not bolted on
+- **App Store / Play Store release pipeline** — signing, versioning and CI builds handled end to end
+
+## Recent patterns
+
+- Barcode-scanning apps for warehouse bin-to-bin transfers and goods receipt
+- Field-service apps with photo capture, GPS check-in and offline work orders
+- Companion apps for existing web products, sharing the same backend and auth`,
+  },
+  {
+    type: "service",
+    slug: "business-intelligence-ai",
+    title: "Business Intelligence and Analytics using AI",
+    excerpt:
+      "Dashboards and data models that answer the next question, not just the last report — with AI that explains a number instead of just charting it.",
+    sort_order: 3,
+    tags: ["BI", "Analytics", "Dashboards", "AI"],
+    data: {
+      icon: "chart",
+      outcomes: [
+        "One data model feeding every dashboard, no duplicate logic",
+        "Natural-language questions answered against your real data",
+        "Alerts on the metrics that matter, not a wall of charts",
+      ],
+    },
+    body: `## Dashboards people actually check
+
+Most BI rollouts stall because the dashboard answers last month's question. We build a data model first, then let both humans and an AI layer query it.
+
+## What we deliver
+
+- **A governed semantic layer** — one source of truth for metrics, so finance and ops stop reconciling numbers
+- **Interactive dashboards** (drill-down, cohort, trend) built on your warehouse or an embedded store when one server is enough
+- **Natural-language analytics** — ask a question in plain English, get a chart and the SQL behind it, not a hallucinated number
+- **Anomaly detection and alerting** on the metrics you actually act on
+- **Scheduled and event-driven pipelines** (ETL/ELT) that keep the model fresh without a nightly fire drill
+
+## Where AI fits
+
+The model never guesses at your numbers — it forms a query against your actual data model, then explains the result in plain language. Every answer is traceable back to the query that produced it.`,
+  },
+  {
+    type: "service",
+    slug: "sap-btp-development",
+    title: "SAP BTP Development and Integration",
+    excerpt:
+      "AI agents, BTP extensions and Fiori apps that read your S/4HANA data through CDS and OData, propose the next action, and post it back — with a human approving the edge cases.",
+    sort_order: 4,
+    tags: ["S/4HANA", "BTP", "OData", "CAP", "Fiori", "UI5", "Agents"],
+    data: {
+      icon: "layers",
+      outcomes: [
+        "Ship a simple agent-driven app in 1–2 days",
+        "Clean-core extensions with zero custom code in S/4",
+        "Apps built on CDS annotations, so they stay upgrade-safe",
+        "Every action traceable to an SAP change document",
+      ],
+    },
+    body: `## AI agents inside SAP S/4HANA
+
+Most "AI for SAP" demos stop at a chat window that summarises a screen. We build agents that **do the work** — safely, inside your authorisation concept.
+
+A Torotech agent is a small, auditable service on BTP that:
+
+- reads business context through **ABAP CDS views** and **OData V4** services (no direct table access, ever)
+- reasons with a model of your choice (Anthropic Claude, Azure OpenAI, or SAP AI Core)
+- summarises data, forms a query, compares records, or proposes an action — entirely through the app's own OData services, with the request shown to an approver before anything writes back
+- writes back only after approval rules pass, and logs every step to a change document
+
+### Typical first projects
+
+| Process | What the agent does | Guardrail |
+| --- | --- | --- |
+| Sales order holds | Reads block reasons, credit exposure and delivery dates; drafts the release or the customer note | Release above a threshold needs a human |
+| Material verification | Compares inbound ASN, PO and goods-receipt data; flags mismatches with a suggested resolution | Never posts a GR on its own |
+| Returns triage | Classifies return reasons from free text and photos; proposes disposition and credit | Credit memo is always approved |
+
+## BTP extensions & integration
+
+Every customisation you put in S/4HANA is a tax on the next upgrade. We build the things your business needs *next to* SAP on BTP — and connect them with events, not batch jobs.
+
+- **CAP services** in TypeScript with proper authorisation, draft handling and OData V4 exposure
+- **Integration Suite** flows for EDI 850/856/810, cXML punch-out, and 3PL shipment feeds
+- **Event Mesh** subscriptions so BTP apps react to SAP business events in seconds
+- **Cloud Connector & Destinations** configured once, documented, and reproducible with Terraform
+- **CI/CD** with MTA builds, Cloud Transport Management and GitHub Actions
+
+### Reference architecture
+
+\`\`\`
+S/4HANA ──(events)──▶ Event Mesh ──▶ CAP service ──▶ HANA Cloud
+   ▲                                       │
+   └────────────(OData via Cloud Connector)◀┘
+\`\`\`
+
+## Fiori & UI5 applications
+
+We build Fiori apps with the same care we'd give a consumer product — clear flows, quick loads, keyboard and scanner friendly.
+
+- **Fiori Elements** (List Report, Object Page, Analytical List Page) driven by CDS annotations and RAP behaviour definitions
+- **Freestyle UI5 / TypeScript** for scanning, planning boards, blotters and anything a template can't express
+- **Launchpad & Build Work Zone** design: catalogs, spaces and pages that match how teams work
+- **AI-assisted UI**: inline explanation, smart defaults and natural-language filters powered by the same agents above
+
+## How an engagement runs
+
+1. **Map the workflow (same day).** We sit with the people who do the work today and identify which OData services and entities the app already uses — and the exceptions that actually matter.
+2. **Build and wire it (1–2 days for a simple app).** Chat shell, orchestrator, narrow LLM, OData calls — wired into the app that already exists. Nothing gets rebuilt underneath it.
+3. **Test it with the people who'll use it.** Real phrasing, real edge cases, before anyone else sees it.
+4. **Go live.** One integration, live for every user immediately — write-backs sit behind an approval inbox until the numbers earn wider auto-approval. More complex, multi-system workflows take longer, but the pattern itself doesn't change.
+
+## Stack
+
+SAP BTP Cloud Foundry or Kyma · CAP (Node.js/TypeScript) · SAP Cloud Connector · Destination service · Integration Suite · Event Mesh · Anthropic Claude / SAP AI Core · Fiori Elements & freestyle UI5.
+
+We've run this pattern in food distribution, healthcare and manufacturing, on both ECC and S/4HANA.`,
+  },
+  {
+    type: "service",
+    slug: "automation-testing-playwright",
+    title: "Automation Testing using Playwright",
+    excerpt:
+      "End-to-end test suites that actually get maintained — fast, parallel, and wired into CI so a broken flow fails the build, not the customer.",
+    sort_order: 5,
+    tags: ["Playwright", "Testing", "CI/CD", "QA"],
+    data: {
+      icon: "testtube",
+      outcomes: [
+        "Critical user flows covered before the next release, not after",
+        "Cross-browser suite running in CI on every pull request",
+        "Flake budget near zero — tests people trust and don't skip",
+      ],
+    },
+    body: `## Test suites your team actually keeps
+
+Most Playwright suites rot within a quarter because they were written once and never owned. We build suites around the flows that make you money, and set up the harness so your team keeps them alive.
+
+## What we deliver
+
+- **Critical-path E2E coverage** — checkout, sign-up, the workflow that generates the invoice — before edge cases
+- **Cross-browser and cross-viewport runs** (Chromium, Firefox, WebKit, mobile emulation) in one config
+- **Page-object / fixture architecture** that survives a redesign without a full rewrite
+- **Visual regression and API-level checks** layered in alongside UI flows where they're cheaper and faster
+- **CI integration** — GitHub Actions or your pipeline of choice, sharded for speed, with traces and video on failure
+- **Flake triage** — quarantine, root-cause and a policy so a flaky test gets fixed, not muted forever
+
+## How an engagement runs
+
+1. Map the flows that actually matter to revenue or compliance.
+2. Stand up the Playwright config, fixtures and CI job in the first days.
+3. Write coverage flow by flow, reviewed with your team as we go.
+4. Hand over a suite your engineers can extend — no black box.`,
+  },
+  {
+    type: "service",
+    slug: "workflow-automation-n8n",
+    title: "Enterprise Workflow Automation using N8N",
+    excerpt:
+      "Self-hosted N8N workflows that connect your SaaS tools, internal systems and AI steps — without the per-task pricing of Zapier at enterprise volume.",
+    sort_order: 6,
+    tags: ["N8N", "Automation", "Integration", "Workflows"],
+    data: {
+      icon: "workflow",
+      outcomes: [
+        "Self-hosted, so no per-execution vendor pricing at scale",
+        "One workflow layer connecting SaaS, internal APIs and AI steps",
+        "Error handling and retries built in, not an afterthought",
+      ],
+    },
+    body: `## Automation that survives contact with production
+
+Point-and-click automation tools demo well and then fall over at real volume, or start billing per task. We build N8N workflows self-hosted on your own infrastructure, with the error handling that turns a demo into an operational system.
+
+## What we deliver
+
+- **Self-hosted N8N** on your own VPS or cloud account — no per-execution pricing, full data residency
+- **Custom nodes and functions** where the built-in library doesn't reach — internal APIs, legacy systems, SAP OData
+- **AI steps inside the workflow** — classification, extraction, summarisation — wired to the model of your choice
+- **Error workflows, retries and alerting** so a failed run pages someone instead of silently dropping data
+- **Version-controlled workflows** (exported as JSON, reviewed like code) instead of undocumented click-ops
+
+## Typical automations
+
+- Lead intake: form → enrichment → CRM → Slack notification → follow-up sequence
+- Document pipeline: inbox → AI extraction → validation → ERP posting → approval alert
+- Cross-system sync: keep two SaaS tools or an internal system and a SaaS tool consistent without a middleware contract`,
   },
 ];
 
@@ -404,7 +499,13 @@ export async function seedContent(db: Seedable) {
   }
 
   const fields: [string, string, string, string, string[]?][] = [
-    ["service", "icon", "Icon", "select", ["brain", "layers", "layout", "globe", "sparkles", "database"]],
+    [
+      "service",
+      "icon",
+      "Icon",
+      "select",
+      ["brain", "layers", "layout", "globe", "sparkles", "database", "smartphone", "chart", "testtube", "workflow"],
+    ],
     ["service", "outcomes", "Key outcomes (one per line)", "list"],
     ["case_study", "client", "Client", "text"],
     ["case_study", "industry", "Industry", "text"],

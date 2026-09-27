@@ -28,7 +28,7 @@ const PROCESS = [
 
 export default async function HomePage() {
   const [services, work, posts, products] = await Promise.all([
-    listPublished("service", 4),
+    listPublished("service", 6),
     listPublished("case_study", 3),
     listPublished("post", 3),
     listPublished("product", 3),
@@ -56,7 +56,7 @@ export default async function HomePage() {
                 Book a call <ArrowRight size={18} />
               </Link>
               <Link
-                href="/services/ai-for-sap"
+                href="/services/sap-btp-development"
                 className="rounded-full border border-line px-6 py-3 font-semibold text-ink transition-colors hover:border-ink"
               >
                 How the agents work
@@ -90,11 +90,11 @@ export default async function HomePage() {
       <section className="pt-24">
         <Container>
           <SectionHeading
-            title="Four things we do well."
+            title="Six things we do well."
             lede="Each engagement is scoped to one process and one number you can check. Pick the entry point that matches where you are."
             action={{ href: "/services", label: "All services" }}
           />
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((s, i) => (
               <ServiceCard key={s.id} item={s} index={i} />
             ))}

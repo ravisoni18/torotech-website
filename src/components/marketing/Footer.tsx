@@ -6,10 +6,12 @@ const columns = [
   {
     title: "Services",
     links: [
-      { href: "/services/ai-for-sap", label: "AI agents for S/4HANA" },
-      { href: "/services/btp-extensions", label: "BTP extensions" },
-      { href: "/services/fiori-apps", label: "Fiori & UI5" },
-      { href: "/services/web-development", label: "Web apps with AI" },
+      { href: "/services/web-development", label: "Website Development & AI Integration" },
+      { href: "/services/mobile-app-development", label: "Mobile Apps Development" },
+      { href: "/services/business-intelligence-ai", label: "BI & Analytics using AI" },
+      { href: "/services/sap-btp-development", label: "SAP BTP Development & Integration" },
+      { href: "/services/automation-testing-playwright", label: "Automation Testing (Playwright)" },
+      { href: "/services/workflow-automation-n8n", label: "Workflow Automation (N8N)" },
     ],
   },
   {

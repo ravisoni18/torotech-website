@@ -1,5 +1,18 @@
 import Link from "next/link";
-import { ArrowUpRight, Brain, Database, Globe, Layers, LayoutPanelTop, Sparkles, type LucideIcon } from "lucide-react";
+import {
+  ArrowUpRight,
+  BarChart3,
+  Brain,
+  Database,
+  Globe,
+  Layers,
+  LayoutPanelTop,
+  Smartphone,
+  Sparkles,
+  TestTube2,
+  Workflow,
+  type LucideIcon,
+} from "lucide-react";
 import type { Content } from "@/lib/content";
 import { mediaKind, productGallery, type MediaItem } from "@/lib/content-types";
 
@@ -39,6 +52,10 @@ const ICONS: Record<string, LucideIcon> = {
   globe: Globe,
   sparkles: Sparkles,
   database: Database,
+  smartphone: Smartphone,
+  chart: BarChart3,
+  testtube: TestTube2,
+  workflow: Workflow,
 };
 
 export function ServiceIcon({ name, className = "" }: { name?: unknown; className?: string }) {
