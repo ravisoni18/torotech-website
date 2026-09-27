@@ -7,6 +7,7 @@ import { Markdown } from "@/components/marketing/Markdown";
 import { SystemDiagram } from "@/components/marketing/SystemDiagram";
 import { SapApprovalDemo } from "@/components/marketing/SapApprovalDemo";
 import { N8nGame } from "@/components/marketing/N8nGame";
+import { PlaywrightGame } from "@/components/marketing/PlaywrightGame";
 
 export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ slug: string }> };
@@ -143,6 +144,15 @@ export default async function ServicePage({ params }: Props) {
                 <p className="mt-3 text-sm text-ink-soft">
                   Build the pipeline yourself — tap a node, then tap another to join them, and hit "Execute."
                   Same node-and-connection model as a real n8n canvas, three missions, works on a phone.
+                </p>
+              </div>
+            )}
+            {slug === "automation-testing-playwright" && (
+              <div className="mt-10">
+                <PlaywrightGame />
+                <p className="mt-3 text-sm text-ink-soft">
+                  Six real defect patterns hidden in a mock checkout page — tap each one before the clock
+                  runs out. The report on the right fills in with the assertion that would have caught it in CI.
                 </p>
               </div>
             )}
