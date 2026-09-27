@@ -42,8 +42,13 @@ const TIMELINE = [
   },
   {
     year: "2023",
-    title: "SAP BTP / Fiori architect, present day",
-    body: "Building agent-driven S/4HANA apps and BTP extensions at Mindfore Inc., alongside Torotech's own client work.",
+    title: "SAP BTP / Fiori architect, Mindfore Inc.",
+    body: "Building agent-driven S/4HANA apps and BTP extensions, onsite in the US — based in Houston, TX, working with a client in New Jersey.",
+  },
+  {
+    year: "2025",
+    title: "Relocated to Canada",
+    body: "Moved the practice to Kitchener–Waterloo, Ontario, continuing the same SAP engagement remotely and taking on Canadian clients directly.",
   },
   {
     year: "Now",

@@ -87,8 +87,9 @@ const EXPERIENCE: {
   {
     role: "SAP BTP / Fiori Architect",
     company: "Mindfore Inc.",
-    location: "Houston, TX — onsite at Porky Products, New Jersey",
+    location: "Houston, TX, USA (2023–2025) → Kitchener–Waterloo, ON, Canada (2025–Present)",
     period: "Apr 2023 – Present",
+    note: "Onsite at Porky Products, New Jersey; relocated to Canada in 2025, continuing the same engagement remotely.",
     points: [
       "Build SAPUI5 custom Fiori apps with the core team on the Business Application Studio platform.",
       "Delivered 15+ fully custom apps across finance and sales & distribution.",

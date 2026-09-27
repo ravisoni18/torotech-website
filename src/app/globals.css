@@ -128,8 +128,16 @@ p {
   animation: pulse-ring 2.4s ease-out infinite;
 }
 
+/* Homepage hero backdrop */
+@keyframes float-slow {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(0, -18px); }
+}
+.float-slow { animation: float-slow 7s ease-in-out infinite; }
+.float-slow-delay { animation: float-slow 8s ease-in-out infinite; animation-delay: 1.4s; }
+
 @media (prefers-reduced-motion: reduce) {
-  .marquee-track, .flow-line, .packet, .pulse-ring { animation: none !important; }
+  .marquee-track, .flow-line, .packet, .pulse-ring, .float-slow, .float-slow-delay { animation: none !important; }
   html { scroll-behavior: auto; }
 }
 
