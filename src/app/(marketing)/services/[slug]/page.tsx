@@ -12,6 +12,33 @@ import { PlaywrightGame } from "@/components/marketing/PlaywrightGame";
 export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ slug: string }> };
 
+const sapOfferings = [
+  {
+    title: "SAP Build",
+    body: "We turn process owners' ideas into working apps and automations on SAP Build, then add the guardrails IT needs: transports, roles and a clean path to production. You get the low-code speed without the shadow-IT mess.",
+  },
+  {
+    title: "SAP Integration Suite",
+    body: "We design and build iFlows, API proxies and event meshes that connect S/4HANA to Salesforce, banks, carriers and everything else in your landscape. Every interface ships with monitoring, alerting and retry logic, so failures surface before your users notice them.",
+  },
+  {
+    title: "SAP Fiori / UI5 / CAPM",
+    body: "We build Fiori apps your users actually want to open: SAPUI5 and Fiori elements front ends on top of CAP services on BTP. The result is clean-core extensions that survive upgrades and look native in the Launchpad.",
+  },
+  {
+    title: "SAP ABAP, CDS and RAP",
+    body: "We write modern ABAP: CDS views, RAP business objects and released APIs that keep your S/4HANA core clean and cloud-ready. We also refactor legacy Z-code, so custom logic stops being the thing that blocks your next upgrade.",
+  },
+  {
+    title: "SAP Business Process Automation",
+    body: "We map your approval chains, document intake and repetitive back-office steps, then automate them with SAP Build Process Automation and AI agents. Every automated decision keeps a human sign-off and a full audit trail.",
+  },
+  {
+    title: "SAP Basis",
+    body: "We handle system administration, BTP subaccount setup, transports, performance tuning and upgrade planning, so your SAP estate stays fast, patched and secure. It's senior Basis expertise on call, without adding headcount.",
+  },
+];
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const item = await getPublished("service", slug);
@@ -62,6 +89,28 @@ export default async function ServicePage({ params }: Props) {
                 </dl>
                 <div className="mt-10">
                   <SapApprovalDemo />
+                </div>
+                <div className="mt-16">
+                  <h2 className="text-3xl font-extrabold text-ink">What we build on SAP</h2>
+                  <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink-soft">
+                    One senior team across the whole SAP stack, from the ABAP core to BTP, integration and Basis.
+                  </p>
+                  <div className="mt-8 grid gap-5 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2">
+                    {sapOfferings.map((o, i) => (
+                      <div
+                        key={o.title}
+                        className="flex aspect-square flex-col justify-between rounded-[var(--radius-card)] border border-line bg-mist p-7 transition-colors hover:border-teal"
+                      >
+                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-teal-tint text-sm font-bold text-teal-deep">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <div className="mt-6">
+                          <h3 className="text-xl font-bold text-ink">{o.title}</h3>
+                          <p className="mt-3 text-[15px] leading-relaxed text-ink-soft">{o.body}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
