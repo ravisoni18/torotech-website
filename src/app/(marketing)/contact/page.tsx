@@ -7,8 +7,8 @@ import { SITE } from "@/lib/site";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Contact", description: "Book a call with Torotech about SAP, BTP, Fiori or an AI-integrated web app." };
 
-export default async function ContactPage({ searchParams }: { searchParams: Promise<{ interest?: string }> }) {
-  const { interest } = await searchParams;
+export default async function ContactPage({ searchParams }: { searchParams: Promise<{ interest?: string; message?: string }> }) {
+  const { interest, message } = await searchParams;
   const fields = (await listFields("lead")).map((f) => ({
     key: f.key,
     label: f.label,
@@ -46,7 +46,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
           </dl>
         </div>
         <div className="relative rounded-[var(--radius-card)] border border-line p-7 md:p-9">
-          <ContactForm fields={fields} defaultInterest={interest} />
+          <ContactForm fields={fields} defaultInterest={interest} defaultMessage={message?.slice(0, 2000)} />
         </div>
       </Container>
     </section>

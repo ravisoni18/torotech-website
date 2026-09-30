@@ -16,13 +16,22 @@ const INTERESTS = [
   "BTP extension or integration",
   "Fiori / UI5 application",
   "Web app with AI",
+  "Mobile Apps Development",
   "Not sure yet",
 ];
 
 const input =
   "w-full rounded-lg border border-line bg-paper px-3.5 py-2.5 text-[15px] text-ink placeholder:text-muted focus:border-teal focus:outline-none";
 
-export function ContactForm({ fields, defaultInterest }: { fields: PublicField[]; defaultInterest?: string }) {
+export function ContactForm({
+  fields,
+  defaultInterest,
+  defaultMessage,
+}: {
+  fields: PublicField[];
+  defaultInterest?: string;
+  defaultMessage?: string;
+}) {
   const pathname = usePathname();
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
@@ -120,6 +129,7 @@ export function ContactForm({ fields, defaultInterest }: { fields: PublicField[]
         <textarea
           name="message"
           rows={5}
+          defaultValue={defaultMessage}
           className={input}
           placeholder="What happens today, who does it, and what goes wrong."
         />

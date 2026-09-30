@@ -9,6 +9,8 @@ import { SystemDiagram } from "@/components/marketing/SystemDiagram";
 import { SapApprovalDemo } from "@/components/marketing/SapApprovalDemo";
 import { N8nGame } from "@/components/marketing/N8nGame";
 import { PlaywrightGame } from "@/components/marketing/PlaywrightGame";
+import { MobileProcess } from "@/components/marketing/MobileProcess";
+import { MobileStackGame } from "@/components/marketing/MobileStackGame";
 
 export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ slug: string }> };
@@ -156,6 +158,20 @@ export default async function ServicePage({ params }: Props) {
                     Open full-screen ↗
                   </a>
                 </p>
+                <div className="mt-16">
+                  <MobileProcess />
+                </div>
+                <div className="mt-16">
+                  <h2 className="text-3xl font-extrabold text-ink">Find your stack in 60 seconds</h2>
+                  <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink-soft">
+                    Answer seven questions about your users, devices and data. The fit meter re-ranks native,
+                    cross-platform and HTML5 as you go, then you get a full frontend, backend, hosting, security and
+                    testing recommendation.
+                  </p>
+                  <div className="mt-8">
+                    <MobileStackGame />
+                  </div>
+                </div>
               </div>
             )}
             {slug === "business-intelligence-ai" && (
