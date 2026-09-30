@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPublished, listPublished } from "@/lib/content";
@@ -16,26 +17,32 @@ const sapOfferings = [
   {
     title: "SAP Build",
     body: "We turn process owners' ideas into working apps and automations on SAP Build, then add the guardrails IT needs: transports, roles and a clean path to production. You get the low-code speed without the shadow-IT mess.",
+    image: "/images/sap/sap-build.jpg",
   },
   {
     title: "SAP Integration Suite",
     body: "We design and build iFlows, API proxies and event meshes that connect S/4HANA to Salesforce, banks, carriers and everything else in your landscape. Every interface ships with monitoring, alerting and retry logic, so failures surface before your users notice them.",
+    image: "/images/sap/sap-integration-suite.jpg",
   },
   {
     title: "SAP Fiori / UI5 / CAPM",
     body: "We build Fiori apps your users actually want to open: SAPUI5 and Fiori elements front ends on top of CAP services on BTP. The result is clean-core extensions that survive upgrades and look native in the Launchpad.",
+    image: "/images/sap/sap-fiori-ui5.png",
   },
   {
     title: "SAP ABAP, CDS and RAP",
     body: "We write modern ABAP: CDS views, RAP business objects and released APIs that keep your S/4HANA core clean and cloud-ready. We also refactor legacy Z-code, so custom logic stops being the thing that blocks your next upgrade.",
+    image: "/images/sap/sap-abap.png",
   },
   {
     title: "SAP Business Process Automation",
     body: "We map your approval chains, document intake and repetitive back-office steps, then automate them with SAP Build Process Automation and AI agents. Every automated decision keeps a human sign-off and a full audit trail.",
+    image: "/images/sap/sap-process-automation.png",
   },
   {
     title: "SAP Basis",
     body: "We handle system administration, BTP subaccount setup, transports, performance tuning and upgrade planning, so your SAP estate stays fast, patched and secure. It's senior Basis expertise on call, without adding headcount.",
+    image: "/images/sap/sap-basis.webp",
   },
 ];
 
@@ -68,6 +75,41 @@ export default async function ServicePage({ params }: Props) {
               ))}
             </div>
             {slug === "sap-btp-development" && (
+              <div className="mt-16">
+                <h2 className="text-3xl font-extrabold text-ink">What we build on SAP</h2>
+                <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink-soft">
+                  One senior team across the whole SAP stack, from the ABAP core to BTP, integration and Basis.
+                </p>
+                <div className="mt-8 grid gap-5 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2">
+                  {sapOfferings.map((o, i) => (
+                    <div
+                      key={o.title}
+                      className="flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-line bg-mist transition-colors hover:border-teal"
+                    >
+                      <div className="relative aspect-[16/10] w-full">
+                        <Image
+                          src={o.image}
+                          alt={o.title}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        />
+                      </div>
+                      <div className="flex flex-1 flex-col p-7">
+                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-teal-tint text-sm font-bold text-teal-deep">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <div className="mt-6">
+                          <h3 className="text-xl font-bold text-ink">{o.title}</h3>
+                          <p className="mt-3 text-[15px] leading-relaxed text-ink-soft">{o.body}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {slug === "sap-btp-development" && (
               <div className="mt-10">
                 <div className="relative">
                   <div className="absolute -inset-6 -z-10 rounded-[28px] bg-mist" />
@@ -89,28 +131,6 @@ export default async function ServicePage({ params }: Props) {
                 </dl>
                 <div className="mt-10">
                   <SapApprovalDemo />
-                </div>
-                <div className="mt-16">
-                  <h2 className="text-3xl font-extrabold text-ink">What we build on SAP</h2>
-                  <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink-soft">
-                    One senior team across the whole SAP stack, from the ABAP core to BTP, integration and Basis.
-                  </p>
-                  <div className="mt-8 grid gap-5 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2">
-                    {sapOfferings.map((o, i) => (
-                      <div
-                        key={o.title}
-                        className="flex aspect-square flex-col justify-between rounded-[var(--radius-card)] border border-line bg-mist p-7 transition-colors hover:border-teal"
-                      >
-                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-teal-tint text-sm font-bold text-teal-deep">
-                          {String(i + 1).padStart(2, "0")}
-                        </span>
-                        <div className="mt-6">
-                          <h3 className="text-xl font-bold text-ink">{o.title}</h3>
-                          <p className="mt-3 text-[15px] leading-relaxed text-ink-soft">{o.body}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
                 </div>
               </div>
             )}
