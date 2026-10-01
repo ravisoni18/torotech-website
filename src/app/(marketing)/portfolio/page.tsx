@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { listPublished } from "@/lib/content";
 import type { Content } from "@/lib/content-types";
 import { Container, CtaBand } from "@/components/marketing/ui";
-import { CvProjectGrid } from "@/components/marketing/CvProjectGrid";
+import { PortfolioTabs, type PortfolioGroup } from "@/components/marketing/PortfolioTabs";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -11,8 +11,27 @@ export const metadata: Metadata = {
     "Selected work: AI assistants on live SAP data, Fiori and SAPUI5 apps, BI dashboards, warehouse mobile apps and an AI-enabled consulting site.",
 };
 
+const GROUPS: PortfolioGroup[] = [
+  { id: "all", label: "All" },
+  { id: "website", label: "Website" },
+  { id: "mobile-apps", label: "Mobile Apps" },
+  { id: "sap", label: "SAP BTP/Fiori Apps" },
+  {
+    id: "n8n",
+    label: "N8N workflows",
+    empty: {
+      text: "Workflow write-ups are on their way. Meanwhile, build one yourself in the interactive n8n-style demo.",
+      href: "/services/workflow-automation-n8n",
+      cta: "Try the workflow demo",
+    },
+  },
+  { id: "analytics", label: "Business Analytics" },
+];
+
 type Piece = {
   slug: string;
+  /** Tab ids from GROUPS this piece appears under ("all" is implied). */
+  groups: string[];
   title: string;
   /** Who it was for — by industry only, never the client's name. */
   sector: string;
@@ -31,6 +50,7 @@ type Piece = {
 const PIECES: Piece[] = [
   {
     slug: "torotech-site",
+    groups: ["website"],
     title: "AI-enabled consulting site with live interactive demos",
     sector: "Torotech",
     tags: ["Next.js", "TypeScript", "React", "Node.js", "DuckDB", "Docker", "CI/CD"],
@@ -41,6 +61,7 @@ const PIECES: Piece[] = [
   },
   {
     slug: "shipment-ai-assistant",
+    groups: ["sap", "analytics"],
     title: "AI shipment visibility & chat assistant",
     sector: "Food distributor",
     tags: ["SAP Fiori Elements", "RAP", "OData V4", "SAPUI5", "AI integration"],
@@ -50,6 +71,7 @@ const PIECES: Piece[] = [
   },
   {
     slug: "field-visit-chat",
+    groups: ["mobile-apps", "sap"],
     title: "Conversational field-visit logging app",
     sector: "Food distributor",
     tags: ["SAPUI5", "LLM integration", "Conversational UI", "SAP master data"],
@@ -60,6 +82,7 @@ const PIECES: Piece[] = [
   },
   {
     slug: "edi-fulfillment-tracker",
+    groups: ["sap"],
     title: "EDI fulfillment tracker",
     sector: "Food distributor",
     tags: ["SAP Fiori", "SAPUI5", "EDI / iDoc", "Document flow"],
@@ -70,6 +93,7 @@ const PIECES: Piece[] = [
   },
   {
     slug: "customer-sales-360",
+    groups: ["analytics"],
     title: "Customer sales 360° dashboard",
     sector: "Food distributor",
     tags: ["SAP Fiori", "SAPUI5", "Business intelligence", "Dashboard design"],
@@ -79,6 +103,7 @@ const PIECES: Piece[] = [
   },
   {
     slug: "sales-lead-dashboard",
+    groups: ["analytics"],
     title: "Sales lead comparative dashboard",
     sector: "Food distributor",
     tags: ["SAP Fiori", "SAPUI5", "Business intelligence", "Sales analytics"],
@@ -88,6 +113,7 @@ const PIECES: Piece[] = [
   },
   {
     slug: "ewm-barcode-scanner",
+    groups: ["mobile-apps"],
     title: "EWM warehouse barcode scanner",
     sector: "Furniture retailer",
     tags: ["SAPUI5", "Cordova", "Mobile", "SAP EWM"],
@@ -97,7 +123,19 @@ const PIECES: Piece[] = [
     cover: "/images/portfolio/ewm-cover.jpg",
   },
   {
+    slug: "b2c-rewards-app",
+    groups: ["mobile-apps"],
+    title: "B2C rewards app",
+    sector: "Furniture retailer",
+    tags: ["Android", "iOS", "PHP", "OData"],
+    excerpt: "Customers check their reward points on their phone, read straight from SAP.",
+    body: "Native Android and iOS apps that fetch and show each customer's reward points from SAP, through a PHP middle layer over OData — so the loyalty balance a customer sees is the one in the ERP.",
+    cvSlug: "b2c-rewards-app",
+    cover: "/images/portfolio/rewards-cover.jpg",
+  },
+  {
     slug: "fiori-rollout",
+    groups: ["sap"],
     title: "Enterprise-scale Fiori rollout (400+ apps)",
     sector: "Mining company",
     tags: ["SAP Fiori", "S/4HANA", "Program delivery", "Change management"],
@@ -108,14 +146,15 @@ const PIECES: Piece[] = [
   },
 ];
 
-export default async function PortfolioPage() {
+export default async function PortfolioPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
+  const { tab } = await searchParams;
   const cvProjects = await listPublished("cv_project", 100);
   const bySlug = new Map(cvProjects.map((p) => [p.slug, p]));
 
-  const items: Content[] = PIECES.map((piece, i) => {
+  const items = PIECES.map((piece, i) => {
     const source = piece.cvSlug ? bySlug.get(piece.cvSlug) : undefined;
     const gallery = Array.isArray(source?.data.gallery) ? source.data.gallery : [];
-    return {
+    const content: Content = {
       id: `portfolio-${piece.slug}`,
       type: "cv_project",
       slug: piece.slug,
@@ -138,6 +177,7 @@ export default async function PortfolioPage() {
       updated_at: source?.updated_at ?? "",
       published_at: source?.published_at ?? null,
     };
+    return { groups: piece.groups, content };
   });
 
   return (
@@ -155,7 +195,7 @@ export default async function PortfolioPage() {
             </p>
           </div>
           <div className="mt-12">
-            <CvProjectGrid projects={items} />
+            <PortfolioTabs groups={GROUPS} items={items} initial={tab ?? "all"} />
           </div>
         </Container>
       </section>
