@@ -26,7 +26,11 @@ const GROUPS: PortfolioGroup[] = [
     },
   },
   { id: "analytics", label: "Business Analytics" },
+  { id: "products", label: "In-house Products" },
 ];
+
+/** Products already covered by a curated piece above, so they don't appear twice. */
+const PRODUCTS_SHOWN_AS_PIECES = new Set(["torotech-ca"]);
 
 type Piece = {
   slug: string;
@@ -50,7 +54,7 @@ type Piece = {
 const PIECES: Piece[] = [
   {
     slug: "torotech-site",
-    groups: ["website"],
+    groups: ["website", "products"],
     title: "AI-enabled consulting site with live interactive demos",
     sector: "Torotech",
     tags: ["Next.js", "TypeScript", "React", "Node.js", "DuckDB", "Docker", "CI/CD"],
@@ -148,7 +152,7 @@ const PIECES: Piece[] = [
 
 export default async function PortfolioPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
   const { tab } = await searchParams;
-  const cvProjects = await listPublished("cv_project", 100);
+  const [cvProjects, products] = await Promise.all([listPublished("cv_project", 100), listPublished("product", 100)]);
   const bySlug = new Map(cvProjects.map((p) => [p.slug, p]));
 
   const items = PIECES.map((piece, i) => {
@@ -179,6 +183,27 @@ export default async function PortfolioPage({ searchParams }: { searchParams: Pr
     };
     return { groups: piece.groups, content };
   });
+
+  // Every published product joins the In-house Products tab; its own gallery and copy come straight from /admin.
+  for (const product of products) {
+    if (PRODUCTS_SHOWN_AS_PIECES.has(product.slug)) continue;
+    const tagline = typeof product.data.tagline === "string" && product.data.tagline ? product.data.tagline : product.excerpt;
+    const status = typeof product.data.status_label === "string" ? product.data.status_label : "";
+    items.push({
+      groups: ["products"],
+      content: {
+        ...product,
+        id: `portfolio-product-${product.slug}`,
+        excerpt: tagline,
+        data: {
+          ...product.data,
+          client: status ? `In-house product · ${status}` : "In-house product",
+          tech: product.tags.join(", "),
+          link: `/products/${product.slug}`,
+        },
+      },
+    });
+  }
 
   return (
     <>
