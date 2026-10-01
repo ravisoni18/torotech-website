@@ -19,6 +19,12 @@ const jetbrains = localFont({
   display: "swap",
 });
 
+const instrumentSerif = localFont({
+  variable: "--font-instrument-serif",
+  src: [{ path: "../fonts/instrument-serif-italic-latin.woff2", weight: "400", style: "italic" }],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
@@ -39,7 +45,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${manrope.variable} ${jetbrains.variable} h-full`}>
+    <html lang="en" className={`${manrope.variable} ${jetbrains.variable} ${instrumentSerif.variable} h-full`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

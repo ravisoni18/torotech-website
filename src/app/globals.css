@@ -28,6 +28,7 @@
   --color-coral: var(--coral);
   --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", Menlo, monospace;
+  --font-serif: var(--font-instrument-serif), ui-serif, Georgia, serif;
   --radius-card: 14px;
 }
 
@@ -152,4 +153,14 @@ p {
   .cv-page section { border-color: #ccc; padding-top: 16px; page-break-inside: auto; }
   .cv-page li, .cv-page .break-inside-avoid { break-inside: avoid; }
   .cv-page a { color: #0b1f3a; text-decoration: none; }
+}
+
+/* Homepage hero — curved wall of screens */
+@keyframes arc-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.arc-float { animation: arc-float 7s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .arc-float { animation: none; }
 }

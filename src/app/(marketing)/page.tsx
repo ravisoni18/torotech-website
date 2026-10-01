@@ -1,10 +1,7 @@
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { listPublished } from "@/lib/content";
 import { TechMarquee } from "@/components/marketing/TechMarquee";
-import { HeroBackdrop } from "@/components/marketing/HeroBackdrop";
+import { HeroArc } from "@/components/marketing/HeroArc";
 import { Reveal } from "@/components/marketing/Reveal";
-import { Counter } from "@/components/marketing/Counter";
 import { ApprovalGame } from "@/components/marketing/ApprovalGame";
 import {
   CaseStudyCard,
@@ -14,7 +11,6 @@ import {
   ProductCard,
   SectionHeading,
   ServiceCard,
-  ServiceIcon,
 } from "@/components/marketing/ui";
 
 export const dynamic = "force-dynamic";
@@ -48,74 +44,7 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <HeroBackdrop />
-        <Container className="grid items-center gap-12 pb-16 pt-14 md:grid-cols-[1.05fr_1fr] md:pb-24 md:pt-20">
-          <Reveal>
-            <h1 className="text-[2.6rem] font-extrabold leading-[1.05] text-ink md:text-[3.6rem]">
-              Software that ships — from your website to SAP.
-            </h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft md:text-xl">
-              Torotech builds and ships six things well: websites and mobile apps with AI built in, BI
-              dashboards you can trust, SAP BTP development and integration, automated testing, and
-              workflow automation — each scoped to one process and one number you can check.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link
-                href="/contact"
-                className="group inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-teal-deep hover:shadow-lg"
-              >
-                Book a call <ArrowRight size={18} className="transition-transform group-hover:translate-x-0.5" />
-              </Link>
-              <Link
-                href="/services"
-                className="rounded-full border border-line px-6 py-3 font-semibold text-ink transition-all hover:-translate-y-0.5 hover:border-ink"
-              >
-                See all services
-              </Link>
-            </div>
-            <dl className="mt-12 grid max-w-lg grid-cols-3 gap-6 border-t border-line pt-8">
-              <div>
-                <dt className="text-sm text-muted">Practice areas</dt>
-                <dd className="mt-1 text-2xl font-extrabold text-ink">
-                  <Counter value="6" />
-                </dd>
-              </div>
-              <div>
-                <dt className="text-sm text-muted">First app live</dt>
-                <dd className="mt-1 text-2xl font-extrabold text-ink">1–2 days</dd>
-              </div>
-              <div>
-                <dt className="text-sm text-muted">Years building software</dt>
-                <dd className="mt-1 text-2xl font-extrabold text-ink">
-                  <Counter value="12+" />
-                </dd>
-              </div>
-            </dl>
-          </Reveal>
-          <Reveal delay={0.15} direction="left">
-            <div className="relative">
-              <div className="absolute -inset-6 -z-10 rounded-[28px] bg-mist" />
-              <div className="grid grid-cols-2 gap-3.5">
-                {services.map((s, i) => (
-                  <Reveal key={s.id} delay={0.2 + i * 0.06}>
-                    <Link
-                      href={`/services/${s.slug}`}
-                      className="group flex items-center gap-3 rounded-2xl border border-line bg-paper p-4 transition-all duration-300 hover:-translate-y-1 hover:border-teal hover:shadow-md"
-                    >
-                      <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-tint text-ink transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
-                        <ServiceIcon name={s.data.icon} className="h-[18px] w-[18px]" />
-                      </span>
-                      <span className="text-sm font-semibold leading-snug text-ink">{s.title}</span>
-                    </Link>
-                  </Reveal>
-                ))}
-              </div>
-            </div>
-          </Reveal>
-        </Container>
-      </section>
+      <HeroArc />
 
       <TechMarquee />
 
