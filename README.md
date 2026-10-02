@@ -118,4 +118,6 @@ deploy/              Caddyfile, backup script
 
 ## Scripts
 
-`npm run dev` · `npm run build` · `npm run start` · `npm run lint` · `npm run typecheck` · `npm run docker:build` · `npm run docker:local`
+`npm run dev` · `npm run build` · `npm run start` · `npm run lint` · `npm run typecheck` · `npm run docker:build` · `npm run docker:local` · `npm run deploy`
+
+`npm run deploy` typechecks and builds, pushes committed work on `main`, follows the GitHub Actions deploy to the VPS, then checks that torotech.ca is up. Uncommitted files are never deployed. Use `npm run deploy -- --redeploy` to rebuild the server without new commits.

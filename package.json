@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "start:standalone": "node .next/standalone/server.js",
     "docker:build": "docker build -t torotech/web .",
-    "docker:local": "docker compose -f docker-compose.local.yml up --build"
+    "docker:local": "docker compose -f docker-compose.local.yml up --build",
+    "deploy": "node scripts/deploy.mjs"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.8.4",
