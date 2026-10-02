@@ -3,6 +3,7 @@ import { listPublished } from "@/lib/content";
 import type { Content } from "@/lib/content-types";
 import { Container, CtaBand } from "@/components/marketing/ui";
 import { PortfolioTabs, type PortfolioGroup } from "@/components/marketing/PortfolioTabs";
+import { CONCEPTS } from "@/lib/portfolio-concepts";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -27,6 +28,43 @@ const GROUPS: PortfolioGroup[] = [
   },
   { id: "analytics", label: "Business Analytics" },
   { id: "products", label: "In-house Products" },
+  { id: "games", label: "Enterprise Games" },
+];
+
+// Interactive games that live on this site — each card links to where it can be played.
+const GAMES = [
+  {
+    slug: "approval-game",
+    title: "You're the approver — AI decision game",
+    excerpt: "Twenty seconds to approve or flag what an AI agent wants to do.",
+    body: "An AI agent proposes real-world actions — deployments, refunds, schema changes — and you have twenty seconds to approve or flag each one. Swipe the card or use the buttons. It's the exact human-in-the-loop decision our agents hand to people, turned into a game.",
+    tags: ["React", "Motion", "AI agents", "Human in the loop"],
+    link: "/#approval-game",
+  },
+  {
+    slug: "bug-hunt",
+    title: "Playwright QA Challenge — bug hunt",
+    excerpt: "Find six real defect patterns in a mock checkout before the clock runs out.",
+    body: "Six real defect patterns are hidden in a mock checkout page. Tap each one before the 35-second clock runs out, and the test report fills in with the Playwright assertion that would have caught it in CI.",
+    tags: ["Playwright", "QA", "React"],
+    link: "/services/automation-testing-playwright#bug-hunt",
+  },
+  {
+    slug: "workflow-game",
+    title: "Toro Automator — n8n workflow game",
+    excerpt: "Build a webhook → AI agent → Slack pipeline across three missions.",
+    body: "Build the pipeline yourself: add nodes, tap one and then another to join them, and hit Execute. It uses the same node-and-connection model as a real n8n canvas, with three missions and an execution console — and it works on a phone.",
+    tags: ["n8n", "Automation", "AI agents"],
+    link: "/services/workflow-automation-n8n#workflow-game",
+  },
+  {
+    slug: "stack-game",
+    title: "Mobile Stack Builder — find your stack in 60 seconds",
+    excerpt: "Seven questions, a live fit meter, and a full mobile stack recommendation.",
+    body: "Answer seven questions about your users, devices and data. The live fit meter re-ranks native, cross-platform and HTML5 as you go, then you get a full frontend, backend, hosting, security and testing recommendation.",
+    tags: ["Mobile", "React Native", "Flutter", "Decision tool"],
+    link: "/services/mobile-app-development#stack-game",
+  },
 ];
 
 /** Products already covered by a curated piece above, so they don't appear twice. */
@@ -205,6 +243,56 @@ export default async function PortfolioPage({ searchParams }: { searchParams: Pr
     });
   }
 
+  for (const game of GAMES) {
+    items.push({
+      groups: ["games"],
+      content: {
+        id: `portfolio-game-${game.slug}`,
+        type: "cv_project",
+        slug: game.slug,
+        title: game.title,
+        excerpt: game.excerpt,
+        body: game.body,
+        cover: `/images/portfolio/games/${game.slug}.webp`,
+        status: "published",
+        tags: game.tags,
+        data: { client: "Interactive · playable on this site", tech: game.tags.join(", "), link: game.link, link_label: "Play it" },
+        sort_order: 0,
+        created_at: "",
+        updated_at: "",
+        published_at: null,
+      },
+    });
+  }
+
+  // Concept designs come after the real work in every tab, and say so on the card.
+  for (const concept of CONCEPTS) {
+    items.push({
+      groups: [concept.group],
+      content: {
+        id: `portfolio-concept-${concept.slug}`,
+        type: "cv_project",
+        slug: concept.slug,
+        title: concept.title,
+        excerpt: concept.excerpt,
+        body: `${concept.body}\n\n*Concept design for a fictional brand — not client work.*`,
+        cover: null,
+        status: "published",
+        tags: concept.tags,
+        data: {
+          client: `Concept · ${concept.sector}`,
+          tech: concept.tags.join(", "),
+          gallery: concept.gallery.map((url) => ({ url, type: "image" })),
+          ...(concept.link ? { link: concept.link, link_label: "Open live mockup" } : {}),
+        },
+        sort_order: 0,
+        created_at: "",
+        updated_at: "",
+        published_at: null,
+      },
+    });
+  }
+
   return (
     <>
       <section className="pt-16 md:pt-24">
@@ -214,9 +302,10 @@ export default async function PortfolioPage({ searchParams }: { searchParams: Pr
               Portfolio, <span className="font-serif font-normal italic text-teal-deep">in screenshots</span>
             </h1>
             <p className="mt-5 text-lg leading-relaxed text-ink-soft">
-              AI assistants on live SAP data, Fiori and SAPUI5 apps, BI dashboards and warehouse mobile apps. Open any
-              piece for the full story and every screenshot. Client work is confidential, so it&apos;s described by
-              industry rather than name.
+              AI assistants on live SAP data, Fiori and SAPUI5 apps, BI dashboards, mobile apps and the games on this
+              site. Open any piece for the full story and every screenshot. Client work is confidential, so it&apos;s
+              described by industry rather than name; pieces marked <b className="font-semibold text-ink">Concept</b>{" "}
+              are design explorations for fictional brands.
             </p>
           </div>
           <div className="mt-12">

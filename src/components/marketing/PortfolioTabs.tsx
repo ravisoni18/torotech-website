@@ -37,7 +37,7 @@ export function PortfolioTabs({
 
   return (
     <div>
-      <div role="tablist" aria-label="Portfolio categories" className="flex gap-1.5 overflow-x-auto rounded-2xl bg-mist p-1.5">
+      <div role="tablist" aria-label="Portfolio categories" className="flex flex-wrap gap-1.5 rounded-2xl bg-mist p-1.5">
         {groups.map((g) => {
           const on = g.id === active;
           return (

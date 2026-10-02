@@ -161,7 +161,7 @@ export default async function ServicePage({ params }: Props) {
                 <div className="mt-16">
                   <MobileProcess />
                 </div>
-                <div className="mt-16">
+                <div id="stack-game" className="mt-16 scroll-mt-24">
                   <h2 className="text-3xl font-extrabold text-ink">Find your stack in 60 seconds</h2>
                   <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink-soft">
                     Answer seven questions about your users, devices and data. The fit meter re-ranks native,
@@ -224,7 +224,7 @@ export default async function ServicePage({ params }: Props) {
               </div>
             )}
             {slug === "workflow-automation-n8n" && (
-              <div className="mt-10">
+              <div id="workflow-game" className="mt-10 scroll-mt-24">
                 <N8nGame />
                 <p className="mt-3 text-sm text-ink-soft">
                   Build the pipeline yourself — tap a node, then tap another to join them, and hit "Execute."
@@ -233,7 +233,7 @@ export default async function ServicePage({ params }: Props) {
               </div>
             )}
             {slug === "automation-testing-playwright" && (
-              <div className="mt-10">
+              <div id="bug-hunt" className="mt-10 scroll-mt-24">
                 <PlaywrightGame />
                 <p className="mt-3 text-sm text-ink-soft">
                   Six real defect patterns hidden in a mock checkout page — tap each one before the clock

@@ -67,6 +67,7 @@ function ProjectModal({ item, onClose }: { item: Content; onClose: () => void })
   const tech = typeof item.data.tech === "string" ? item.data.tech : "";
   const duration = typeof item.data.duration === "string" ? item.data.duration : "";
   const link = typeof item.data.link === "string" ? item.data.link : "";
+  const linkLabel = typeof item.data.link_label === "string" ? item.data.link_label : "Visit";
   const media = productGallery(item.data);
   const hero = item.cover ? { url: item.cover } : media[0];
   const rest = item.cover ? media : media.slice(1);
@@ -99,7 +100,7 @@ function ProjectModal({ item, onClose }: { item: Content; onClose: () => void })
               rel="noreferrer"
               className="mb-5 inline-flex items-center gap-1.5 rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white hover:bg-teal-deep"
             >
-              Visit <ExternalLink size={14} />
+              {linkLabel} <ExternalLink size={14} />
             </a>
           )}
           <Markdown source={item.body || item.excerpt || ""} />

@@ -94,7 +94,7 @@ export default async function HomePage() {
       </section>
 
       {/* Play the approver */}
-      <section className="pt-24">
+      <section id="approval-game" className="scroll-mt-16 pt-24">
         <Container>
           <Reveal>
             <SectionHeading
