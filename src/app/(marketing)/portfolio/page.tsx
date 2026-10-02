@@ -283,7 +283,7 @@ export default async function PortfolioPage({ searchParams }: { searchParams: Pr
           client: `Concept · ${concept.sector}`,
           tech: concept.tags.join(", "),
           gallery: concept.gallery.map((url) => ({ url, type: "image" })),
-          ...(concept.link ? { link: concept.link, link_label: "Open live mockup" } : {}),
+          ...(concept.link ? { link: concept.link, link_label: concept.linkLabel ?? "Open live mockup" } : {}),
         },
         sort_order: 0,
         created_at: "",

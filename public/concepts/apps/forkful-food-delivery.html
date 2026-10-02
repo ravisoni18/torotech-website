@@ -1,0 +1,50 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Forkful — app concept by Torotech</title><meta name="robots" content="noindex"><link rel="icon" href="/icon.svg">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0}
+  body{min-height:100vh;background:linear-gradient(135deg,#ffe0bf,#fff5ea);color:#1f1300;font-family:'DM Sans',-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;gap:72px;padding:24px;flex-wrap:wrap}
+  .info{width:400px;max-width:100%}
+  .back{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:inherit;opacity:.7;text-decoration:none}
+  .back:hover{opacity:1}
+  .chip{display:inline-block;margin-top:28px;padding:7px 13px;border-radius:999px;font-size:13px;font-weight:700;background:rgba(255,255,255,.75)}
+  h1{font-size:64px;font-weight:800;letter-spacing:-.045em;line-height:1;margin-top:18px}
+  .tag{font-size:22px;opacity:.75;margin-top:10px}
+  .desc{font-size:16px;line-height:1.6;opacity:.8;margin-top:18px}
+  .steps{margin-top:28px;display:grid;gap:8px}
+  .steps button{all:unset;cursor:pointer;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;font-size:15px;font-weight:600;background:rgba(255,255,255,.55);transition:background .15s}
+  .steps button span{width:26px;height:26px;border-radius:99px;display:flex;align-items:center;justify-content:center;font-size:13px;background:rgba(0,0,0,.07)}
+  .steps button.on{background:#ff7a00;color:#fff}
+  .steps button.on span{background:rgba(255,255,255,.25)}
+  .hint{margin-top:20px;font-size:13px;opacity:.6}
+  .note{margin-top:28px;font-size:12px;font-weight:600;letter-spacing:.08em;opacity:.5}
+  .stage{position:relative;width:min(420px,calc(100vw - 48px));overflow:hidden;border-radius:62px}
+  #phone{position:absolute;left:0;top:0;width:420px;height:880px;transform-origin:top left;border-radius:62px;background:#0d0d0f;padding:15px;box-shadow:0 60px 100px -30px rgba(0,0,0,.5),inset 0 0 0 2px #2a2a2e}
+  .screenbox{position:relative;width:390px;height:844px;border-radius:48px;overflow:hidden;background:#fff}
+  #screen{width:390px;height:844px;border:0;display:block;transition:opacity .12s}
+  #screen.swap{opacity:0}
+  .notch{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:20px;background:#0d0d0f;z-index:3;pointer-events:none}
+  #overlay{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:40px;text-align:center;background:rgba(255,255,255,.96);color:#111;opacity:0;pointer-events:none;transition:opacity .25s}
+  #overlay.on{opacity:1;pointer-events:auto}
+  #overlay .tick{width:84px;height:84px;border-radius:99px;background:#ff7a00;color:#fff;display:flex;align-items:center;justify-content:center;font-size:40px}
+  #overlay h2{font-size:26px;letter-spacing:-.02em}
+  #overlay p{font-size:16px;line-height:1.5;color:#555}
+  #overlay button{all:unset;cursor:pointer;margin-top:6px;padding:15px 28px;border-radius:16px;background:#ff7a00;color:#fff;font-weight:700}
+  #overlay small{font-size:12px;color:#999}
+  #toast{position:absolute;left:50%;bottom:110px;z-index:5;transform:translate(-50%,16px);opacity:0;background:#111;color:#fff;padding:12px 18px;border-radius:14px;font-size:14px;font-weight:600;white-space:nowrap;transition:all .25s;pointer-events:none}
+  #toast.on{opacity:1;transform:translate(-50%,0)}
+  @media (max-width:900px){.wrap{gap:28px;padding-top:28px}.info{order:2}h1{font-size:44px}}</style></head><body>
+<div class="wrap">
+  <div class="info">
+    <a class="back" href="/portfolio?tab=mobile-apps">← Back to portfolio</a><br>
+    <span class="chip">Food delivery</span>
+    <h1>Forkful</h1>
+    <div class="tag">Local kitchens, at your door</div>
+    <p class="desc">A food delivery app with restaurant discovery, dish customisation with required and optional choices, and live order tracking with the courier on a map.</p>
+    <div class="steps"><button data-step="1" class="on"><span>1</span>Explore</button><button data-step="2" class=""><span>2</span>Dish</button><button data-step="3" class=""><span>3</span>Order tracking</button></div>
+    <p class="hint">Tap around inside the phone — it's a clickable prototype. Buttons, cards, tabs and back arrows all work.</p>
+    <p class="note">CONCEPT · FICTIONAL BRAND · TOROTECH</p>
+  </div>
+  <div class="stage"><div id="phone"><div class="screenbox"><div class="notch"></div><iframe id="screen" title="Forkful prototype" src="forkful-food-delivery-1.html"></iframe>
+    <div id="overlay"><div class="tick">✓</div><h2>Done</h2><p></p><button id="restart">Start over</button><small>Demo only — nothing was sent.</small></div><div id="toast"></div></div></div></div>
+</div>
+<script>window.PROTO={"slug":"forkful-food-delivery","screens":["Explore","Dish","Order tracking"],"done":""}</script><script src="prototype.js"></script>
+</body></html>
