@@ -161,6 +161,11 @@ p {
   50% { transform: translateY(-8px); }
 }
 .arc-float { animation: arc-float 7s ease-in-out infinite; }
+.reel-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 70s linear infinite;
+}
 @media (prefers-reduced-motion: reduce) {
-  .arc-float { animation: none; }
+  .arc-float, .reel-track { animation: none; }
 }

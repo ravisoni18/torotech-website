@@ -49,7 +49,7 @@ function ArcCard({ screen, slot, side, index }: { screen: Screen; slot: number; 
   const { k, s, r } = SLOTS[slot];
   return (
     <div
-      className={`absolute left-1/2 top-1/2 w-[var(--card-w)] ${slot < 4 ? "max-sm:hidden" : ""}`}
+      className="absolute left-1/2 top-1/2 w-[var(--card-w)]"
       style={{
         aspectRatio: "9 / 16",
         marginTop: "calc(var(--card-w) * -16 / 18)",
@@ -84,6 +84,34 @@ function ArcCard({ screen, slot, side, index }: { screen: Screen; slot: number; 
   );
 }
 
+// Phones and tablets get a scrolling strip instead of the wall — the arc needs laptop width to read as a curve.
+const REEL: Screen[] = LEFT.flatMap((screen, i) => [screen, RIGHT[i]]);
+
+function MobileReel() {
+  return (
+    <div
+      aria-hidden="true"
+      className="relative z-10 -mx-5 mt-6 w-screen overflow-hidden pb-10 pt-4 [mask-image:linear-gradient(90deg,transparent,black_12%,black_88%,transparent)] lg:hidden"
+    >
+      <div className="reel-track gap-3.5 px-2">
+        {[...REEL, ...REEL].map((screen, i) => (
+          <div
+            key={i}
+            className="relative aspect-[9/16] w-[148px] shrink-0 overflow-hidden rounded-[20px] bg-mist shadow-[0_18px_36px_-16px_rgba(11,31,58,0.4)] ring-1 ring-black/5"
+            style={{ transform: `rotate(${i % 2 ? 2 : -2}deg) translateY(${i % 2 ? 10 : 0}px)` }}
+          >
+            <Image src={screen.src} alt="" fill sizes="150px" className="object-cover" style={{ objectPosition: screen.position ?? "50% 50%" }} />
+            <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-black/60 via-black/25 to-transparent" />
+            <p className="absolute inset-x-3 top-3 text-center text-[14px] font-extrabold leading-tight text-white [text-shadow:0_2px_6px_rgba(0,0,0,0.5)]">
+              {screen.caption}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /** Homepage hero: a curved wall of real screens (apps, dashboards, AI, SAP) around the headline. Spreads and fades out as you scroll. */
 export function HeroArc() {
   const ref = useRef<HTMLElement>(null);
@@ -111,11 +139,11 @@ export function HeroArc() {
         <rect width="100%" height="100%" fill="url(#arc-dots)" />
       </svg>
 
-      <div className="relative flex min-h-[calc(100svh-4rem)] min-h-[640px] flex-col items-center justify-between px-5 pb-10 pt-10 md:min-h-[760px] md:pt-14">
+      <div className="relative flex flex-col items-center px-5 pb-12 pt-10 md:pt-14 lg:min-h-[760px] lg:min-h-[calc(100svh-4rem)] lg:justify-between">
         {/* The wall */}
         <motion.div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-[48%] h-0 [--card-w:clamp(110px,13.5vw,270px)] max-sm:[--card-w:130px]"
+          className="pointer-events-none absolute inset-x-0 top-[48%] h-0 [--card-w:clamp(110px,13.5vw,270px)] max-lg:hidden"
           style={{ "--spread": spread, opacity: wallOpacity } as unknown as React.CSSProperties}
         >
           {LEFT.map((screen, i) => (
@@ -139,14 +167,16 @@ export function HeroArc() {
           </span>
         </motion.h1>
 
+        <MobileReel />
+
         <motion.div
           style={{ y: copyY }}
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-          className="relative z-20 mt-[42vh] flex w-full max-w-[34rem] flex-col items-center text-center sm:mt-[38vh] md:mt-0"
+          className="relative z-20 mt-8 flex w-full max-w-[34rem] flex-col items-center text-center lg:mt-0"
         >
-          <p className="rounded-2xl bg-paper/70 px-3 py-1 text-[17px] leading-relaxed text-ink-soft backdrop-blur-sm md:bg-transparent md:text-lg md:backdrop-blur-none">
+          <p className="text-[17px] leading-relaxed text-ink-soft md:text-lg lg:rounded-2xl lg:bg-paper/75 lg:px-3 lg:py-1 lg:backdrop-blur-sm xl:bg-transparent xl:backdrop-blur-none">
             Websites and mobile apps with AI built in, BI dashboards, SAP BTP development and integration
             <span className="max-sm:hidden">, automated testing and workflow automation</span> — each scoped to one
             process and one number you can check.
@@ -171,7 +201,7 @@ export function HeroArc() {
               type="submit"
               className="group inline-flex shrink-0 items-center gap-1.5 rounded-full bg-ink px-5 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-teal-deep"
             >
-              Start a project
+              Start<span className="max-sm:hidden"> a project</span>
               <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
             </button>
           </form>

@@ -30,7 +30,7 @@ export function Nav() {
           <Logo />
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
+        <nav className="hidden items-center gap-8 lg:flex" aria-label="Primary">
           {NAV.map((item) => {
             const active = pathname === item.href || pathname.startsWith(item.href + "/");
             return (
@@ -47,7 +47,7 @@ export function Nav() {
           })}
         </nav>
 
-        <div className="hidden items-center gap-3 md:flex">
+        <div className="hidden items-center gap-3 lg:flex">
           <Link
             href="/contact"
             className="rounded-full bg-ink px-5 py-2.5 text-[15px] font-semibold text-white transition-colors hover:bg-teal-deep"
@@ -58,7 +58,7 @@ export function Nav() {
 
         <button
           type="button"
-          className="rounded-md p-2 text-ink md:hidden"
+          className="rounded-md p-2 text-ink lg:hidden"
           aria-expanded={open}
           aria-label={open ? "Close menu" : "Open menu"}
           onClick={() => setOpen((v) => !v)}
@@ -68,7 +68,7 @@ export function Nav() {
       </div>
 
       {open && (
-        <div className="border-t border-line bg-paper px-5 pb-6 pt-2 md:hidden">
+        <div className="border-t border-line bg-paper px-5 pb-6 pt-2 lg:hidden">
           <nav className="flex flex-col" aria-label="Mobile">
             {NAV.map((item) => (
               <Link key={item.href} href={item.href} onClick={() => setOpen(false)} className="py-3 text-lg font-medium text-ink">
