@@ -545,6 +545,36 @@ export async function seedContent(db: Seedable) {
 // One-off content migrations. Each runs once per database (tracked in `settings`), so anything an
 // admin edits or deletes afterwards is left alone.
 
+
+const TORO_CATALOG_DATA = {
+  tagline: "Scan it, order it — on a rugged handheld, an Android phone or an iPhone.", status_label: "Interactive demo",
+  demo_url: "/demos/toro-catalog/index.html", demo_device: "desktop",
+  highlights: [
+    "Zebra hardware trigger via DataWedge — scan from any screen",
+    "Camera scanning on Android and iOS with EAN-13 validation",
+    "Contract prices, tier pricing and live stock by warehouse",
+    "Offline orders that sync when the device reconnects",
+  ],
+  gallery: [1, 2, 3].map((n) => ({ url: `/images/products/toro-catalog-${n}.webp`, type: "image" })),
+};
+const TORO_CATALOG_BODY = `Chefs, store managers and warehouse staff still re-order by phone, email or a paper order guide. **Toro Catalog** puts the customer's own catalogue — contract prices, order guide and last order — into an app that orders by scanning the shelf.
+
+**One app, three kinds of device**
+
+- **Rugged handhelds (Zebra TC-class)** — the yellow hardware trigger scans through DataWedge from any screen, with the beep, vibration and LED feedback warehouse teams expect
+- **Android phones** — camera scanning with a live viewfinder, torch and Material-style navigation
+- **iPhone** — the same flows with native iOS conventions
+
+**What's inside**
+
+- EAN-13 / UPC scanning with check-digit validation, continuous scan sessions and manual entry
+- Tier pricing, stock by warehouse, minimum-order and free-delivery thresholds
+- Delivery-day selection, PO numbers, reorder-last-order and an order history
+- Offline mode: orders queue on the device and send when the connection is back
+- Connects to SAP S/4HANA or ECC (OData), or any ERP with an API, for prices, stock and order creation
+
+Switch devices at the top of the demo above. On the handheld, press a yellow trigger (or the **S** key) on any screen.`;
+
 const NEW_PRODUCTS: SeedItem[] = [
   {
     type: "product", slug: "toro-approvals", title: "Toro Approvals", sort_order: 2,
@@ -607,22 +637,10 @@ The demo above shows the workspace UI — switch between Enterprise Chat, Analyt
   },
   {
     type: "product", slug: "toro-catalog", title: "Toro Catalog", sort_order: 5,
-    excerpt: "A swipe-to-order mobile catalogue for B2B buyers, connected to your product and pricing data.",
-    tags: ["Mobile", "B2B", "Commerce"],
-    data: {
-      tagline: "Product discovery your buyers actually enjoy — swipe, add, order.", status_label: "Interactive demo",
-      demo_url: "/demos/mobile-swipe-demo.html", demo_device: "phone",
-      gallery: [{ url: "/images/products/toro-catalog-1.webp", type: "image" }],
-      highlights: ["Swipe through products like cards", "Add to a cart and submit in two taps", "Works offline and syncs when back online", "Prices and stock from your ERP"],
-    },
-    body: `Re-ordering from a 40-page PDF price list is how a lot of B2B buying still works. **Toro Catalog** turns your catalogue into a mobile app buyers can swipe through, with live stock and their own prices, and sends the order straight into your system.
-
-**Good fit for**
-
-- Distributors and manufacturers with field sales or repeat B2B buyers
-- Teams that want an ordering app without a full e-commerce re-platform
-
-Swipe the cards in the demo above, add a few items, and open the cart.`,
+    excerpt: "B2B ordering for food-service and distribution: scan a barcode, see your contract price, place the order — on Zebra handhelds, Android and iPhone.",
+    tags: ["Mobile", "Barcode", "Zebra", "Android", "iOS", "B2B"],
+    data: TORO_CATALOG_DATA,
+    body: TORO_CATALOG_BODY,
   },
 ];
 
@@ -644,6 +662,18 @@ async function insertIfMissing(db: Queryable, it: SeedItem & { cover?: string | 
 }
 
 export async function runOnceMigrations(db: Queryable) {
+  await once(db, "migration:toro-catalog-v2", async () => {
+    const rows = await db.query<{ id: string; data: string }>(`SELECT id, data FROM content WHERE type = 'product' AND slug = 'toro-catalog'`);
+    for (const r of rows) {
+      let d: Record<string, unknown> = {};
+      try { d = JSON.parse(r.data || "{}"); } catch { /* treat as empty */ }
+      if (d.demo_url && d.demo_url !== "/demos/mobile-swipe-demo.html") continue; // admin picked something else — leave it
+      await db.exec(`UPDATE content SET excerpt = ?, body = ?, tags = ?, data = ? WHERE id = ?`, [
+        "B2B ordering for food-service and distribution: scan a barcode, see your contract price, place the order — on Zebra handhelds, Android and iPhone.",
+        TORO_CATALOG_BODY, JSON.stringify(["Mobile", "Barcode", "Zebra", "Android", "iOS", "B2B"]), JSON.stringify({ ...d, ...TORO_CATALOG_DATA }), r.id,
+      ]);
+    }
+  });
   await once(db, "migration:portfolio-v1", async () => {
     for (const p of portfolioSeed()) {
       await insertIfMissing(db, { type: "portfolio", slug: p.slug, title: p.title, excerpt: p.excerpt, body: p.body, cover: p.cover, tags: p.tags, data: p.data, sort_order: p.sort_order });
