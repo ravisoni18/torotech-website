@@ -2,7 +2,7 @@ import "server-only";
 import { DuckDBInstance, type DuckDBConnection } from "@duckdb/node-api";
 import fs from "node:fs";
 import path from "node:path";
-import { seedContent, ensureBaselineFields } from "./seed";
+import { seedContent, ensureBaselineFields, runOnceMigrations } from "./seed";
 
 /**
  * DuckDB is the single HTAP store for Torotech:
@@ -121,6 +121,7 @@ class Database {
     // Seed through the raw connection: the public query() waits on init, which is still running here.
     if (n === 0) await seedContent(seedable);
     await ensureBaselineFields(seedable);
+    await runOnceMigrations({ ...seedable, query: <T,>(sql: string, params?: unknown[]) => runRaw(conn, sql, params) as unknown as Promise<T[]> });
   }
 }
 

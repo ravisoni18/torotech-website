@@ -1,6 +1,6 @@
 /** Client-safe content types and helpers (no database imports). */
 
-export type ContentType = "service" | "case_study" | "post" | "page" | "product" | "cv_project";
+export type ContentType = "service" | "case_study" | "post" | "page" | "product" | "cv_project" | "portfolio";
 export const CONTENT_TYPES: { value: ContentType; label: string; plural: string }[] = [
   { value: "service", label: "Service", plural: "Services" },
   { value: "case_study", label: "Case study", plural: "Case studies" },
@@ -8,6 +8,7 @@ export const CONTENT_TYPES: { value: ContentType; label: string; plural: string 
   { value: "product", label: "Product", plural: "Products" },
   { value: "page", label: "Page", plural: "Pages" },
   { value: "cv_project", label: "CV project", plural: "CV projects" },
+  { value: "portfolio", label: "Portfolio item", plural: "Portfolio" },
 ];
 
 export type ContentRow = {
@@ -85,6 +86,8 @@ export function contentHref(c: Pick<Content, "type" | "slug">) {
       return `/products/${c.slug}`;
     case "cv_project":
       return `/ravisoni`;
+    case "portfolio":
+      return `/portfolio`;
     default:
       return `/${c.slug}`;
   }

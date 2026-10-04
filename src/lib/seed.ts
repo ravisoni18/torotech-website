@@ -1,9 +1,11 @@
 import "server-only";
+import { portfolioSeed } from "./portfolio-seed";
 
 type Seedable = { exec: (sql: string, params?: unknown[]) => Promise<void> };
+type Queryable = Seedable & { query: <T>(sql: string, params?: unknown[]) => Promise<T[]> };
 
 type SeedItem = {
-  type: "service" | "case_study" | "post" | "page" | "product" | "cv_project";
+  type: "service" | "case_study" | "post" | "page" | "product" | "cv_project" | "portfolio";
   slug: string;
   title: string;
   excerpt: string;
@@ -457,6 +459,19 @@ const PRODUCT_FIELDS: [string, string, string, string, string[]?][] = [
   ["product", "tagline", "Tagline", "text"],
   ["product", "status_label", "Status label (e.g. Live, Beta)", "text"],
   ["product", "link", "External link", "url"],
+  ["product", "demo_url", "Interactive demo URL (embedded on the product page)", "text"],
+  ["product", "demo_device", "Demo frame", "select", ["desktop", "phone"]],
+  ["product", "highlights", "Highlights (one per line)", "list"],
+];
+
+/** Field definitions for portfolio items on /portfolio. */
+const PORTFOLIO_FIELDS: [string, string, string, string, string[]?][] = [
+  ["portfolio", "tabs", "Tabs (one per line: Website, Mobile Apps, SAP BTP/Fiori Apps, N8N workflows, Business Analytics, In-house Products, Enterprise Games)", "list"],
+  ["portfolio", "sector", "Sector / client line (e.g. Food distributor, or Concept · Healthcare)", "text"],
+  ["portfolio", "duration", "Duration (e.g. 2 weeks)", "text"],
+  ["portfolio", "link", "Link (live demo, product or case study)", "text"],
+  ["portfolio", "link_label", "Link button label (e.g. Open live mockup)", "text"],
+  ["portfolio", "cv_slug", "Use media from CV project (slug) when this item has no gallery", "text"],
 ];
 
 /** Field definitions for CV projects on /ravisoni — inserted idempotently on every boot. */
@@ -469,7 +484,7 @@ const CV_PROJECT_FIELDS: [string, string, string, string, string[]?][] = [
 
 export async function ensureBaselineFields(db: Seedable) {
   let i = 100;
-  for (const [entity, key, label, type, options] of [...PRODUCT_FIELDS, ...CV_PROJECT_FIELDS]) {
+  for (const [entity, key, label, type, options] of [...PRODUCT_FIELDS, ...CV_PROJECT_FIELDS, ...PORTFOLIO_FIELDS]) {
     await db.exec(
       `INSERT INTO field_defs (id, entity, key, label, type, options, sort_order)
        VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT (entity, key) DO NOTHING`,
@@ -524,4 +539,124 @@ export async function seedContent(db: Seedable) {
       [crypto.randomUUID(), entity, key, label, type, JSON.stringify(options ?? []), i++],
     );
   }
+}
+
+// ---------------------------------------------------------------------------
+// One-off content migrations. Each runs once per database (tracked in `settings`), so anything an
+// admin edits or deletes afterwards is left alone.
+
+const NEW_PRODUCTS: SeedItem[] = [
+  {
+    type: "product", slug: "toro-approvals", title: "Toro Approvals", sort_order: 2,
+    excerpt: "A Fiori approval inbox for SAP purchase requisitions — budget context on every row, bulk decisions, and a full trail.",
+    tags: ["SAP", "Fiori", "OpenUI5", "BTP"],
+    data: {
+      tagline: "Approve purchase requisitions in seconds, with the budget in front of you.", status_label: "Interactive demo",
+      demo_url: "/concepts/fiori/fiori-purchase-requisitions.html", demo_device: "desktop",
+      highlights: ["Filter, search and bulk-approve requisitions", "Budget used on every row; over-budget requests flagged", "Reject with a reason the requester sees", "One object page: items, budget check and approval flow"],
+      gallery: [{ url: "/images/portfolio/concepts/fiori-purchase-requisitions-1.webp", type: "image" }, { url: "/images/portfolio/concepts/fiori-purchase-requisitions-2.webp", type: "image" }],
+    },
+    body: `Approvers shouldn't need to open three transactions to decide on a laptop order. **Toro Approvals** puts every open requisition on one list report with the cost centre, value and budget already used — so the obvious ones are approved in bulk and the questionable ones stand out.
+
+**How it fits your landscape**
+
+- A Fiori app on SAP BTP that reads and writes through your existing OData services
+- Works with your release strategy; decisions post back as standard approvals
+- Runs in the Fiori launchpad or SAP Build Work Zone, on desktop and phone
+
+The demo above is the real UI5 front end running on sample data — select a few rows and approve them, or open one to see the budget check and approval history.`,
+  },
+  {
+    type: "product", slug: "toro-insights", title: "Toro Insights", sort_order: 3,
+    excerpt: "A drill-down sales dashboard where every KPI, chart and table answers to one data model.",
+    tags: ["BI", "Analytics", "Dashboards"],
+    data: {
+      tagline: "Click a region or a category and the whole dashboard answers.", status_label: "Interactive demo",
+      demo_url: "/demos/bi-desktop-dashboard.html", demo_device: "desktop",
+      gallery: [{ url: "/images/products/toro-insights-1.webp", type: "image" }, { url: "/images/products/toro-insights-2.webp", type: "image" }],
+      highlights: ["Click any bar or slice to drill down", "KPIs, trend and transactions update together", "Year, quarter and month views", "Export the filtered transactions"],
+    },
+    body: `Most dashboards are a set of charts that disagree with each other. **Toro Insights** is built on a single semantic layer: one definition of revenue, units and customers, so every tile changes together when you drill into a region or a product category.
+
+**What you get**
+
+- Sales overview with revenue, units, order value and active customers
+- Drill-down by region and category, with a detailed transaction list
+- Connects to SAP (CDS views / OData), a warehouse, or a DuckDB file for smaller teams
+
+Try it above — click a region bar, then a category slice, then reset.`,
+  },
+  {
+    type: "product", slug: "toro-workspace", title: "Toro Workspace", sort_order: 4,
+    excerpt: "A private AI workspace for your team: agent chat, a knowledge base and usage analytics in one place.",
+    tags: ["AI", "LLM", "Knowledge base"],
+    data: {
+      tagline: "Your team's AI workspace — on your data, under your rules.", status_label: "Interactive demo",
+      demo_url: "/demos/toro-ai-workspace.html", demo_device: "desktop",
+      gallery: [{ url: "/images/products/toro-workspace-1.webp", type: "image" }],
+      highlights: ["Agent chat with saved threads", "Knowledge base grounded in your documents", "Analytics: usage, cost and agent activity", "Runs on your own infrastructure and model choice"],
+    },
+    body: `Teams want the speed of an AI assistant without pasting company data into a public chatbot. **Toro Workspace** gives them agent chat, a shared knowledge base and an analytics view of usage and cost — deployed in your environment, with the model of your choice.
+
+**Built for**
+
+- Finance, operations and IT teams that work from internal documents
+- Organisations that need data to stay in-house and usage to be auditable
+
+The demo above shows the workspace UI — switch between Enterprise Chat, Analytics & ROI and the Knowledge Base.`,
+  },
+  {
+    type: "product", slug: "toro-catalog", title: "Toro Catalog", sort_order: 5,
+    excerpt: "A swipe-to-order mobile catalogue for B2B buyers, connected to your product and pricing data.",
+    tags: ["Mobile", "B2B", "Commerce"],
+    data: {
+      tagline: "Product discovery your buyers actually enjoy — swipe, add, order.", status_label: "Interactive demo",
+      demo_url: "/demos/mobile-swipe-demo.html", demo_device: "phone",
+      gallery: [{ url: "/images/products/toro-catalog-1.webp", type: "image" }],
+      highlights: ["Swipe through products like cards", "Add to a cart and submit in two taps", "Works offline and syncs when back online", "Prices and stock from your ERP"],
+    },
+    body: `Re-ordering from a 40-page PDF price list is how a lot of B2B buying still works. **Toro Catalog** turns your catalogue into a mobile app buyers can swipe through, with live stock and their own prices, and sends the order straight into your system.
+
+**Good fit for**
+
+- Distributors and manufacturers with field sales or repeat B2B buyers
+- Teams that want an ordering app without a full e-commerce re-platform
+
+Swipe the cards in the demo above, add a few items, and open the cart.`,
+  },
+];
+
+async function once(db: Queryable, key: string, run: () => Promise<void>) {
+  const done = await db.query<{ n: number }>(`SELECT count(*)::INTEGER AS n FROM settings WHERE key = ?`, [key]);
+  if (done[0]?.n) return;
+  await run();
+  await db.exec(`INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value`, [key, new Date().toISOString()]);
+}
+
+async function insertIfMissing(db: Queryable, it: SeedItem & { cover?: string | null }) {
+  const exists = await db.query<{ n: number }>(`SELECT count(*)::INTEGER AS n FROM content WHERE type = ? AND slug = ?`, [it.type, it.slug]);
+  if (exists[0]?.n) return;
+  await db.exec(
+    `INSERT INTO content (id, type, slug, title, excerpt, body, cover, status, tags, data, sort_order, published_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, 'published', ?, ?, ?, now())`,
+    [crypto.randomUUID(), it.type, it.slug, it.title, it.excerpt, it.body ?? null, it.cover ?? null, JSON.stringify(it.tags ?? []), JSON.stringify(it.data ?? {}), it.sort_order ?? 0],
+  );
+}
+
+export async function runOnceMigrations(db: Queryable) {
+  await once(db, "migration:portfolio-v1", async () => {
+    for (const p of portfolioSeed()) {
+      await insertIfMissing(db, { type: "portfolio", slug: p.slug, title: p.title, excerpt: p.excerpt, body: p.body, cover: p.cover, tags: p.tags, data: p.data, sort_order: p.sort_order });
+    }
+  });
+  await once(db, "migration:products-v2", async () => {
+    for (const p of NEW_PRODUCTS) await insertIfMissing(db, p);
+    // The site's own product card had no preview; give it the homepage screenshot if nothing was uploaded.
+    const rows = await db.query<{ id: string; cover: string | null; data: string }>(`SELECT id, cover, data FROM content WHERE type = 'product' AND slug = 'torotech-ca'`);
+    for (const r of rows) {
+      let gallery: unknown[] = [];
+      try { const d = JSON.parse(r.data || "{}"); gallery = Array.isArray(d.gallery) ? d.gallery : []; } catch { /* keep empty */ }
+      if (!r.cover && gallery.length === 0) await db.exec(`UPDATE content SET cover = ? WHERE id = ?`, ["/images/portfolio/torotech-site.jpg", r.id]);
+    }
+  });
 }

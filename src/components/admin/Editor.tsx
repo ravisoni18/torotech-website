@@ -54,7 +54,7 @@ export function Editor({ item, fields, initialType }: { item?: Content; fields: 
   const galleryRef = useRef<HTMLInputElement>(null);
 
   const typeFields = useMemo(() => fields.filter((f) => f.entity === d.type), [fields, d.type]);
-  const hasGallery = d.type === "product" || d.type === "cv_project";
+  const hasGallery = d.type === "product" || d.type === "cv_project" || d.type === "portfolio";
 
   const gallery: MediaItem[] = useMemo(
     () => (Array.isArray(d.data.gallery) ? (d.data.gallery as MediaItem[]) : []),
@@ -236,7 +236,7 @@ export function Editor({ item, fields, initialType }: { item?: Content; fields: 
 
           {hasGallery && (
             <Card
-              title={d.type === "product" ? "Product gallery" : "Project media"}
+              title={d.type === "product" ? "Product gallery" : d.type === "portfolio" ? "Portfolio media" : "Project media"}
               aside={
                 <>
                   <Button variant="secondary" onClick={() => galleryRef.current?.click()}>
