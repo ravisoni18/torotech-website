@@ -34,6 +34,11 @@ export default function LegalPage() {
             <li>View the site and use its demos for your own evaluation of our services.</li>
             <li>Share links to any page.</li>
             <li>Quote short passages with a clear credit and a link back to the source page.</li>
+            <li>
+              Search engines and AI assistants (such as Google, Bing, Gemini, Claude, ChatGPT and Perplexity) may crawl,
+              index and summarise the site, and cite it with a link. This doesn&apos;t permit republishing our content or
+              reusing our designs and code.
+            </li>
           </ul>
 
           <h2>What you may not do without our written permission</h2>
@@ -41,7 +46,6 @@ export default function LegalPage() {
             <li>Copy, reproduce, republish or redistribute the site&apos;s content, code, designs or demos, in whole or in part.</li>
             <li>Reuse our demos, mockups or interface designs in your own products, portfolios, proposals or client work.</li>
             <li>Frame or embed our pages or demos on another website.</li>
-            <li>Scrape, crawl or bulk-download content, or use it to train machine-learning models.</li>
             <li>Remove or alter copyright notices, attributions or watermarks.</li>
           </ul>
 

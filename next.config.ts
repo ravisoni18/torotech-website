@@ -14,9 +14,6 @@ const nextConfig: NextConfig = {
   images: { remotePatterns: [] },
   async headers() {
     return [
-      // Demos and concept mockups are linked from real pages but shouldn't rank on their own.
-      { source: "/demos/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, follow" }] },
-      { source: "/concepts/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, follow" }] },
       {
         source: "/(.*)",
         headers: [
