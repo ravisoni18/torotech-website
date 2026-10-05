@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { listPublished } from "@/lib/content";
 import type { Content } from "@/lib/content-types";
 import { Container, CtaBand } from "@/components/marketing/ui";
@@ -6,11 +7,12 @@ import { PortfolioTabs, type PortfolioGroup } from "@/components/marketing/Portf
 import { TAB_LABELS } from "@/lib/portfolio-seed";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = {
-  title: "Portfolio",
+export const metadata: Metadata = pageMeta({
+  title: "Portfolio — SAP Fiori apps, websites, mobile apps and AI",
   description:
-    "Selected work: AI assistants on live SAP data, Fiori and SAPUI5 apps, BI dashboards, warehouse mobile apps and an AI-enabled consulting site.",
-};
+    "Portfolio of SAP Fiori and SAPUI5 apps, AI assistants on SAP data, BI dashboards, websites, mobile apps and interactive demos by Torotech in Kitchener, Ontario.",
+  path: "/portfolio",
+});
 
 const GROUPS: PortfolioGroup[] = [
   { id: "all", label: "All" },

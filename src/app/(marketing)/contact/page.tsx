@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { listFields } from "@/lib/fields";
 import { ContactForm } from "@/components/marketing/ContactForm";
 import { Container } from "@/components/marketing/ui";
 import { SITE } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Contact", description: "Book a call with Torotech about SAP, BTP, Fiori or an AI-integrated web app." };
+export const metadata: Metadata = pageMeta({
+  title: "Contact — book a call",
+  description:
+    "Contact Torotech in Kitchener, Ontario: call +1 613 716 1135 or email hello@torotech.ca about SAP BTP, Fiori, AI, web or mobile app development.",
+  path: "/contact",
+});
 
 export default async function ContactPage({ searchParams }: { searchParams: Promise<{ interest?: string; message?: string }> }) {
   const { interest, message } = await searchParams;
@@ -26,24 +32,33 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
             Thirty minutes is enough to tell whether an agent, an extension or a plain good Fiori app is the answer.
             Bring the messy version — that&apos;s where the value is.
           </p>
-          <dl className="mt-10 space-y-5 text-[15px]">
+          <address className="mt-10 space-y-5 text-[15px] not-italic">
             <div>
-              <dt className="font-bold text-ink">Email</dt>
-              <dd>
-                <a href={`mailto:${SITE.email}`} className="text-teal-deep hover:underline">
-                  {SITE.email}
-                </a>
-              </dd>
+              <div className="font-bold text-ink">Phone</div>
+              <a href={SITE.phoneHref} className="text-teal-deep hover:underline">
+                {SITE.phone}
+              </a>
             </div>
             <div>
-              <dt className="font-bold text-ink">Where</dt>
-              <dd className="text-ink-soft">{SITE.location} · remote across North America</dd>
+              <div className="font-bold text-ink">Email</div>
+              {SITE.emails.map((e) => (
+                <div key={e.address}>
+                  <a href={`mailto:${e.address}`} className="text-teal-deep hover:underline">
+                    {e.address}
+                  </a>
+                  {SITE.emails.length > 1 && <span className="text-ink-soft"> · {e.label}</span>}
+                </div>
+              ))}
             </div>
             <div>
-              <dt className="font-bold text-ink">Response time</dt>
-              <dd className="text-ink-soft">Within one business day</dd>
+              <div className="font-bold text-ink">Location</div>
+              <div className="text-ink-soft">{SITE.location} · working with clients across Canada and the US</div>
             </div>
-          </dl>
+            <div>
+              <div className="font-bold text-ink">Response time</div>
+              <div className="text-ink-soft">Within one business day</div>
+            </div>
+          </address>
         </div>
         <div className="relative rounded-[var(--radius-card)] border border-line p-7 md:p-9">
           <ContactForm fields={fields} defaultInterest={interest} defaultMessage={message?.slice(0, 2000)} />

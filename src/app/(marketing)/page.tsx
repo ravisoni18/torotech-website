@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { listPublished } from "@/lib/content";
 import { TechMarquee } from "@/components/marketing/TechMarquee";
 import { HeroArc } from "@/components/marketing/HeroArc";
@@ -14,6 +16,7 @@ import {
 } from "@/components/marketing/ui";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = pageMeta({ path: "/" });
 
 const PROCESS = [
   {

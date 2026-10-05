@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { listPublished } from "@/lib/content";
 import { Container, CtaBand, ServiceCard } from "@/components/marketing/ui";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = {
-  title: "Services",
+export const metadata: Metadata = pageMeta({
+  title: "Services — SAP BTP, Fiori, web, mobile, BI & automation",
   description:
-    "Website development, mobile apps, AI-powered BI, SAP BTP development & integration, Playwright test automation, and N8N workflow automation.",
-};
+    "Software development services from Kitchener, Ontario: websites and mobile apps with AI, BI dashboards, SAP BTP and Fiori development, Playwright test automation and n8n workflow automation.",
+  path: "/services",
+});
 
 export default async function ServicesPage() {
   const services = await listPublished("service");

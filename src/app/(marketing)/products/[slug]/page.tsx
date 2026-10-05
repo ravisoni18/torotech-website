@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { pageMeta, breadcrumbLd, softwareLd } from "@/lib/seo";
+import { JsonLd } from "@/components/marketing/JsonLd";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPublished, listPublished } from "@/lib/content";
@@ -12,7 +14,9 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const item = await getPublished("product", slug);
-  return item ? { title: item.title, description: item.excerpt ?? undefined } : {};
+  if (!item) return {};
+  const image = item.cover || (Array.isArray(item.data.gallery) ? (item.data.gallery as { url?: string }[])[0]?.url : undefined);
+  return pageMeta({ title: item.title, description: item.excerpt, path: `/products/${item.slug}`, image });
 }
 
 export default async function ProductPage({ params }: Props) {
@@ -34,6 +38,7 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <>
+      <JsonLd data={[breadcrumbLd([["Home", "/"], ["Products", "/products"], [item.title, `/products/${item.slug}`]]), softwareLd({ title: item.title, excerpt: item.excerpt, slug: item.slug, image: item.cover || productGallery(item.data)[0]?.url })]} />
       <section className="pt-16 md:pt-24">
         <Container>
           <Link href="/products" className="text-sm font-medium text-teal-deep hover:underline">

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { Mail, Phone, Link2, MapPin, Award } from "lucide-react";
 import { Container } from "@/components/marketing/ui";
@@ -8,11 +9,12 @@ import { listPublished } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Ravikumar Soni — CV",
+export const metadata: Metadata = pageMeta({
+  title: "Ravi Soni — SAP BTP & Fiori Architect (CV)",
   description:
-    "SAP Certified Senior SAP BTP / Fiori architect with 12+ years leading SAP Fiori, BTP and SAPUI5 implementations across food distribution, mining, healthcare and consulting.",
-};
+    "Ravi Soni (Ravikumar Soni), SAP-certified senior SAP BTP and Fiori architect with 12+ years leading SAP Fiori, BTP and SAPUI5 implementations. Kitchener, Ontario.",
+  path: "/ravisoni",
+});
 
 const CONTACT = [
   { icon: Mail, label: "ravisoni18@gmail.com", href: "mailto:ravisoni18@gmail.com" },

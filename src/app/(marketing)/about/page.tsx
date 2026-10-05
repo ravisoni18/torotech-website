@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { Compass, Rocket, ShieldCheck, Target } from "lucide-react";
 import { Container, CtaBand } from "@/components/marketing/ui";
@@ -7,10 +8,12 @@ import { Counter } from "@/components/marketing/Counter";
 import { AboutFaq } from "@/components/marketing/AboutFaq";
 import { SITE } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "About",
-  description: "Torotech is an SAP and AI consultancy in Kitchener–Waterloo, Ontario, led by Ravi Soni.",
-};
+export const metadata: Metadata = pageMeta({
+  title: "About Torotech — SAP & AI software company in Kitchener, Ontario",
+  description:
+    "Torotech is an SAP BTP, Fiori and AI software company in Kitchener, Ontario, led by SAP-certified architect Ravi Soni, serving clients across Canada and the US.",
+  path: "/about",
+});
 
 const STATS = [
   { value: "12+", label: "Years in SAP & software delivery" },
@@ -48,7 +51,7 @@ const TIMELINE = [
   {
     year: "2025",
     title: "Relocated to Canada",
-    body: "Moved the practice to Kitchener–Waterloo, Ontario, continuing the same SAP engagement remotely and taking on Canadian clients directly.",
+    body: "Moved the practice to Kitchener, Ontario, continuing the same SAP engagement remotely and taking on Canadian clients directly.",
   },
   {
     year: "Now",

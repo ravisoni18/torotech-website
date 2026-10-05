@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { listPublished } from "@/lib/content";
 import { Container, CtaBand, PostCard } from "@/components/marketing/ui";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Insights", description: "Practical writing on SAP agents, CDS, BTP and web architecture." };
+export const metadata: Metadata = pageMeta({
+  title: "Insights — SAP, AI agents and web architecture",
+  description:
+    "Practical writing on SAP AI agents, CDS views, SAP BTP, Fiori and web application architecture from the Torotech team.",
+  path: "/blog",
+});
 
 export default async function BlogPage() {
   const posts = await listPublished("post", 100);

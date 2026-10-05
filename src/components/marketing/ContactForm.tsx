@@ -1,5 +1,7 @@
 "use client";
 
+import { SITE } from "@/lib/site";
+
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 
@@ -76,9 +78,13 @@ export function ContactForm({
       <div className="rounded-[var(--radius-card)] border border-teal bg-teal-tint/50 p-8">
         <h3 className="text-xl font-bold text-ink">Message sent</h3>
         <p className="mt-2 text-ink-soft">
-          Thanks — you&apos;ll hear from Ravi within one business day. If it&apos;s urgent, email{" "}
-          <a className="font-semibold text-teal-deep" href="mailto:hello@torotech.ca">
-            hello@torotech.ca
+          Thanks — you&apos;ll hear from Ravi within one business day. If it&apos;s urgent, call{" "}
+          <a className="font-semibold text-teal-deep" href={SITE.phoneHref}>
+            {SITE.phone}
+          </a>{" "}
+          or email{" "}
+          <a className="font-semibold text-teal-deep" href={`mailto:${SITE.email}`}>
+            {SITE.email}
           </a>
           .
         </p>

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { pageMeta, breadcrumbLd } from "@/lib/seo";
+import { JsonLd } from "@/components/marketing/JsonLd";
 import { notFound } from "next/navigation";
 import { getPublished } from "@/lib/content";
 import { Container, CtaBand, Tag } from "@/components/marketing/ui";
@@ -10,7 +12,9 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const item = await getPublished("case_study", slug);
-  return item ? { title: item.title, description: item.excerpt ?? undefined } : {};
+  if (!item) return {};
+  const image = item.cover || (Array.isArray(item.data.gallery) ? (item.data.gallery as { url?: string }[])[0]?.url : undefined);
+  return pageMeta({ title: item.title, description: item.excerpt, path: `/work/${item.slug}`, image });
 }
 
 export default async function CaseStudyPage({ params }: Props) {
@@ -26,6 +30,7 @@ export default async function CaseStudyPage({ params }: Props) {
 
   return (
     <>
+      <JsonLd data={[breadcrumbLd([["Home", "/"], ["Work", "/work"], [item.title, `/work/${item.slug}`]])]} />
       <section className="pt-16 md:pt-24">
         <Container className="grid gap-12 md:grid-cols-[1fr_280px]">
           <div>

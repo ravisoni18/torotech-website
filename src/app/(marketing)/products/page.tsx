@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { listPublished } from "@/lib/content";
 import { Container, CtaBand, ProductCard } from "@/components/marketing/ui";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = {
-  title: "Products",
-  description: "Tools and products from Torotech — SAP agents, Fiori apps and web software you can see in motion.",
-};
+export const metadata: Metadata = pageMeta({
+  title: "Products — SAP, AI and mobile software",
+  description:
+    "Software products by Torotech with live demos: Toro Chat AI for SAP Fiori, Toro Approvals, Toro Insights BI dashboards, Toro Workspace AI and Toro Catalog scan-to-order for Zebra, Android and iOS.",
+  path: "/products",
+});
 
 export default async function ProductsPage() {
   const products = await listPublished("product");

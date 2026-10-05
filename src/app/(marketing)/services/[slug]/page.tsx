@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { pageMeta, breadcrumbLd, serviceLd } from "@/lib/seo";
+import { JsonLd } from "@/components/marketing/JsonLd";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -51,7 +53,9 @@ const sapOfferings = [
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const item = await getPublished("service", slug);
-  return item ? { title: item.title, description: item.excerpt ?? undefined } : {};
+  if (!item) return {};
+  const image = item.cover || (Array.isArray(item.data.gallery) ? (item.data.gallery as { url?: string }[])[0]?.url : undefined);
+  return pageMeta({ title: item.title, description: item.excerpt, path: `/services/${item.slug}`, image });
 }
 
 export default async function ServicePage({ params }: Props) {
@@ -63,6 +67,7 @@ export default async function ServicePage({ params }: Props) {
 
   return (
     <>
+      <JsonLd data={[breadcrumbLd([["Home", "/"], ["Services", "/services"], [item.title, `/services/${item.slug}`]]), serviceLd({ title: item.title, excerpt: item.excerpt, slug: item.slug })]} />
       <section className="pt-16 md:pt-24">
         <Container className="grid gap-12 md:grid-cols-[1fr_300px]">
           <div>

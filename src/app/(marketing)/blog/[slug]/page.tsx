@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { pageMeta, breadcrumbLd, articleLd } from "@/lib/seo";
+import { JsonLd } from "@/components/marketing/JsonLd";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPublished, listPublished } from "@/lib/content";
@@ -11,7 +13,9 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const item = await getPublished("post", slug);
-  return item ? { title: item.title, description: item.excerpt ?? undefined, openGraph: { type: "article" } } : {};
+  if (!item) return {};
+  const image = item.cover || (Array.isArray(item.data.gallery) ? (item.data.gallery as { url?: string }[])[0]?.url : undefined);
+  return pageMeta({ title: item.title, description: item.excerpt, path: `/blog/${item.slug}`, image, type: "article" });
 }
 
 export default async function PostPage({ params }: Props) {
@@ -23,6 +27,7 @@ export default async function PostPage({ params }: Props) {
 
   return (
     <>
+      <JsonLd data={[breadcrumbLd([["Home", "/"], ["Insights", "/blog"], [item.title, `/blog/${item.slug}`]]), articleLd({ title: item.title, excerpt: item.excerpt, slug: item.slug, published: item.published_at, updated: item.updated_at, image: item.cover })]} />
       <article className="pt-16 md:pt-24">
         <Container>
           <div className="mx-auto max-w-3xl">

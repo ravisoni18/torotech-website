@@ -1,6 +1,8 @@
 import { Nav } from "@/components/marketing/Nav";
 import { Footer } from "@/components/marketing/Footer";
 import { Analytics } from "@/components/marketing/Analytics";
+import { JsonLd } from "@/components/marketing/JsonLd";
+import { organizationLd, websiteLd } from "@/lib/seo";
 
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -17,6 +19,7 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
       </main>
       <Footer />
       <Analytics />
+      <JsonLd data={[organizationLd(), websiteLd()]} />
     </>
   );
 }

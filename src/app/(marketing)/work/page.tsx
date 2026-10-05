@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { listPublished } from "@/lib/content";
 import { CaseStudyCard, Container, CtaBand } from "@/components/marketing/ui";
 import { Reveal } from "@/components/marketing/Reveal";
 import { Counter } from "@/components/marketing/Counter";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Work", description: "Case studies from Torotech engagements in SAP, BTP, Fiori and AI." };
+export const metadata: Metadata = pageMeta({
+  title: "Case studies — SAP, Fiori and AI projects",
+  description:
+    "Case studies from Torotech engagements: SAP Fiori and BTP apps, AI assistants on live SAP data and the numbers clients measured.",
+  path: "/work",
+});
 
 export default async function WorkPage() {
   const items = await listPublished("case_study");

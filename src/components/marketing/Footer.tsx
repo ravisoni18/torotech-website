@@ -30,6 +30,7 @@ const columns = [
       { href: SITE.linkedin, label: "LinkedIn" },
       { href: SITE.github, label: "GitHub" },
       { href: `mailto:${SITE.email}`, label: SITE.email },
+      { href: SITE.phoneHref, label: SITE.phone },
     ],
   },
 ];
@@ -41,7 +42,7 @@ export function Footer() {
         <div>
           <Logo />
           <p className="mt-4 max-w-xs text-[15px] leading-relaxed text-ink-soft">
-            AI solutions for SAP, BTP and Fiori — and web applications with AI built in. Based in{" "}
+            SAP BTP, Fiori and AI software — plus websites and mobile apps with AI built in. Based in{" "}
             {SITE.location}.
           </p>
         </div>

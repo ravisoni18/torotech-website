@@ -3,9 +3,17 @@ export const SITE = {
   domain: "torotech.ca",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://torotech.ca",
   description:
-    "Torotech builds AI solutions for SAP — S/4HANA, BTP and Fiori — and AI-integrated web applications for teams that want their systems to think, not just record.",
+    "Torotech is a Kitchener, Ontario software company building SAP BTP and Fiori apps, AI agents on live SAP data, websites, mobile apps, BI dashboards, test automation and n8n workflows.",
+  title: "Torotech — SAP BTP, Fiori & AI software development in Kitchener, Ontario",
+  legalName: "Torotech Inc.",
+  founder: "Ravi Soni",
   email: "hello@torotech.ca",
-  location: "Kitchener–Waterloo, Ontario, Canada",
+  // Shown on /contact. Add more mailboxes here once they exist on the mail server.
+  emails: [{ label: "New projects & general", address: "hello@torotech.ca" }],
+  phone: "+1 613 716 1135",
+  phoneHref: "tel:+16137161135",
+  location: "Kitchener, Ontario, Canada",
+  address: { locality: "Kitchener", region: "ON", country: "CA" },
   linkedin: "https://www.linkedin.com/company/torotech",
   github: "https://github.com/ravisoni18",
 };
