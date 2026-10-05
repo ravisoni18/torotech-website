@@ -63,7 +63,17 @@ export function Footer() {
       </div>
       <div className="border-t border-line">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-5 py-6 text-sm text-muted md:flex-row md:items-center md:justify-between md:px-8">
-          <p>© {new Date().getFullYear()} Torotech Inc. All rights reserved.</p>
+          <p>
+            © {new Date().getFullYear()} {SITE.legalName} All rights reserved. Content, code, designs and demos may not be copied
+            or reused without permission ·{" "}
+            <Link href="/legal" className="underline underline-offset-2 hover:text-ink">
+              Copyright &amp; terms
+            </Link>{" "}
+            ·{" "}
+            <Link href="/privacy" className="underline underline-offset-2 hover:text-ink">
+              Privacy
+            </Link>
+          </p>
           <p>
             SAP, S/4HANA, BTP and Fiori are trademarks of SAP SE. Torotech is an independent consultancy.
           </p>

@@ -1,3 +1,4 @@
+/*! © 2026 Torotech Inc. All rights reserved. https://torotech.ca — may not be copied, reused or redistributed without written permission. See https://torotech.ca/legal */
 var stat = function (rows) { return '<div style="display:grid;gap:.375rem;font-size:.875rem">' + rows.map(function (r) { return '<div style="display:flex;justify-content:space-between;gap:1rem;border-top:1px solid #eaecee;padding-top:.375rem"><span>' + r[0] + '</span><span style="color:' + (r[2] || "#556b82") + ';font-weight:600">' + r[1] + "</span></div>"; }).join("") + "</div>"; };
 FioriKit.run({
   title: "Inventory Overview",

@@ -1,3 +1,4 @@
+/*! © 2026 Torotech Inc. All rights reserved. https://torotech.ca — may not be copied, reused or redistributed without written permission. See https://torotech.ca/legal */
 // Each result is checked against its tolerance as it is typed.
 function qiChange(e) {
   var c = e.getSource().getBindingContext(), r = c.getObject(), m = c.getModel(), v = parseFloat(e.getParameter("value"));

@@ -1,3 +1,4 @@
+/*! © 2026 Torotech Inc. All rights reserved. https://torotech.ca — may not be copied, reused or redistributed without written permission. See https://torotech.ca/legal */
 /* Torotech Fiori concept kit — builds real OpenUI5 (sap_horizon) floorplans from a small spec.
    Each app page loads OpenUI5 from the CDN, then this file, then specs/<app>.js which calls FioriKit.run(spec).
    Everything is local demo data in a JSONModel; nothing is sent anywhere. */

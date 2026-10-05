@@ -1,3 +1,4 @@
+/*! © 2026 Torotech Inc. All rights reserved. https://torotech.ca — may not be copied, reused or redistributed without written permission. See https://torotech.ca/legal */
 FioriKit.run({
   title: "Manage Credit Accounts",
   start: "list",

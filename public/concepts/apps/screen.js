@@ -1,3 +1,4 @@
+/*! © 2026 Torotech Inc. All rights reserved. https://torotech.ca — may not be copied, reused or redistributed without written permission. See https://torotech.ca/legal */
 /* Runs inside each phone screen of a Torotech app concept. Turns taps into navigation by posting to the
    prototype page around it (see prototype.js). Config comes from window.SCREEN = { n, total, rules }. */
 (function () {

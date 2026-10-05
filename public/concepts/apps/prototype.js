@@ -1,3 +1,4 @@
+/*! © 2026 Torotech Inc. All rights reserved. https://torotech.ca — may not be copied, reused or redistributed without written permission. See https://torotech.ca/legal */
 /* The prototype page around a phone: swaps screens in the iframe, keeps a back stack, and shows the
    end-of-flow confirmation. Config: window.PROTO = { slug, screens: [names], done, accent, onAccent }. */
 (function () {

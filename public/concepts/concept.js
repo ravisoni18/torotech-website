@@ -1,3 +1,4 @@
+/*! © 2026 Torotech Inc. All rights reserved. https://torotech.ca — may not be copied, reused or redistributed without written permission. See https://torotech.ca/legal */
 /* Interaction layer for Torotech concept sites. Each page sets window.CONCEPT (see the inline config) and this
    script wires its nav, buttons, forms and widgets. Forms are demos: nothing is sent anywhere. */
 (function () {

@@ -42,6 +42,7 @@ export const metadata: Metadata = {
   },
   icons: { icon: "/icon.svg" },
   formatDetection: { telephone: true, email: true },
+  other: { copyright: `© ${new Date().getFullYear()} ${SITE.legalName} All rights reserved.` },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

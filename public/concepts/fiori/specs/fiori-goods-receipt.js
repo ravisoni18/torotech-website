@@ -1,3 +1,4 @@
+/*! © 2026 Torotech Inc. All rights reserved. https://torotech.ca — may not be copied, reused or redistributed without written permission. See https://torotech.ca/legal */
 // Received quantities are editable; under-deliveries are flagged as you type.
 function grChange(e) {
   var ctx = e.getSource().getBindingContext(), row = ctx.getObject(), m = ctx.getModel(), v = +e.getParameter("value");

@@ -13,7 +13,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]);
   const statics: [string, number, MetadataRoute.Sitemap[number]["changeFrequency"]][] = [
     ["", 1, "weekly"], ["/services", 0.9, "monthly"], ["/products", 0.8, "monthly"], ["/portfolio", 0.8, "weekly"],
-    ["/work", 0.7, "monthly"], ["/blog", 0.7, "weekly"], ["/about", 0.6, "yearly"], ["/contact", 0.8, "yearly"], ["/ravisoni", 0.5, "monthly"],
+    ["/work", 0.7, "monthly"], ["/blog", 0.7, "weekly"], ["/about", 0.6, "yearly"], ["/contact", 0.8, "yearly"], ["/ravisoni", 0.5, "monthly"], ["/legal", 0.2, "yearly"], ["/privacy", 0.2, "yearly"],
   ];
   const priority = { service: 0.9, product: 0.8, case_study: 0.7, post: 0.6 } as Record<string, number>;
   const items = [...services, ...work, ...posts, ...products].map((c) => ({

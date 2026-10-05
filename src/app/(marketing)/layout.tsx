@@ -2,6 +2,7 @@ import { Nav } from "@/components/marketing/Nav";
 import { Footer } from "@/components/marketing/Footer";
 import { Analytics } from "@/components/marketing/Analytics";
 import { JsonLd } from "@/components/marketing/JsonLd";
+import { CopyAttribution } from "@/components/marketing/CopyAttribution";
 import { organizationLd, websiteLd } from "@/lib/seo";
 
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
@@ -19,6 +20,7 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
       </main>
       <Footer />
       <Analytics />
+      <CopyAttribution />
       <JsonLd data={[organizationLd(), websiteLd()]} />
     </>
   );
