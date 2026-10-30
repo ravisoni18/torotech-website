@@ -34,6 +34,9 @@ services:
       - "443:443/udp"
     environment:
       SITE_DOMAIN: ${SITE_DOMAIN:-torotech.ca}
+    # Lets Caddy proxy to other apps published on this host (e.g. Dharma Quest on :8080).
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy-data:/data

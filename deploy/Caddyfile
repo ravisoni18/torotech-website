@@ -32,3 +32,19 @@ mail.{$SITE_DOMAIN} {
 		-Server
 	}
 }
+
+# Dharma Quest — a separate project (/opt/dharma-quest, github.com/ravisoni18/dharmaquest)
+# published on the host's port 8080. Reached via the host gateway, see extra_hosts in docker-compose.yml.
+dharmaquest.{$SITE_DOMAIN} {
+	encode zstd gzip
+	request_body {
+		max_size 12MB
+	}
+	reverse_proxy host.docker.internal:8080 {
+		header_up X-Real-IP {remote_host}
+	}
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+}
