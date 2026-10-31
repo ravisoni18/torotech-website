@@ -35,7 +35,11 @@ mail.{$SITE_DOMAIN} {
 
 # Dharma Quest — a separate project (/opt/dharma-quest, github.com/ravisoni18/dharmaquest)
 # published on the host's port 8080. Reached via the host gateway, see extra_hosts in docker-compose.yml.
-dharmaquest.{$SITE_DOMAIN} {
+www.dharmaquest.in {
+	redir https://dharmaquest.in{uri} permanent
+}
+
+dharmaquest.in, dharmaquest.{$SITE_DOMAIN} {
 	encode zstd gzip
 	request_body {
 		max_size 12MB
